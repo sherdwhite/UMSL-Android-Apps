@@ -3,7 +3,7 @@ CS4760
 Assignment 1 - Unix System Calls and Library Functions
 
 The goal of this homework is to become familiar with the environment in hoare while practising system calls by doing 
-Exercise 3.8 (p. 87) in your text by Robbins/Robbins. The exercise expands on the process chain of Program 3.1 in the 
+Exercise 3.8 (p. 87) in the text by Robbins/Robbins. The exercise expands on the process chain of Program 3.1 in the 
 book. The process chain is a vehicle to experiment with wait(2) and with sharing of devices. All of the processes in 
 the chain created by Program 3.1 share stdin, stdout, and stderr. The program should give some meaningful error messages. 
 The format for error messages should be:		
@@ -12,9 +12,9 @@ The format for error messages should be:
 	
 where my_prog is actually the name of the executable (argv[0]) that you are trying to execute.
 
-3.1 creates a chain of process.  It takes a single command line argument that specifies the 
-number of processes to create.  Before exiting, each process outputs its i value, its process ID, its parent process ID and
-the process ID of its child.  The parent does execute wait.  If the parent exits before the child, the
+3.1 creates a chain of process.  It takes a single command line argument that specifies the number of processes to 
+create.  Before exiting, each process outputs its i value, its process ID, its parent process ID and
+the process ID of its child.  The parent does not execute wait.  If the parent exits before the child, the
 child becomes and orphan.  In this case the child process is adopted by a special system process (traditionally
 init with process ID of 1.  As a result, some processes may have a parent ID of 1.  
 
@@ -82,6 +82,7 @@ Exercise 3.8:
 	i:20 process ID:4083 parent ID:4082 child ID:0
 	
 2. Fill in the actual Process IDs of the processes in the diagram of Figure 3.2 for a run with command line argument value of 4.
+	
 	4:
 	i:1 process ID:16255 parent ID:10682 child ID:16256
 	i:2 process ID:16256 parent ID:16255 child ID:16257
@@ -90,6 +91,29 @@ Exercise 3.8:
 	
 	1 -> 2 -> 3 -> 4	=	16255 -> 16256 -> 16258 -> 16257
 	
-3. Experiment to find the largest number of processes the program can generate. 
+3. Experimenting to find the largest number of processes I could generate with the program seemed to vary between 350 and 364.
+
+4. By placing a sleep directly before the final fprintf statement I could generate no more than 27 processes. 
+
+5. After changes, last value only causes longer wait, doesn't change the number of processes:
+	4 4 4:
+	i:1 process ID:10154 parent ID:10682 child ID:10155
+	i:1 process ID:10155 parent ID:10154 child ID:10156
+	i:1 process ID:10157 parent ID:10156 child ID:0
+	i:1 process ID:10156 parent ID:10155 child ID:10157
+	i:2 process ID:10154 parent ID:10682 child ID:10155
+	i:2 process ID:10155 parent ID:10154 child ID:10156
+	i:2 process ID:10156 parent ID:10155 child ID:10157
+	i:2 process ID:10157 parent ID:10156 child ID:0
+	i:3 process ID:10154 parent ID:10682 child ID:10155
+	i:3 process ID:10155 parent ID:10154 child ID:10156
+	i:3 process ID:10157 parent ID:10156 child ID:0
+	i:3 process ID:10156 parent ID:10155 child ID:10157
 	
+	1 4 2:
+	i:1 process ID:10217 parent ID:10682 child ID:0
+	i:2 process ID:10217 parent ID:10682 child ID:0
+	i:3 process ID:10217 parent ID:10682 child ID:0
+
+
 
