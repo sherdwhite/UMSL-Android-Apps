@@ -10,6 +10,9 @@ int main (int argc, char *argv[]) {
     }
 
     n = atoi(argv[1]);
+	k = atoi(argv[2]);
+	m = atoi(argv[3]);
+	
     for (i = 1; i < n; i++)
         if (childpid = fork())
         break;
