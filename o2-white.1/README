@@ -115,5 +115,15 @@ Exercise 3.8:
 	i:2 process ID:10217 parent ID:10682 child ID:0
 	i:3 process ID:10217 parent ID:10682 child ID:0
 
+6. Reverted program back to 3.1, adding wait (for child) before final fprintf causes the pid processes to exit in reverse of before.
+	This also appears to force a limit of 27 processes at a time on the system.
+	
+	5:
+	i:5 process ID:1933 parent ID:1932 child ID:-1
+	i:4 process ID:1932 parent ID:1931 child ID:1933
+	i:3 process ID:1931 parent ID:1930 child ID:1932
+	i:2 process ID:1930 parent ID:1929 child ID:1931
+	i:1 process ID:1929 parent ID:10682 child ID:1930
 
+7. 	
 
