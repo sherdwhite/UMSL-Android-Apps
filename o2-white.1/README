@@ -2,21 +2,30 @@ Sherd White
 CS4760
 Assignment 1 - Unix System Calls and Library Functions
 
-The goal of this homework is to become familiar with the environment in hoare while practising system calls by doing 
-Exercise 3.8 (p. 87) in the text by Robbins/Robbins. The exercise expands on the process chain of Program 3.1 in the 
-book. The process chain is a vehicle to experiment with wait(2) and with sharing of devices. All of the processes in 
-the chain created by Program 3.1 share stdin, stdout, and stderr. The program should give some meaningful error messages. 
-The format for error messages should be:		
+Objective: 
 
-	my_prog: Error: Detailed error message
+	The goal of this homework is to become familiar with the environment in hoare while practising system calls by doing 
+	Exercise 3.8 (p. 87) in the text. The exercise expands on the process chain of Program 3.1 in the book. The process chain 
+	is a vehicle to experiment with wait(2) and with sharing of devices. All of the processes in the chain created by 
+	Program 3.1 share stdin, stdout, and stderr. The program gives meaningful error messages. The exercise will result in 
+	different versions of the same base program.  Git/Github are utilized for capturing the changes that have been made for 
+	each part of the exercise.
+
+Details regarding the base program:
+
+	3.1 creates a chain of process.  It takes a single command line argument that specifies the number of processes to 
+	create.  Before exiting, each process outputs its i value, its process ID, its parent process ID and
+	the process ID of its child.  The parent does not execute wait.  If the parent exits before the child, the
+	child becomes and orphan.  In this case the child process is adopted by a special system process (traditionally
+	init with process ID of 1.  As a result, some processes may have a parent ID of 1.  Each part of Exercise 3.8 causes
+	output of the program to differ.
 	
-where my_prog is actually the name of the executable (argv[0]) that you are trying to execute.
-
-3.1 creates a chain of process.  It takes a single command line argument that specifies the number of processes to 
-create.  Before exiting, each process outputs its i value, its process ID, its parent process ID and
-the process ID of its child.  The parent does not execute wait.  If the parent exits before the child, the
-child becomes and orphan.  In this case the child process is adopted by a special system process (traditionally
-init with process ID of 1.  As a result, some processes may have a parent ID of 1.  
+Instructions:
+	
+	A make file is included with the program.  Simply type make on the command line to compile the file assignment1.cpp.  
+	The executable for this assignment will simply be called assignment1.  For all parts of the exercise except part 5, one 
+	integer command arguement is expected, ex. assignment1 4.  For part 5, three integer arguements are expected, ex. 
+	assignment1 4 4 4.  The results are captured in results.txt.
 
 
 

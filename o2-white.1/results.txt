@@ -1,10 +1,10 @@
 Sherd White
 CS4760
-Program Assignment 1
+Assignment 1 - Unix System Calls and Library Functions
 Results
 
 Exercise 3.8:
-1. Run 3.1 and observe the results for a number of different processes.  
+1. 	Run 3.1 and observe the results for a number of different processes.  
 
 	3:
 	i:1 process ID:8289 parent ID:10682 child ID:8290
@@ -66,7 +66,7 @@ Exercise 3.8:
 	i:19 process ID:4082 parent ID:4081 child ID:4083
 	i:20 process ID:4083 parent ID:4082 child ID:0
 	
-2. Fill in the actual Process IDs of the processes in the diagram of Figure 3.2 for a run with command line argument value of 4.
+2. 	Fill in the actual Process IDs of the processes in the diagram of Figure 3.2 for a run with command line argument value of 4.
 	
 	4:
 	i:1 process ID:16255 parent ID:10682 child ID:16256
@@ -76,11 +76,11 @@ Exercise 3.8:
 	
 	1 -> 2 -> 3 -> 4	=	16255 -> 16256 -> 16258 -> 16257
 	
-3. Experimenting to find the largest number of processes I could generate with the program seemed to vary between 350 and 364.
+3. 	Experimenting to find the largest number of processes I could generate with the program seemed to vary between 350 and 364.
 
-4. By placing a sleep directly before the final fprintf statement I could generate no more than 27 processes. 
+4. 	By placing a sleep directly before the final fprintf statement I could generate no more than 27 processes. 
 
-5. After changes, last value only causes longer wait and doesn't change the number of processes:
+5. 	After changes, last value only causes longer wait and doesn't change the number of processes:
 	4 4 4:
 	i:1 process ID:10154 parent ID:10682 child ID:10155
 	i:1 process ID:10155 parent ID:10154 child ID:10156
@@ -100,7 +100,7 @@ Exercise 3.8:
 	i:2 process ID:10217 parent ID:10682 child ID:0
 	i:3 process ID:10217 parent ID:10682 child ID:0
 
-6. Reverted program back to 3.1, adding wait (for child) before final fprintf causes the pid processes to exit in reverse of before.
+6. 	Reverted program back to 3.1, adding wait (for child) before final fprintf causes the pid processes to exit in reverse of before.
 	This also appears to force a limit of 27 processes at a time on the system.
 	
 	5:
@@ -110,4 +110,32 @@ Exercise 3.8:
 	i:2 process ID:1930 parent ID:1929 child ID:1931
 	i:1 process ID:1929 parent ID:10682 child ID:1930
 
-7. 	
+7. 	Modifying final fprintf into 4 seperate print statements. When run, it appears the print output changes each time.  Sometimes it looks like I can 
+	tell which process generated the output, but in a few of the runs, the output is obviously mixed together.  Based on this, yes the output changes 
+	each time. 
+	
+	i:1 process ID:24299 parent ID:23404 child ID:24300
+	i:2 process ID:24300 parent ID:1 child ID:24301
+	i:3 process ID:24301 parent ID:24300 child ID:24302
+	i:4 process ID:24302 parent ID:24301 child ID:0
+
+	i:1 process ID:24303 parent ID:23404 child ID:24304
+	i:2 process ID:24304 parent ID:1 child ID:24305
+	i:3 process ID:24305 parent ID:1 child ID:24306
+	i:4 process ID:24306 parent ID:24305 child ID:0
+
+	i:1 process ID:24324 parent ID:23404 child ID:24325
+	i:2 process ID:24325 parent ID:1 child ID:24326
+	i:3 process ID:24326 i:4 parent ID:24325 child ID:24327
+	process ID:24327 parent ID:24326 child ID:0
+	
+	i:1 process ID:24331 parent ID:23404 child ID:24332
+	i:2 process ID:24332 parent ID:1 child ID:24333
+	i:4 i:3 process ID:24334 process ID:24333 parent ID:24333 child ID:0
+	parent ID:1 child ID:24334
+	
+	i:1 process ID:24481 parent ID:23404 child ID:24482
+	i:2 process ID:24482 parent ID:1 child ID:24483
+	i:3 i:4 process ID:24483 parent ID:24482 child ID:24484
+	process ID:24484 parent ID:24483 child ID:0
+
