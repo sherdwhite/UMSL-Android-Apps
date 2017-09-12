@@ -23,8 +23,8 @@ int main (int argc, char *argv[]) {
         break;
 	
 	for (i = 1; i <= nchars; i++){
-        cout << "Please enter a single character: ";
-		cin >> character;
+        std::cout << "Please enter a single character: ";
+		std::cin >> character;
 		mybuf[nchars-1] = character;
 	}
 	mybuf[nchars] = '\0'
