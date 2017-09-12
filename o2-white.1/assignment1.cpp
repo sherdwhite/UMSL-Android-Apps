@@ -16,6 +16,8 @@ int main (int argc, char *argv[]) {
     }
 
     n = atoi(argv[1]);
+	// k = atoi(argv[2]);  // 3.8 #5
+	// m = atoi(argv[3]);  // 3.8 #5
 	nchars = atoi(argv[2]);
 	char mybuf[nchars];
 	
@@ -30,6 +32,21 @@ int main (int argc, char *argv[]) {
 	}
 	mybuf[nchars] = '\0';
 	
+	// sleep(10);  // 3.8 #4
+	// childpid = wait(NULL);  // 3.8 #6
     fprintf(stderr, "process ID:%ld; mybuf:%s \n", (long)getpid(), mybuf);
+	
+	// 3.8 #5
+	/* for (i = 1; i < k; i++) {
+		fprintf(stderr, "i:%d process ID:%ld parent ID:%ld child ID:%ld\n", i, (long)getpid(), (long)getppid(), (long)childpid);
+		sleep(m);
+	} */
+	
+	// 3.8 #7
+	/* fprintf(stderr, "i:%d ", i);
+ 	fprintf(stderr, "process ID:%ld ", (long)getpid());
+ 	fprintf(stderr, "parent ID:%ld ", (long)getppid());
+ 	fprintf(stderr, "child ID:%ld\n", (long)childpid); */
+	
     return 0;
 }
