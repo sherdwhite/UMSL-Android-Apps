@@ -27,7 +27,7 @@ int main (int argc, char *argv[]) {
 		std::cin >> character;
 		mybuf[nchars-1] = character;
 	}
-	mybuf[nchars] = '\0'
+	mybuf[nchars] = '\0';
 	
     fprintf(stderr, "process ID:%ld mybuf:%s \n", (long)getpid(), mybuf);
     return 0;
