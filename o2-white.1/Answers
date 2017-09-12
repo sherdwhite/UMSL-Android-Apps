@@ -139,3 +139,16 @@ Exercise 3.8:
 	i:3 i:4 process ID:24483 parent ID:24482 child ID:24484
 	process ID:24484 parent ID:24483 child ID:0
 
+8.  The output for this indicates that when you have more than one PID, it is almost impossible to determine which PID instance is taking your input and in
+	what order. For example, if you enter 3 3 as the arguments, you get the following result. You have to keep entering characters until all the input calls
+	are satisfied.  It is hard to tell what input is being taken by what process.
+	
+	3 3:
+	Please enter 3 characters:Please enter 3 characters:Please enter 3 characters:a
+	b
+	c
+	d
+	e
+	process ID:3149; mybuf:ade 
+	-bash-4.2$ process ID:3150; mybuf:bbb 
+	process ID:3151; mybuf:ccc 
