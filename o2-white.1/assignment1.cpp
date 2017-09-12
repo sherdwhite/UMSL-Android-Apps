@@ -6,7 +6,7 @@
 int main (int argc, char *argv[]) {
     pid_t childpid = 0;
     int i, n;
-	int nchars;'
+	int nchars;
 	char character;
 		
     if (argc != 3){ /* check for valid number of command-line arguments */
