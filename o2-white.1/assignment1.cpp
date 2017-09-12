@@ -6,16 +6,29 @@
 int main (int argc, char *argv[]) {
     pid_t childpid = 0;
     int i, n;
-    if (argc != 2){ /* check for valid number of command-line arguments */
+	int nchars;'
+	char character;
+		
+    if (argc != 3){ /* check for valid number of command-line arguments */
         fprintf(stderr, "Usage: %s processes\n", argv[0]);
     return 1;
     }
 
     n = atoi(argv[1]);
+	nchars = atoi(argv[2]);
+	char mybuf[nchars];
+	
     for (i = 1; i < n; i++)
         if (childpid = fork())
         break;
 	
-    fprintf(stderr, "i:%d process ID:%ld parent ID:%ld child ID:%ld\n", i, (long)getpid(), (long)getppid(), (long)childpid);
+	for (i = 1; i <= nchars; i++){
+        cout << "Please enter a single character: ";
+		cin >> character;
+		mybuf[nchars-1] = character;
+	}
+	mybuf[nchars] = '\0'
+	
+    fprintf(stderr, "process ID:%ld mybuf:%s \n", (long)getpid(), mybuf);
     return 0;
 }
