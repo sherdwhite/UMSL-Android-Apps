@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <iostream>
 
 int main (int argc, char *argv[]) {
     pid_t childpid = 0;
