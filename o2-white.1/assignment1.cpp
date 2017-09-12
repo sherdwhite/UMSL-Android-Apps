@@ -30,6 +30,6 @@ int main (int argc, char *argv[]) {
 	}
 	mybuf[nchars] = '\0';
 	
-    fprintf(stderr, "process ID:%ld mybuf:%s \n", (long)getpid(), mybuf);
+    fprintf(stderr, "process ID:%ld; mybuf:%s \n", (long)getpid(), mybuf);
     return 0;
 }
