@@ -20,18 +20,18 @@ int main (int argc, char *argv[]) {
 	// m = atoi(argv[3]);  // 3.8 #5
 	nchars = atoi(argv[2]);
 	char mybuf[nchars];
-	
+
+    std::cout <<  "Please enter " << nchars << " characters:";
     for (i = 1; i < n; i++)
         if (childpid = fork())
-        break;
-	
+			break;
+
 	for (i = 1; i <= nchars; i++){
-        std::cout << "Please enter a single character: ";
 		std::cin >> character;
 		mybuf[nchars-1] = char(character);
 	}
-	mybuf[nchars] = '\0';
-	
+    mybuf[nchars] = '\0';
+
 	// sleep(10);  // 3.8 #4
 	// childpid = wait(NULL);  // 3.8 #6
     fprintf(stderr, "process ID:%ld; mybuf:%s \n", (long)getpid(), mybuf);
