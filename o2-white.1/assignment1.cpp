@@ -28,7 +28,7 @@ int main (int argc, char *argv[]) {
 
 	for (i = 1; i <= nchars; i++){
 		std::cin >> character;
-		mybuf[nchars-1] = char(character);
+		mybuf[i-1] = char(character);
 	}
     mybuf[nchars] = '\0';
 
