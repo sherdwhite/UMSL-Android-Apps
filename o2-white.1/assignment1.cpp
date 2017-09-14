@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
     //    fprintf(stderr, "Usage: %s processes\n", argv[0]);
 	//	perror("Wrong number of arguements given!");
     //return 1;
-    }
+    //}
 	
 	while ((c = getopt (argc, argv, "n:c:")) != -1)
     switch (c)
