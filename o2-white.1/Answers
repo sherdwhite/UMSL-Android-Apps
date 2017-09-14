@@ -4,7 +4,8 @@ Assignment 1 - Unix System Calls and Library Functions
 Results
 
 Exercise 3.8:
-1. 	Run 3.1 and observe the results for a number of different processes.  
+1. 	Ran 3.1 and I observed that the results for a number of different processes vary.  The more processes you start, the more you see 
+	the process ID vary for each run.  
 
 	3:
 	i:1 process ID:8289 parent ID:10682 child ID:8290
@@ -66,7 +67,7 @@ Exercise 3.8:
 	i:19 process ID:4082 parent ID:4081 child ID:4083
 	i:20 process ID:4083 parent ID:4082 child ID:0
 	
-2. 	Fill in the actual Process IDs of the processes in the diagram of Figure 3.2 for a run with command line argument value of 4.
+2. 	The actual Process IDs of the processes are in the diagram of Figure 3.2 format below for a run with command line argument value of 4.
 	
 	4:
 	i:1 process ID:16255 parent ID:10682 child ID:16256
@@ -80,7 +81,8 @@ Exercise 3.8:
 
 4. 	By placing a sleep directly before the final fprintf statement I could generate no more than 27 processes. 
 
-5. 	After changes, last value only causes longer wait and doesn't change the number of processes:
+5. 	After adding a loop around the last fprintf and adding a sleep following it, I noticed the last value only causes longer wait and 
+	doesn't change the number of processes but did make execution of the fprintf consistent after each increment of i.
 	4 4 4:
 	i:1 process ID:10154 parent ID:10682 child ID:10155
 	i:1 process ID:10155 parent ID:10154 child ID:10156
@@ -100,8 +102,8 @@ Exercise 3.8:
 	i:2 process ID:10217 parent ID:10682 child ID:0
 	i:3 process ID:10217 parent ID:10682 child ID:0
 
-6. 	Reverted program back to 3.1, adding wait (for child) before final fprintf causes the pid processes to exit in reverse of before.
-	This also appears to force a limit of 27 processes at a time on the system.
+6. 	Reverted program back to 3.1 and added a wait (for child) before final fprintf causes the pid processes to exit in reverse of before
+	as each process is waiting for its child to finish before completing. 
 	
 	5:
 	i:5 process ID:1933 parent ID:1932 child ID:-1
@@ -141,14 +143,18 @@ Exercise 3.8:
 
 8.  The output for this indicates that when you have more than one PID, it is almost impossible to determine which PID instance is taking your input and in
 	what order. For example, if you enter 3 3 as the arguments, you get the following result. You have to keep entering characters until all the input calls
-	are satisfied.  It is hard to tell what input is being taken by what process.
+	are satisfied.  It is hard to tell what input is being taken by what process as the more I run the program, greater are the variations.
 	
 	3 3:
 	Please enter 3 characters:Please enter 3 characters:Please enter 3 characters:a
 	b
 	c
 	d
+	process ID:19236; mybuf:bcd 
 	e
-	process ID:3149; mybuf:ade 
-	-bash-4.2$ process ID:3150; mybuf:bbb 
-	process ID:3151; mybuf:ccc 
+	f
+	g
+	process ID:19237; mybuf:efg 
+	h
+	i
+	process ID:19235; mybuf:ahi 
