@@ -9,6 +9,8 @@ int main (int argc, char *argv[]) {
     int i, n;
 	int nchars;
 	char character;
+	char *nvalue = NULL;
+	char *cvalue = NULL;
 		
     if (argc != 3){ /* check for valid number of command-line arguments */
         fprintf(stderr, "Usage: %s processes\n", argv[0]);
