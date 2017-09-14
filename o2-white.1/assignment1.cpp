@@ -12,6 +12,8 @@ int main (int argc, char *argv[]) {
 		
     if (argc != 3){ /* check for valid number of command-line arguments */
         fprintf(stderr, "Usage: %s processes\n", argv[0]);
+		perror("Wrong number of arguements given!");
+		perrer
     return 1;
     }
 
@@ -27,7 +29,8 @@ int main (int argc, char *argv[]) {
 			break;
 
 	for (i = 1; i <= nchars; i++){
-		std::cin >> character;
+		scanf(" %c", character);
+		getchar();
 		mybuf[i-1] = char(character);
 	}
     mybuf[nchars] = '\0';
