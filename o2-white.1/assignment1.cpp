@@ -13,7 +13,6 @@ int main (int argc, char *argv[]) {
     if (argc != 3){ /* check for valid number of command-line arguments */
         fprintf(stderr, "Usage: %s processes\n", argv[0]);
 		perror("Wrong number of arguements given!");
-		perrer
     return 1;
     }
 
