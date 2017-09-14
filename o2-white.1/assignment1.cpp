@@ -6,7 +6,7 @@
 
 int main (int argc, char *argv[]) {
     pid_t childpid = 0;
-    int i, n;
+    int i, n, c;
 	int nchars;
 	char character;
 	char *nvalue = NULL;
