@@ -12,10 +12,10 @@ int main (int argc, char *argv[]) {
 	char *nvalue = NULL;
 	char *cvalue = NULL;
 		
-    if (argc != 3){ /* check for valid number of command-line arguments */
-        fprintf(stderr, "Usage: %s processes\n", argv[0]);
-		perror("Wrong number of arguements given!");
-    return 1;
+    //if (argc != 3){ /* check for valid number of command-line arguments */
+    //    fprintf(stderr, "Usage: %s processes\n", argv[0]);
+	//	perror("Wrong number of arguements given!");
+    //return 1;
     }
 	
 	while ((c = getopt (argc, argv, "n:c:")) != -1)
@@ -28,16 +28,24 @@ int main (int argc, char *argv[]) {
 				cvalue = optarg;
 				break;
 			case '?':
-				if (optopt == 'n')
+				if (optopt == 'n'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-				if (optopt == 'c')
+					perror("No arguement value given!");
+				}
+				if (optopt == 'c'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-				else if (isprint (optopt))
+					perror("No arguement value given!");
+				}
+				else if (isprint (optopt)){
 					fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-				else
+					perror("Incorrect arguement given!");
+				}
+				else {
 					fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+					perror("Unknown arguement given!");
 					return 1;
-			  default:
+				}
+			default:
 				abort ();
 		  }
 

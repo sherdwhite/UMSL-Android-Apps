@@ -23,9 +23,11 @@ Details regarding the base program:
 Instructions:
 	
 	A make file is included with the program.  Simply type make on the command line to compile the file assignment1.cpp.  
-	The executable for this assignment will simply be called assignment1.  For all parts of the exercise except part 5, one 
-	integer command arguement is expected, ex. assignment1 4.  For part 5, three integer arguements are expected, ex. 
-	assignment1 4 4 4.  The results are captured in the Answers file.
+	The executable for this assignment will simply be called assignment1.  To run the final program, you will need to specify
+	command line arguements with the -n option for the number of processes and the -c option for the number of characters.
+	For all parts of the exercise except part 5, one integer command arguement was expected, ex. assignment1 4.  For part 5, 
+	three integer arguements were expected, ex. assignment1 4 4 4.  Part 8 requires the arguement calls of -n and -c along with
+	and integer value. The results are captured in the Answers file.
 
 
 
