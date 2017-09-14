@@ -28,9 +28,8 @@ int main (int argc, char *argv[]) {
 			break;
 
 	for (i = 1; i <= nchars; i++){
-		scanf(" %c", character);
-		getchar();
-		mybuf[i-1] = char(character);
+		scanf(" %c", &character);
+		mybuf[i-1] = character;
 	}
     mybuf[nchars] = '\0';
 
