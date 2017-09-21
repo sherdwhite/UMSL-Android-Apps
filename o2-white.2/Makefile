@@ -1,8 +1,8 @@
 CC	= g++
 
-TARGET1	= assignment1
+TARGET1	= assignment2
 
-OBJS1	= assignment1.o
+OBJS1	= assignment2.o
 
 
 all: $(TARGET1) 
