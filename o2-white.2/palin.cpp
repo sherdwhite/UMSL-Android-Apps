@@ -12,7 +12,22 @@ int main(int argc, char * argv[])
 		// execute code to enter critical section;
 		// /* Critical section */
 		// sleep for random amount of time (between 0 and 2 seconds);sses and shared memory
-		// write message into the file
+		//    // Start from leftmost and rightmost corners of str
+		int l = 0;
+		int r = strlen(str) - 1;
+	 
+		// Keep comparing characters while they are same
+		while (r > l)
+		{
+			if (str[l++] != str[r--])
+			{
+				printf("%s Not Palindrome", str);
+				return;
+			}
+			l++;
+			r--;
+		}
+		printf("%s Palindrome", str);
 		// sleep for random amount of time (between 0 and 2 seconds);
 		// execute code to exit from critical section;
 	// }
