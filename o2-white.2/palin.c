@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <iostream>
-#include <string>
 #include <cstring>
 
 int main(int argc, char * argv[]) 
