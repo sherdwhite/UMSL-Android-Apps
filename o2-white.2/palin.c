@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <cstring>
 
 int main(int argc, char * argv[])
 {
