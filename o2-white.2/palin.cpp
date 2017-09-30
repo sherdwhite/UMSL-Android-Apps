@@ -44,8 +44,8 @@ int main(int argc, char * argv[])
 	
 	
 	// Write palindromes and non-palindromes to their files. 
-	file1 = "palin.out";
-	file2 = "nopalin.out";
+	string file1 = "palin.out";
+	string file2 = "nopalin.out";
 	
 	for (int i = 0; i < list.size(); i++)
 	{
