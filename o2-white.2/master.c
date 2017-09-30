@@ -21,10 +21,10 @@ int main(int argc, char * argv[])
 		list.push_back(loc);
 	}
 	
+	for(i = 0; i < 5; i++) {
+	// critical seciton
 	// Code for each child in palin.cpp
-	
-	
-
+	}
 	
     return 0;
 }

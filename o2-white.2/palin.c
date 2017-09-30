@@ -2,65 +2,60 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <iostream>
 #include <cstring>
 
-int main(int argc, char * argv[]) 
+int main(int argc, char * argv[])
 {
-	if (argc <= 1)
-	{
-		std::cerr << "Not enough arguments, filename needed!" << argv[1] << std::endl;
-		return (1);
-	}
+        if (argc != 2) {
+                fprintf(stderr, "Usage: %s string\n", argv[0]);
+                return 1;
+        }
+        char* word;
+        word = argv[1];
+		
+        // /* Critical section */
+        // sleep for random amount of time (between 0 and 2 seconds);sses and shared memory
+		
+        // Start from leftmost and rightmost corners of str
+        int l = 0;
+        int r = strlen(word) - 1;
+        int palin = 1;
+        // Keep comparing characters while they are same
+        while (r > l)
+        {
+                if (word[l] != word[r]) {
+                        printf("%s Not Palindrome\n", word);
+                        palin = 0;
+                        break;
+                        }
+                l++;
+                r--;
+        }
+        if (palin == 1) {
+                printf("%s Palindrome\n", word);
+        }
 
-	std::string word = argv[1];
-	// Code for each child
-	// for ( i = 0; i < 5; i++ )
-	// {
-			// execute code to enter critical section;
-			// /* Critical section */
-			// sleep for random amount of time (between 0 and 2 seconds);sses and shared memory
-			//    // Start from leftmost and rightmost corners of str
-			int l = 0;
-			int r = strlen(word.c_str()) - 1;
+        // Write palindromes and non-palindromes to their files.
+        FILE *file;
 
-			// Keep comparing characters while they are same
-			while (r > l)
-			{
-					if (word[l] != word[r])
-					{
-							printf("%s Not Palindrome\n", word.c_str());
-							return 0;
-					}
-					l++;
-					r--;
-			}
-			printf("%s Palindrome\n", word.c_str());
-			// sleep for random amount of time (between 0 and 2 seconds);
-			// execute code to exit from critical section;
-	// }
+        if (palin == 1) {
+                // write to palin.out
+                file = fopen("palin.out", "a");
+                fputs(word, file);
+                fputs("\n", file);
+        }
+        else {
+                // write to nopalin.out
+                file = fopen("nopalin.out", "a");
+                fputs(word, file);
+                fputs("\n", file);
+        }
+        fclose(file);
+		
+		// sleep for random amount of time (between 0 and 2 seconds);
+        // execute code to exit from critical section;
 
-	
-	
-	// Write palindromes and non-palindromes to their files. 
-	string file1 = "palin.out";
-	string file2 = "nopalin.out";
-	
-	for (int i = 0; i < list.size(); i++)
-	{
-		if (palin) {
-			// write to palin.out
-			std::ofstream file(file1.c_str());
-			file1 << word << std::endl;
-		}
-		else {
-			// write to nopalin.out
-			std::ofstream file(file2.c_str());
-			file2 << word << std::endl;
-		}
-
-	}
-	file.close();
-	
     return 0;
+}
+
 }
