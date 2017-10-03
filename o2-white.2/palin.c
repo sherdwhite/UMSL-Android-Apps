@@ -24,8 +24,7 @@ int main()
 		perror("Failed to find shared memory segment");
 				return 1;
 	}
-
-	// printf("My segment id is %d\n", shm_id);
+	printf("My palin segment id is %d\n", shm_id);
 
 	// attach shared memory segment
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
@@ -34,11 +33,12 @@ int main()
 		perror("Failed to attach existing shared memory segment");
 		return 1;
 	}
+	printf("My palin ptr address is %x\n", ptr);
 	
 	int idr = ptr->id;
 	int indexr = ptr->index;
 
-	printf("Palin: The id is %d, the index is %d.\n", ptr->idr, ptr->indexr);
+	printf("Palin: The id is %d, the index is %d.\n", idr, indexr);
 
 	int i = 0;
 	char *word;

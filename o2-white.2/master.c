@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
                 return 1;
 	}
 
-	// printf("My segment id is %d\n", shm_id);
+	printf("My master segment id is %d\n", shm_id);
 
 	// attach shared memory segment
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
@@ -47,8 +47,8 @@ int main(int argc, char * argv[])
         perror("Failed to attach shared memory segment");
                 return 1;
         }
-
-	// printf("My ptr address is %x\n", ptr);
+	printf("My master ptr address is %x\n", ptr);
+	
 	// test saving data
 	ptr->id  = 0;
 	// ptr->data[0] = "test";
@@ -68,28 +68,15 @@ int main(int argc, char * argv[])
 	int i = 0;
 	char line[LENGTH];
     while (fgets(line, sizeof(line), fp)) {
-         /* note that fgets don't strip the terminating \n, checking its
-           presence would allow to handle lines longer that sizeof(line) */
-		   line[strlen(line) - 1] = '\0';
-		   ptr->data[i] = line;
+	 /* note that fgets don't strip the terminating \n, checking its
+	   presence would allow to handle lines longer that sizeof(line) */
+	   line[strlen(line) - 1] = '\0';
+	   ptr->data[i] = line;
        printf("%s", line); 
+	   i++;
     }
 	
-	pid_t childpid;
-	childpid = fork();
-	if (childpid == -1) {
-		perror("Failed to fork");
-		return 1;
-	}
-	if (childpid == 0) { /* child code */
-		execv("palin", NULL);	
-		perror("Child failed to exec palin");
-		return 1;
-	}
-	if (childpid != wait(NULL)) { /* parent code */
-		perror("Parent failed to wait due to signal or error");
-		return 1;
-	}
+	execv("palin", NULL);	
 	
 	// Testing array of strings for data.
 	// for(i=0; i<50; i++){
