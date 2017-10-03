@@ -27,9 +27,9 @@ int main(int argc, char * argv[])
 		// list.push_back(loc);
 	// }
 	typedef struct {
-		int shm_id, index = 0, flag = 0;
+		int shm_id, index, flag;
 		//key_t key;
-		char data[SIZE] = {0};
+		char data[SIZE];
 	} shared_memory;
 
 	// create shared memory segment and get the segment id
@@ -56,6 +56,10 @@ int main(int argc, char * argv[])
 	}
 	
 	printf("My ptr address is %x\n", ptr);
+	
+	ptr->index = 0;
+	ptr->flag = 0;
+	ptr->data = {0}
 	
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
