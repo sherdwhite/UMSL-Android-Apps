@@ -35,6 +35,11 @@ int main()
 		return 1;
 	}
 	
+	int idr = ptr->id;
+	int indexr = ptr->index;
+	
+	printf("The id is %d, the index is %d.\n", ptr->id, ptr->index);
+	
 	int i = 0;
 	char *word;
 	// Testing array of strings for data.
