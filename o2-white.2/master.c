@@ -57,9 +57,9 @@ int main(int argc, char * argv[])
 	
 	printf("My ptr address is %x\n", ptr);
 	
-	ptr *index = 0;
-	ptr *flag = 0;
-	ptr *data[0] = 1;
+	ptr.index = 0;
+	ptr.flag = 0;
+	ptr.data[0] = 1;
 	
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
