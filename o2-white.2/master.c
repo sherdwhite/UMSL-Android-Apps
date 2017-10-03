@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
 	// Could also be ptr[0].index or ptr[0].flag, etc.
 	// printf("The index is %d, the flag is %d, the array is %s.\n", ptr->index, ptr->flag, ptr->data[0]);
 	
-	FILE *fp = fopen(argv[0], "r");
+	FILE *fp = fopen(argv[1], "r");
 	if (fp == 0)
     {
         fprintf(stderr,"File %s not found\n",argv[1]);
