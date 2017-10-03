@@ -8,21 +8,22 @@
 #include <sys/stat.h>
 #include <string.h>
 #define PERM (S_IRUSR | S_IWUSR)
-#define SIZE 50 
+#define SIZE 50
 #define LENGTH 132
 
 typedef struct {
-	int id;
-	int index;  //key_t key;
-	char *data[SIZE];
+        int id;
+        int index;  //key_t key;
+        char *data[SIZE];
 } shared_memory;
 
 int main()
 {
-	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM | IPC_CREAT);
+	int key = 9211191514;
+	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
 	if (shm_id == -1) {
-		perror("Failed to find shared memory segment");
-				return 1;
+			perror("Failed to find shared memory segment");
+							return 1;
 	}
 	printf("My palin segment id is %d\n", shm_id);
 
@@ -30,11 +31,11 @@ int main()
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
 	if (ptr == (void*)-1) {
-		perror("Failed to attach existing shared memory segment");
-		return 1;
+			perror("Failed to attach existing shared memory segment");
+			return 1;
 	}
 	printf("My palin ptr address is %x\n", ptr);
-	
+
 	int idr = ptr->id;
 	int indexr = ptr->index;
 
@@ -44,10 +45,11 @@ int main()
 	char *word;
 	// Testing array of strings for data.
 	for(i = 0; i < sizeof(ptr->data); i++){
-			word = (ptr->data[i]);
-			printf("%s", word);
+					word = (ptr->data[i]);
+					printf("%s", word);
 	}
 	printf("Test");
+
 
 
 	// // Start from leftmost and rightmost corners of str

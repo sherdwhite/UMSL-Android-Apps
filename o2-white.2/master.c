@@ -32,6 +32,7 @@ int main(int argc, char * argv[])
 	// IPC_CREAT says to create, but don't fail if it is already there
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
+	int key = 9211191514;
 	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM | IPC_CREAT | IPC_EXCL);
     if (shm_id == -1) {
         perror("Failed to create shared memory segment");
@@ -90,6 +91,7 @@ int main(int argc, char * argv[])
 	if (childpid != wait(NULL)) { /* parent code */
 		perror("Parent failed to wait due to signal or error");
 		return 1;
+	}
 	
 	// Testing array of strings for data.
 	// for(i=0; i<50; i++){
