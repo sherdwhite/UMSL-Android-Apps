@@ -76,7 +76,20 @@ int main(int argc, char * argv[])
 	   i++;
     }
 	
-	execv("palin", NULL);	
+	pid_t childpid;
+	childpid = fork();
+		if (childpid == -1) {
+		perror("Failed to fork");
+	return 1;
+	}
+	if (childpid == 0) { /* child code */
+		execv("palin", NULL);	
+		perror("Child failed to execv");
+	return 1;
+	}
+	if (childpid != wait(NULL)) { /* parent code */
+		perror("Parent failed to wait due to signal or error");
+		return 1;
 	
 	// Testing array of strings for data.
 	// for(i=0; i<50; i++){
