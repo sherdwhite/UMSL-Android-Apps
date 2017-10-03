@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
 	printf("My master ptr address is %x\n", ptr);
 	
 	// test saving data
-	ptr->id  = 0;
+	ptr->id  = 1;
 	// ptr->data[0] = "test";
 	ptr->index  = 2;
 	// We can use the shared_memory ptr to get access to shared memory.
@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 	   presence would allow to handle lines longer that sizeof(line) */
 	   line[strlen(line) - 1] = '\0';
 	   ptr->data[i] = line;
-       printf("%s", line); 
+       printf("%s ", line); 
 	   i++;
     }
 	

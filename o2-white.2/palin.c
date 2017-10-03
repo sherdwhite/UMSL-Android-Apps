@@ -23,7 +23,7 @@ int main()
 	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
 	if (shm_id == -1) {
 			perror("Failed to find shared memory segment");
-							return 1;
+			return 1;
 	}
 	printf("My palin segment id is %d\n", shm_id);
 
@@ -35,11 +35,7 @@ int main()
 			return 1;
 	}
 	printf("My palin ptr address is %x\n", ptr);
-
-	int idr = ptr->id;
-	int indexr = ptr->index;
-
-	printf("Palin: The id is %d, the index is %d.\n", idr, indexr);
+	printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 
 	int i = 0;
 	char *word;
@@ -48,9 +44,6 @@ int main()
 					word = (ptr->data[i]);
 					printf("%s", word);
 	}
-	printf("Test");
-
-
 
 	// // Start from leftmost and rightmost corners of str
 	// int l = 0;
