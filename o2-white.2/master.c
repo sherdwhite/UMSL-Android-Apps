@@ -71,8 +71,18 @@ int main(int argc, char * argv[])
         return 1;
     }
 	
+	int lines = 0;
+	while(!feof(fp))
+	{
+	  ch = fgetc(fp);
+	  if(ch == '\n')
+	  {
+		lines++;
+	  }
+	}
+	printf("%d lines.\n", lines);
+	
 	char line[256];
-
     while (fgets(line, sizeof(line), fp)) {
         /* note that fgets don't strip the terminating \n, checking its
            presence would allow to handle lines longer that sizeof(line) */
