@@ -71,12 +71,18 @@ int main(int argc, char * argv[])
         return 1;
     }
 	
-	char line[256];
-    while (fgets(line, sizeof(line), fp)) {
+	// line[256];
+    //while (fgets(line, sizeof(line), fp)) {
         /* note that fgets don't strip the terminating \n, checking its
            presence would allow to handle lines longer that sizeof(line) */
-        printf("%s", line); 
-    }
+    //    printf("%s", line); 
+    // }
+	
+	char *buffer;
+	while(fp !=NULL) {
+		*buffer = fgetc(fp);
+	}
+	printf("%s", *buffer);
 	
 	// could add to data via scanf("%
 
