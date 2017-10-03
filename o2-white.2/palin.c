@@ -19,7 +19,7 @@ typedef struct {
 
 int main()
 {
-	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM);
+	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM | IPC_CREAT);
 	if (shm_id == -1) {
 		perror("Failed to find shared memory segment");
 				return 1;
