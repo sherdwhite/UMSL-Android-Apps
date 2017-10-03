@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <string.h>
 #define PERM (S_IRUSR | S_IWUSR)
 #define SIZE 5000 /* size of shared memory segment in K */
 
@@ -58,7 +59,7 @@ int main(int argc, char * argv[])
 	// printf("My ptr address is %x\n", ptr);
 
 	// ptr->flag  = 1;
-	// ptr->data[0] = "shit";
+	// ptr->data[0] = "test";
 	// ptr->index  = 2;
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
