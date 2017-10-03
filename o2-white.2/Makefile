@@ -1,8 +1,8 @@
 CC	= gcc
 
-TARGET1	= palin
+TARGET1	= master	
 
-OBJS1	= palin.o
+OBJS1	= master.o
 
 
 all: $(TARGET1) 
