@@ -8,7 +8,8 @@
 #include <sys/stat.h>
 #include <string.h>
 #define PERM (S_IRUSR | S_IWUSR)
-#define SIZE 5000 /* size of shared memory segment in K */
+#define SIZE 50 
+#define LENGTH 132
 
 int main(int argc, char * argv[]) 
 {
@@ -28,9 +29,9 @@ int main(int argc, char * argv[])
 		// list.push_back(loc);
 	// }
 	typedef struct {
-		int flag;
+		int id;
 		int index;  //key_t key;
-		char *data[SIZE];
+		char *data[SIZE][LENGTH];
 	} shared_memory;
 
 	// create shared memory segment and get the segment id
@@ -58,12 +59,12 @@ int main(int argc, char * argv[])
 
 	// printf("My ptr address is %x\n", ptr);
 
-	// ptr->flag  = 1;
-	// ptr->data[0] = "test";
-	// ptr->index  = 2;
+	ptr->id  = 0;
+	ptr->data[0] = "test";
+	ptr->index  = 2;
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
-	// printf("The index is %d, the flag is %d, the array is %s.\n", ptr->index, ptr->flag, ptr->data[0]);
+	printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", ptr->id, ptr->index, ptr->data[0]);
 	
 	FILE *fp = fopen(argv[1], "r");
 	if (fp == 0)
@@ -72,7 +73,7 @@ int main(int argc, char * argv[])
         return 1;
     }
 	
-	char line[256];
+	char line[LENGTH];
     while (fgets(line, sizeof(line), fp)) {
          /* note that fgets don't strip the terminating \n, checking its
            presence would allow to handle lines longer that sizeof(line) */
