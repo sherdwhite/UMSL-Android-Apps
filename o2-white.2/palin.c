@@ -36,9 +36,11 @@ int main()
 	}
 	
 	int i = 0;
+	char *word;
 	// Testing array of strings for data.
 	for(i = 0; i < 50; i++){
-		printf(ptr->data[i]);
+		word = (ptr->data[i]);
+		printf(word);
 	}
 
 	// // Start from leftmost and rightmost corners of str
