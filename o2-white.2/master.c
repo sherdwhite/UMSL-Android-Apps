@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
                 return 1;
 	}
 
-	printf("My segment id is %d\n", shm_id);
+	// printf("My segment id is %d\n", shm_id);
 
 	// attach shared memory segment
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
@@ -55,15 +55,30 @@ int main(int argc, char * argv[])
                 return 1;
         }
 
-	printf("My ptr address is %x\n", ptr);
+	// printf("My ptr address is %x\n", ptr);
 
-	ptr->flag  = 1;
-	ptr->data[0] = "shit";
-	ptr->index  = 2;
+	// ptr->flag  = 1;
+	// ptr->data[0] = "shit";
+	// ptr->index  = 2;
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
-	printf("The index is %d, the flag is %d, the array is %s.\n", ptr->index, ptr->flag, ptr->data[0]);
+	// printf("The index is %d, the flag is %d, the array is %s.\n", ptr->index, ptr->flag, ptr->data[0]);
+	
+	FILE *fp = fopen(argv[0], "r");
+	if (fp == 0)
+    {
+        fprintf(stderr,"File %s not found\n",argv[1]);
+        return 1;
+    }
+	
+	char line[256];
 
+    while (fgets(line, sizeof(line), fp)) {
+        /* note that fgets don't strip the terminating \n, checking its
+           presence would allow to handle lines longer that sizeof(line) */
+        printf("%s", line); 
+    }
+	
 	// could add to data via scanf("%
 
 	// for(i = 0; i < 5; i++) {
