@@ -38,7 +38,7 @@ int main()
 	int idr = ptr->id;
 	int indexr = ptr->index;
 	
-	printf("The id is %d, the index is %d.\n", ptr->id, ptr->index);
+	printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 	
 	int i = 0;
 	char *word;
