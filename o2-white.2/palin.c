@@ -19,67 +19,74 @@ typedef struct {
 
 int main()
 {
-		int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM | IPC_EXCL);
-		if (shm_id == -1) {
-			perror("Failed to find shared memory segment");
-					return 1;
-		}
+	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM | IPC_EXCL);
+	if (shm_id == -1) {
+		perror("Failed to find shared memory segment");
+				return 1;
+	}
 
-		// printf("My segment id is %d\n", shm_id);
+	// printf("My segment id is %d\n", shm_id);
 
-		// attach shared memory segment
-		shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
-		// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-		if (ptr == (void*)-1) {
-			perror("Failed to attach existing shared memory segment");
-			return 1;
-		}
-		
-		// Testing array of strings for data.
-		for(i=0; i<50; i++){
-			printf(ptr->data[i]);
-		}
+	// attach shared memory segment
+	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
+	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
+	if (ptr == (void*)-1) {
+		perror("Failed to attach existing shared memory segment");
+		return 1;
+	}
+	
+	// Testing array of strings for data.
+	for(i=0; i<50; i++){
+		printf(ptr->data[i]);
+	}
 
-        // // Start from leftmost and rightmost corners of str
-        // int l = 0;
-        // int r = strlen(word) - 1;
-        // int palin = 1;
-        // // Keep comparing characters while they are same
-        // while (r > l)
-        // {
-                // if (word[l] != word[r]) {
-                        // printf("%s Not Palindrome\n", word);
-                        // palin = 0;
-                        // break;
-                        // }
-                // l++;
-                // r--;
-        // }
-        // if (palin == 1) {
-                // printf("%s Palindrome\n", word);
-        // }
+	// // Start from leftmost and rightmost corners of str
+	// int l = 0;
+	// int r = strlen(word) - 1;
+	// int palin = 1;
+	// // Keep comparing characters while they are same
+	// while (r > l)
+	// {
+			// if (word[l] != word[r]) {
+					// printf("%s Not Palindrome\n", word);
+					// palin = 0;
+					// break;
+					// }
+			// l++;
+			// r--;
+	// }
+	// if (palin == 1) {
+			// printf("%s Palindrome\n", word);
+	// }
 
-		/* Critical section */
-        // sleep for random amount of time (between 0 and 2 seconds);
-        // Write palindromes and non-palindromes to their files.
-        // FILE *file;
+	/* Critical section */
+	// sleep for random amount of time (between 0 and 2 seconds);
+	// Write palindromes and non-palindromes to their files.
+	// FILE *file;
 
-        // if (palin == 1) {
-                // // write to palin.out
-                // file = fopen("palin.out", "a");
-                // fputs(word, file);
-                // fputs("\n", file);
-        // }
-        // else {
-                // // write to nopalin.out
-                // file = fopen("nopalin.out", "a");
-                // fputs(word, file);
-                // fputs("\n", file);
-        // }
-        // fclose(file);
-		
-		// sleep for random amount of time (between 0 and 2 seconds);
-        // execute code to exit from critical section;
+	// if (palin == 1) {
+			// // write to palin.out
+			// file = fopen("palin.out", "a");
+			// fputs(word, file);
+			// fputs("\n", file);
+	// }
+	// else {
+			// // write to nopalin.out
+			// file = fopen("nopalin.out", "a");
+			// fputs(word, file);
+			// fputs("\n", file);
+	// }
+	// fclose(file);
+	
+	// sleep for random amount of time (between 0 and 2 seconds);
+	// execute code to exit from critical section;
+	
+	// detach from memory segment
+	int detach = shmdt(ptr);
+	if (detach == -1){
+		perror("Failed to detach shared memory segment");
+		return 1;
+	}
 
     return 0;
 }
