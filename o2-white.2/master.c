@@ -74,6 +74,8 @@ int main(int argc, char * argv[])
        printf("%s", line); 
     }
 	
+	execv("palin", NULL);
+	
 	// Testing array of strings for data.
 	// for(i=0; i<50; i++){
 		// printf(ptr->data[i]);
