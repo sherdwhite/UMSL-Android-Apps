@@ -37,16 +37,18 @@ int main()
 	
 	int idr = ptr->id;
 	int indexr = ptr->index;
-	
-	printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
-	
+
+	printf("Palin: The id is %d, the index is %d.\n", ptr->idr, ptr->indexr);
+
 	int i = 0;
 	char *word;
 	// Testing array of strings for data.
-	for(i = 0; i < 50; i++){
-		word = (ptr->data[i]);
-		printf(word);
+	for(i = 0; i < sizeof(ptr->data); i++){
+			word = (ptr->data[i]);
+			printf("%s", word);
 	}
+	printf("Test");
+
 
 	// // Start from leftmost and rightmost corners of str
 	// int l = 0;
