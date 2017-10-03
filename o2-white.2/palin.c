@@ -35,6 +35,7 @@ int main()
 		return 1;
 	}
 	
+	int i = 0;
 	// Testing array of strings for data.
 	for(i=0; i<50; i++){
 		printf(ptr->data[i]);
