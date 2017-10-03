@@ -11,6 +11,12 @@
 #define SIZE 50 
 #define LENGTH 132
 
+typedef struct {
+	int id;
+	int index;  //key_t key;
+	char *data[SIZE];
+} shared_memory;
+
 int main(int argc, char * argv[]) 
 {
 	if (argc <= 1)
@@ -18,21 +24,6 @@ int main(int argc, char * argv[])
 		fprintf(stderr, "A missing or incorrect file specified.\n");
 		return 1;
 	}
-
-	// vector<int> list1;
-	// int loc;
-
-	// ifstream fin(argv[1]);
-
-	// while (fin >> loc)
-	// {
-		// list.push_back(loc);
-	// }
-	typedef struct {
-		int id;
-		int index;  //key_t key;
-		char *data[SIZE];
-	} shared_memory;
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
@@ -58,13 +49,13 @@ int main(int argc, char * argv[])
         }
 
 	// printf("My ptr address is %x\n", ptr);
-
+	// test saving data
 	// ptr->id  = 0;
 	// ptr->data[0] = "test";
 	// ptr->index  = 2;
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
-	printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", ptr->id, ptr->index, ptr->data[0]);
+	// printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", ptr->id, ptr->index, ptr->data[0]);
 	
 	FILE *fp = fopen(argv[1], "r");
 	if (fp == 0)
@@ -82,28 +73,11 @@ int main(int argc, char * argv[])
 		   ptr->data[i] = line;
        printf("%s", line); 
     }
-	printf(data);
 	
-	// could add to data via scanf("%
-
-	// for(i = 0; i < 5; i++) {
-	// critical seciton
-	// Code for each child in palin.cpp
-					//wait(1);
-	// }
-    /*
-     * Wait until the other process
-     * changes the first character of our memory
-     * to '*', indicating that it has read what
-     * we put there.
-     */
-
-    /*
-     * Wait until the other process
-     * changes the first character of our memory
-     * to '*', indicating that it has read what
-     * we put there.
-     */
+	// Testing array of strings for data.
+	// for(i=0; i<50; i++){
+		// printf(ptr->data[i]);
+    // }
 	 
 	// detach from memory segment
 	int detach = shmdt(ptr);
