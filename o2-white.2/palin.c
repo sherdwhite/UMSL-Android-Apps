@@ -19,7 +19,7 @@ typedef struct {
 
 int main()
 {
-	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM | IPC_EXCL);
+	int shm_id = shmget(IPC_PRIVATE, sizeof(shared_memory), PERM);
 	if (shm_id == -1) {
 		perror("Failed to find shared memory segment");
 				return 1;
@@ -37,7 +37,7 @@ int main()
 	
 	int i = 0;
 	// Testing array of strings for data.
-	for(i=0; i<50; i++){
+	for(i = 0; i < 50; i++){
 		printf(ptr->data[i]);
 	}
 
