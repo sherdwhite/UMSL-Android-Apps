@@ -27,9 +27,9 @@ int main(int argc, char * argv[])
 		// list.push_back(loc);
 	// }
 	typedef struct {
-		int shm_id, index, flag;
+		int shm_id, index = 0, flag = 0;
 		//key_t key;
-		char data[SIZE];
+		char data[SIZE] = {0};
 	} shared_memory;
 
 	// create shared memory segment and get the segment id
