@@ -59,11 +59,11 @@ int main(int argc, char * argv[])
 	
 	ptr->index = 0;
 	ptr->flag = 0;
-	ptr->data[0] = 1;
+	ptr->data = 0;
 	
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
-	printf("The index is %n, the flag is %n, the array is %s.", ptr->index, ptr->flag, ptr->data[0]);  
+	printf("The index is %n, the flag is %n, the array is %s.", ptr->index, ptr->flag, ptr->data);  
 
 	// could add to data via scanf("%
 	
