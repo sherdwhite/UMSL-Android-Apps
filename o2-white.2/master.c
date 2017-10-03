@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/shm.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/stat.h>
 #define PERM (S_IRUSR | S_IWUSR)
 #define SIZE 5000 /* size of shared memory segment in K */
 
