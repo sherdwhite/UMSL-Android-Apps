@@ -12,13 +12,22 @@
 #define LENGTH 132
 
 typedef struct {
-        int id;
-        int index;  //key_t key;
-        char data[SIZE][LENGTH];
+	int id;
+	//key_t key;
+	char data[SIZE][LENGTH];
 } shared_memory;
 
-int main()
+int main(int argc, char * argv[]) 
 {
+	if (argc <= 2)
+	{
+		fprintf(stderr, "Not enough arguements passed..\n");
+		return 1;
+	}
+	
+	int pid = argv[1];
+	int index = argv[2];
+	
 	int key = 92111;
 	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
 	if (shm_id == -1) {
@@ -45,12 +54,12 @@ int main()
 
 	// Start from leftmost and rightmost corners of str
 	int l = 0;
-	int r = strlen(ptr->data[ptr->index]) - 1;
+	int r = strlen(ptr->data[index]) - 1;
 	int palin = 1;
 	// Keep comparing characters while they are same
 	while (r > l)
 	{
-			if (ptr->data[ptr->index][l] != ptr->data[ptr->index][r]) {
+			if (ptr->data[index][l] != ptr->data[index][r]) {
 				// printf("%s Not Palindrome\n", word);
 				palin = 0;
 				break;
@@ -70,19 +79,21 @@ int main()
 	if (palin == 1) {
 		// write to palin.out
 		file = fopen("palin.out", "a");
-		sprintf(indx, "%d", ptr->index); 
-		fputs(indx, file);
+		fputs(pid, file);
 		fputs(" ", file);
-		fputs(ptr->data[ptr->index], file);
+		fputs(index, file);
+		fputs(" ", file);
+		fputs(ptr->data[index], file);
 		fputs("\n", file);
 	}
 	else {
 		// write to nopalin.out
 		file = fopen("nopalin.out", "a");
-		sprintf(indx, "%d", ptr->index); 
-		fputs(indx, file);
+		fputs(pid, file);
 		fputs(" ", file);
-		fputs(ptr->data[ptr->index], file);
+		fputs(index, file);
+		fputs(" ", file);
+		fputs(ptr->data[index], file);
 		fputs("\n", file);
 	}
 	fclose(file);
