@@ -14,7 +14,7 @@
 typedef struct {
         int id;
         int index;  //key_t key;
-        char *data[SIZE];
+        char data[SIZE][LENGTH];
 } shared_memory;
 
 int main()
@@ -35,11 +35,11 @@ int main()
 		return 1;
 	}
 	printf("My palin ptr address is %x\n", ptr);
-	printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
+	// printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 
 	int i = 0;
 	// Testing array of strings for data.
-	for(i = 0; i < sizeof(ptr->data); i++){
+	for(i = 0; i < 50; i++){
 		printf("%s", ptr->data[i]);
 	}
 

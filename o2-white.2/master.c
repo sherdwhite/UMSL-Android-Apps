@@ -14,7 +14,7 @@
 typedef struct {
 	int id;
 	int index;  //key_t key;
-	char *data[SIZE];
+	char data[SIZE][LENGTH];
 } shared_memory;
 
 int main(int argc, char * argv[]) 
@@ -51,9 +51,9 @@ int main(int argc, char * argv[])
 	printf("My master ptr address is %x\n", ptr);
 	
 	// test saving data
-	ptr->id  = 1;
+	// ptr->id  = 1;
 	// ptr->data[0] = "test";
-	ptr->index  = 2;
+	// ptr->index  = 2;
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
 	// printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", ptr->id, ptr->index, ptr->data[0]);
@@ -68,15 +68,13 @@ int main(int argc, char * argv[])
 	
 	int i = 0;
 	char line[LENGTH];
-    while (fgets(line, sizeof(line), fp) != NULL) {
-	 /* note that fgets don't strip the terminating \n, checking its
-	   presence would allow to handle lines longer that sizeof(line) */
-	   line[strlen(line) - 1] = '\0';
-	   strcpy(ptr->data[i],line); 
-       //printf("%s ", line); 
-	   i++;
-    }
-	
+	while (fgets(line, sizeof(line), fp)) {
+			line[strlen(line) - 1] = '\0';
+			strcpy(ptr->data[i], line);
+			//printf("%s ", ptr->data[i]);
+			i++;
+	  }
+
 	pid_t childpid;
 	childpid = fork();
 		if (childpid == -1) {
