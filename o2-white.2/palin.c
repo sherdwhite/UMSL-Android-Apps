@@ -25,8 +25,8 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	
-	int pid = argv[1];
-	int index = argv[2];
+	int pid = atoi(argv[1]);
+	int index = atoi(argv[2]);
 	
 	int key = 92111;
 	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
@@ -76,12 +76,15 @@ int main(int argc, char * argv[])
 	// Write palindromes and non-palindromes to their files.
 	FILE *file;
 	char indx[2];
+	char cpid[2];
+	sprintf(indx, "%d", index);
+	sprintf(cpid, "%d", pid);
 	if (palin == 1) {
 		// write to palin.out
 		file = fopen("palin.out", "a");
-		fputs(pid, file);
+		fputs(cpid, file);
 		fputs(" ", file);
-		fputs(index, file);
+		fputs(indx, file);
 		fputs(" ", file);
 		fputs(ptr->data[index], file);
 		fputs("\n", file);
@@ -89,9 +92,9 @@ int main(int argc, char * argv[])
 	else {
 		// write to nopalin.out
 		file = fopen("nopalin.out", "a");
-		fputs(pid, file);
+		fputs(cpid, file);
 		fputs(" ", file);
-		fputs(index, file);
+		fputs(indx, file);
 		fputs(" ", file);
 		fputs(ptr->data[index], file);
 		fputs("\n", file);
