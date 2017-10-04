@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
 		perror("Failed to find shared memory segment");
 		return 1;
 	}
-	printf("My palin segment id is %d\n", shm_id);
+	// printf("My palin segment id is %d\n", shm_id);
 
 	// attach shared memory segment
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
@@ -48,7 +48,7 @@ int main(int argc, char * argv[])
 		perror("Failed to attach existing shared memory segment");
 		return 1;
 	}
-	printf("My palin ptr address is %x\n", ptr);
+	// printf("My palin ptr address is %x\n", ptr);
 	// printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 
 	// int i = 0;
@@ -123,7 +123,6 @@ int main(int argc, char * argv[])
 	fclose(file);
 	
 	// sleep for random amount of time (between 0 and 2 seconds);
-	srand(time(NULL));
 	random = rand() % 3;
 	sleep(random);
 	// execute code to exit from critical section;

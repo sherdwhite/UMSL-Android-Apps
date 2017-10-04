@@ -38,8 +38,7 @@ int main(int argc, char * argv[])
         perror("Failed to create shared memory segment");
         return 1;
 	}
-
-	printf("My master segment id is %d\n", shm_id);
+	// printf("My master segment id is %d\n", shm_id);
 
 	// attach shared memory segment
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
@@ -48,7 +47,7 @@ int main(int argc, char * argv[])
         perror("Failed to attach shared memory segment");
         return 1;
         }
-	printf("My master ptr address is %x\n", ptr);
+	// printf("My master ptr address is %x\n", ptr);
 	
 	// test saving data
 	// ptr->id  = 1;
