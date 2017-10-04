@@ -57,7 +57,7 @@ int main(int argc, char * argv[])
 	// We can use the shared_memory ptr to get access to shared memory.
 	// Could also be ptr[0].index or ptr[0].flag, etc.
 	// printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", ptr->id, ptr->index, ptr->data[0]);
-	printf("Master: The id is %d, the index is %d.\n", ptr->id, ptr->index);
+	// printf("Master: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 	
 	FILE *fp = fopen(argv[1], "r");
 	if (fp == 0)
@@ -82,6 +82,8 @@ int main(int argc, char * argv[])
 	return 1;
 	}
 	if (childpid == 0) { /* child code */
+		ptr->id  = 0;
+		ptr->index  = 2;
 		execv("palin", NULL);	
 		perror("Child failed to execv");
 	return 1;

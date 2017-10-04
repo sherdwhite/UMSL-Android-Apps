@@ -37,49 +37,49 @@ int main()
 	printf("My palin ptr address is %x\n", ptr);
 	// printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 
-	int i = 0;
+	// int i = 0;
 	// Testing array of strings for data.
-	for(i = 0; i < 50; i++){
-		printf("%s", ptr->data[i]);
-	}
-
-	// // Start from leftmost and rightmost corners of str
-	// int l = 0;
-	// int r = strlen(word) - 1;
-	// int palin = 1;
-	// // Keep comparing characters while they are same
-	// while (r > l)
-	// {
-			// if (word[l] != word[r]) {
-					// printf("%s Not Palindrome\n", word);
-					// palin = 0;
-					// break;
-					// }
-			// l++;
-			// r--;
+	// for(i = 0; i < 50; i++){
+		// printf("%s", ptr->data[i]);
 	// }
+
+	// Start from leftmost and rightmost corners of str
+	int l = 0;
+	int r = strlen(ptr->data[ptr->index]) - 1;
+	int palin = 1;
+	// Keep comparing characters while they are same
+	while (r > l)
+	{
+			if (ptr->data[ptr->index][l] != ptr->data[ptr->index][r]) {
+				// printf("%s Not Palindrome\n", word);
+				palin = 0;
+				break;
+			}
+			l++;
+			r--;
+	}
 	// if (palin == 1) {
-			// printf("%s Palindrome\n", word);
+		// printf("%s Palindrome\n", word);
 	// }
 
 	/* Critical section */
 	// sleep for random amount of time (between 0 and 2 seconds);
 	// Write palindromes and non-palindromes to their files.
-	// FILE *file;
+	FILE *file;
 
-	// if (palin == 1) {
-			// // write to palin.out
-			// file = fopen("palin.out", "a");
-			// fputs(word, file);
-			// fputs("\n", file);
-	// }
-	// else {
-			// // write to nopalin.out
-			// file = fopen("nopalin.out", "a");
-			// fputs(word, file);
-			// fputs("\n", file);
-	// }
-	// fclose(file);
+	if (palin == 1) {
+		// write to palin.out
+		file = fopen("palin.out", "a");
+		fputs(ptr->data[ptr->index], file);
+		fputs("\n", file);
+	}
+	else {
+		// write to nopalin.out
+		file = fopen("nopalin.out", "a");
+		fputs(ptr->data[ptr->index], file);
+		fputs("\n", file);
+	}
+	fclose(file);
 	
 	// sleep for random amount of time (between 0 and 2 seconds);
 	// execute code to exit from critical section;
