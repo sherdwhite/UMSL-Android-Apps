@@ -13,7 +13,7 @@
 
 typedef struct {
 	int id;
-	//key_t key;
+	int index;  //key_t key;
 	char data[SIZE][LENGTH];
 } shared_memory;
 
