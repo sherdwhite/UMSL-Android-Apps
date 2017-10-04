@@ -1,3 +1,7 @@
+// Sherd White
+// cs4760 Assignment 1
+// 10/04/2017
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

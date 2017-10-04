@@ -1,3 +1,7 @@
+// Sherd White
+// cs4760 Assignment 1
+// 10/04/2017
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,6 +11,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <string.h>
+
 #define PERM (S_IRUSR | S_IWUSR)
 #define SIZE 50 
 #define LENGTH 132
