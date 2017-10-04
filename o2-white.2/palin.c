@@ -66,11 +66,12 @@ int main()
 	// sleep for random amount of time (between 0 and 2 seconds);
 	// Write palindromes and non-palindromes to their files.
 	FILE *file;
-
+	char indx[2];
 	if (palin == 1) {
 		// write to palin.out
 		file = fopen("palin.out", "a");
-		fputs(ptr->index, file);
+		sprintf(indx, "%d", ptr->index); 
+		fputs(indx, file);
 		fputs(" ", file);
 		fputs(ptr->data[ptr->index], file);
 		fputs("\n", file);
@@ -78,6 +79,9 @@ int main()
 	else {
 		// write to nopalin.out
 		file = fopen("nopalin.out", "a");
+		sprintf(indx, "%d", ptr->index); 
+		fputs(indx, file);
+		fputs(" ", file);
 		fputs(ptr->data[ptr->index], file);
 		fputs("\n", file);
 	}
