@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 	   presence would allow to handle lines longer that sizeof(line) */
 	   line[strlen(line) - 1] = '\0';
 	   ptr->data[i] = line;
-       //printf("%s ", line); 
+       printf("%s ", line); 
 	   i++;
     }
 	
