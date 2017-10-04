@@ -89,7 +89,7 @@ int main(int argc, char * argv[])
     {
         fprintf(stderr, "Failure to convert the current time.\n");
     }
-    printf("Entered Critical Section at: %s \n", cur_t_string);
+    printf("PID %d entered Critical Section at: %s", pid, cur_t_string);
 	// sleep for random amount of time (between 0 and 2 seconds);
 	int random = rand() % 2 + 1;
 	sleep(random);
@@ -135,7 +135,7 @@ int main(int argc, char * argv[])
     {
         fprintf(stderr, "Failure to convert the current time.\n");
     }
-    printf("Exited Critical Section at: %s \n", cur_t_string);
+    printf("PID %d exited Critical Section at: %s", pid, cur_t_string);
 
 	
 	// detach from memory segment
