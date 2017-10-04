@@ -68,11 +68,11 @@ int main(int argc, char * argv[])
 	
 	int i = 0;
 	char line[LENGTH];
-    while (fgets(line, sizeof(line), fp)) {
+    while (fgets(line, sizeof(line), fp) != NULL) {
 	 /* note that fgets don't strip the terminating \n, checking its
 	   presence would allow to handle lines longer that sizeof(line) */
 	   line[strlen(line) - 1] = '\0';
-	   ptr->data[i] = line;
+	   ptr->data[i] = strndup(line, sizeof(line));
        printf("%s ", line); 
 	   i++;
     }
