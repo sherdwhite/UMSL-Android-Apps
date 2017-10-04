@@ -84,7 +84,11 @@ int main(int argc, char * argv[])
 	if (childpid == 0) { /* child code */
 		// ptr->id  = 0;
 		// ptr->index  = 2;
-		execl("palin", (long)childpid, "2", NULL);	
+		char indx[2];
+		char cpid[12];
+		sprintf(cpid, "%ld", (long)childpid);
+		sprintf(indx, "%d", ptr->index);
+		execl("palin", cpid, indx, NULL);	
 		perror("Child failed to execv");
 	return 1;
 	}
