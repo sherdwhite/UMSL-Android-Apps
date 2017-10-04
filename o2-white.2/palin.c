@@ -70,6 +70,8 @@ int main()
 	if (palin == 1) {
 		// write to palin.out
 		file = fopen("palin.out", "a");
+		fputs(ptr->index, file);
+		fputs(" ", file);
 		fputs(ptr->data[ptr->index], file);
 		fputs("\n", file);
 	}
