@@ -72,8 +72,8 @@ int main(int argc, char * argv[])
 	 /* note that fgets don't strip the terminating \n, checking its
 	   presence would allow to handle lines longer that sizeof(line) */
 	   line[strlen(line) - 1] = '\0';
-	   ptr->data[i] = strndup(line, sizeof(line));
-       printf("%s ", line); 
+	   strcpy(ptr->data[i]],line); 
+       //printf("%s ", line); 
 	   i++;
     }
 	
