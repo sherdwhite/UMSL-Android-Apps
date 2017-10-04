@@ -22,8 +22,8 @@ int main()
 	int key = 92111;
 	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
 	if (shm_id == -1) {
-			perror("Failed to find shared memory segment");
-			return 1;
+		perror("Failed to find shared memory segment");
+		return 1;
 	}
 	printf("My palin segment id is %d\n", shm_id);
 
@@ -31,18 +31,16 @@ int main()
 	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
 	if (ptr == (void*)-1) {
-			perror("Failed to attach existing shared memory segment");
-			return 1;
+		perror("Failed to attach existing shared memory segment");
+		return 1;
 	}
 	printf("My palin ptr address is %x\n", ptr);
 	printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
 
 	int i = 0;
-	char *word;
 	// Testing array of strings for data.
 	for(i = 0; i < sizeof(ptr->data); i++){
-					word = (ptr->data[i]);
-					printf("%s", word);
+		printf("%s", ptr->data[i]);
 	}
 
 	// // Start from leftmost and rightmost corners of str

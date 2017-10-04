@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
 	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT | IPC_EXCL);
     if (shm_id == -1) {
         perror("Failed to create shared memory segment");
-                return 1;
+        return 1;
 	}
 
 	printf("My master segment id is %d\n", shm_id);
@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (ptr == (void*)-1) {
         perror("Failed to attach shared memory segment");
-                return 1;
+        return 1;
         }
 	printf("My master ptr address is %x\n", ptr);
 	
@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 	   presence would allow to handle lines longer that sizeof(line) */
 	   line[strlen(line) - 1] = '\0';
 	   ptr->data[i] = line;
-       printf("%s ", line); 
+       //printf("%s ", line); 
 	   i++;
     }
 	
