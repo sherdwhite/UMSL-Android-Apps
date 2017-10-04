@@ -19,7 +19,7 @@ typedef struct {
 
 int main(int argc, char * argv[]) 
 {
-	if (argc <= 3)
+	if (argc <= 2)
 	{
 		fprintf(stderr, "Not enough arguements passed..\n");
 		return 1;
@@ -73,6 +73,8 @@ int main(int argc, char * argv[])
 
 	/* Critical section */
 	// sleep for random amount of time (between 0 and 2 seconds);
+	int random = rand() % 2 + 1;
+	sleep(random);
 	// Write palindromes and non-palindromes to their files.
 	FILE *file;
 	char indx[2];
@@ -102,6 +104,8 @@ int main(int argc, char * argv[])
 	fclose(file);
 	
 	// sleep for random amount of time (between 0 and 2 seconds);
+	random = rand() % 2 + 1;
+	sleep(random);
 	// execute code to exit from critical section;
 	
 	// detach from memory segment
