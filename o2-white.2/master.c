@@ -82,9 +82,9 @@ int main(int argc, char * argv[])
 	return 1;
 	}
 	if (childpid == 0) { /* child code */
-		ptr->id  = 0;
-		ptr->index  = 2;
-		execl("palin", (long)childpid, ptr->index, NULL);	
+		// ptr->id  = 0;
+		// ptr->index  = 2;
+		execl("palin", (long)childpid, "2", NULL);	
 		perror("Child failed to execv");
 	return 1;
 	}
