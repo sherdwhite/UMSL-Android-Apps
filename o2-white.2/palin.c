@@ -77,9 +77,19 @@ int main(int argc, char * argv[])
 	// }
 
 	/* Critical section */
-	time(&now);
-    tm_info = localtime(&now);
-	fprintf( stderr, "Entering critical section at %Y-%m-%d %H:%M:%S", tm_info);
+	time_t cur_time;
+    char* cur_t_string;
+    cur_time = time(NULL);
+    if (cur_time == ((time_t)-1))
+    {
+        fprintf(stderr, "Failure to get the current time.\n");
+    }
+    cur_t_string = ctime(&cur_time); //convert to local time format
+    if (cur_t_string == NULL)
+    {
+        fprintf(stderr, "Failure to convert the current time.\n");
+    }
+    printf("Entered Critical Section at: %s \n", cur_t_string);
 	// sleep for random amount of time (between 0 and 2 seconds);
 	int random = rand() % 2 + 1;
 	sleep(random);
@@ -115,9 +125,18 @@ int main(int argc, char * argv[])
 	random = rand() % 2 + 1;
 	sleep(random);
 	// execute code to exit from critical section;
-	time(&now);
-    tm_info = localtime(&now);
-	fprintf( stderr, "Exiting critical section at %Y-%m-%d %H:%M:%S", tm_info);
+    cur_time = time(NULL);
+    if (cur_time == ((time_t)-1))
+    {
+        fprintf(stderr, "Failure to get the current time.\n");
+    }
+    cur_t_string = ctime(&cur_time); //convert to local time format
+    if (cur_t_string == NULL)
+    {
+        fprintf(stderr, "Failure to convert the current time.\n");
+    }
+    printf("Exited Critical Section at: %s \n", cur_t_string);
+
 	
 	// detach from memory segment
 	int detach = shmdt(ptr);
