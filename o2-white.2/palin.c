@@ -19,7 +19,7 @@ typedef struct {
 
 int main(int argc, char * argv[]) 
 {
-	if (argc <= 2)
+	if (argc <= 3)
 	{
 		fprintf(stderr, "Not enough arguements passed..\n");
 		return 1;
