@@ -91,7 +91,8 @@ int main(int argc, char * argv[])
     }
     printf("PID %d entered Critical Section at: %s", pid, cur_t_string);
 	// sleep for random amount of time (between 0 and 2 seconds);
-	int random = rand() % 2 + 1;
+	srand(time(NULL));
+	int random = rand() % 3;
 	sleep(random);
 	// Write palindromes and non-palindromes to their files.
 	FILE *file;
@@ -122,7 +123,8 @@ int main(int argc, char * argv[])
 	fclose(file);
 	
 	// sleep for random amount of time (between 0 and 2 seconds);
-	random = rand() % 2 + 1;
+	srand(time(NULL));
+	random = rand() % 3;
 	sleep(random);
 	// execute code to exit from critical section;
     cur_time = time(NULL);
