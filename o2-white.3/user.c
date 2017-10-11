@@ -46,29 +46,29 @@ int main(int argc, char * argv[])
 	// printf("My palin segment id is %d\n", shm_id);
 
 	// attach shared memory segment
-	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
+	shared_memory* shared = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-	if (ptr == (void*)-1) {
+	if (shared == (void*)-1) {
 		perror("Failed to attach existing shared memory segment");
 		return 1;
 	}
-	// printf("My palin ptr address is %x\n", ptr);
-	// printf("Palin: The id is %d, the index is %d.\n", ptr->id, ptr->index);
+	// printf("My palin shared address is %x\n", shared);
+	// printf("Palin: The id is %d, the index is %d.\n", shared->id, shared->index);
 
 	// int i = 0;
 	// Testing array of strings for data.
 	// for(i = 0; i < 50; i++){
-		// printf("%s", ptr->data[i]);
+		// printf("%s", shared->data[i]);
 	// }
 
 	// Start from leftmost and rightmost corners of str
 	int l = 0;
-	int r = strlen(ptr->data[index]) - 1;
+	int r = strlen(shared->data[index]) - 1;
 	int palin = 1;
 	// Keep comparing characters while they are same
 	while (r > l)
 	{
-			if (ptr->data[index][l] != ptr->data[index][r]) {
+			if (shared->data[index][l] != shared->data[index][r]) {
 				// printf("%s Not Palindrome\n", word);
 				palin = 0;
 				break;
@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
 		fputs(" ", file);
 		fputs(indx, file);
 		fputs(" ", file);
-		fputs(ptr->data[index], file);
+		fputs(shared->data[index], file);
 		fputs("\n", file);
 	}
 	else {
@@ -121,7 +121,7 @@ int main(int argc, char * argv[])
 		fputs(" ", file);
 		fputs(indx, file);
 		fputs(" ", file);
-		fputs(ptr->data[index], file);
+		fputs(shared->data[index], file);
 		fputs("\n", file);
 	}
 	fclose(file);
@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
 
 	
 	// detach from memory segment
-	int detach = shmdt(ptr);
+	int detach = shmdt(shared);
 	if (detach == -1){
 		perror("Failed to detach shared memory segment");
 		return 1;

@@ -43,25 +43,32 @@ int main(int argc, char * argv[])
         perror("Failed to create shared memory segment");
         return 1;
 	}
-	// printf("My master segment id is %d\n", shm_id);
+	// printf("My master segment id for shared memory is %d\n", shm_id);
+	
+	int msgkey = 91514;
+	int msg_id = shmget(msgkey, sizeof(shared_memory), PERM | IPC_CREAT | IPC_EXCL);
+    if (msg_id == -1) {
+        perror("Failed to create shared memory segment");
+        return 1;
+	// printf("My master segment id for the msg share is %d\n", msg_id);
 
 	// attach shared memory segment
-	shared_memory* ptr = (shared_memory*)shmat(shm_id, NULL, 0);
+	shared_memory* shared = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (ptr == (void*)-1) {
+    if (shared == (void*)-1) {
         perror("Failed to attach shared memory segment");
         return 1;
         }
-	// printf("My master ptr address is %x\n", ptr);
+	// printf("My master shared address is %x\n", shared);
 	
 	// test saving data
-	// ptr->id  = 1;
-	// ptr->data[0] = "test";
-	// ptr->index  = 2;
-	// We can use the shared_memory ptr to get access to shared memory.
-	// Could also be ptr[0].index or ptr[0].flag, etc.
-	// printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", ptr->id, ptr->index, ptr->data[0]);
-	// printf("Master: The id is %d, the index is %d.\n", ptr->id, ptr->index);
+	// shared->id  = 1;
+	// shared->data[0] = "test";
+	// shared->index  = 2;
+	// We can use the shared_memory shared to get access to shared memory.
+	// Could also be shared[0].index or shared[0].flag, etc.
+	// printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", shared->id, shared->index, shared->data[0]);
+	// printf("Master: The id is %d, the index is %d.\n", shared->id, shared->index);
 	
 	FILE *fp = fopen(argv[1], "r");
 	if (fp == 0)
@@ -74,8 +81,8 @@ int main(int argc, char * argv[])
 	char line[LENGTH];
 	while (fgets(line, sizeof(line), fp)) {
 			line[strlen(line) - 1] = '\0';
-			strcpy(ptr->data[i], line);
-			//printf("%s ", ptr->data[i]);
+			strcpy(shared->data[i], line);
+			//printf("%s ", shared->data[i]);
 			i++;
 	  }
 
@@ -86,12 +93,12 @@ int main(int argc, char * argv[])
 	return 1;
 	}
 	if (childpid == 0) { /* child code */
-		// ptr->id  = 0;
-		ptr->index  = 2;
+		// shared->id  = 0;
+		shared->index  = 2;
 		char indx[2];
 		char cpid[12];
 		sprintf(cpid, "%ld", (long)childpid);
-		sprintf(indx, "%d", ptr->index);
+		sprintf(indx, "%d", shared->index);
 		execlp("palin", "palin", cpid, indx, NULL);
 		perror("Child failed to execv");
 
@@ -104,11 +111,11 @@ int main(int argc, char * argv[])
 	
 	// Testing array of strings for data.
 	// for(i=0; i<50; i++){
-		// printf(ptr->data[i]);
+		// printf(shared->data[i]);
     // }
 	 
 	// detach from memory segment
-	int detach = shmdt(ptr);
+	int detach = shmdt(shared);
 	if (detach == -1){
 		perror("Failed to detach shared memory segment");
 		return 1;
