@@ -17,10 +17,13 @@
 #define LENGTH 132
 
 typedef struct {
-	int id;
-	int index;  //key_t key;
-	char data[SIZE][LENGTH];
+	int seconds;
+	int nanoseconds;
 } shared_memory;
+
+typedef struct {
+	char msg[SIZE][LENGTH];
+} messaging;
 
 int main(int argc, char * argv[]) 
 {
@@ -43,15 +46,8 @@ int main(int argc, char * argv[])
         perror("Failed to create shared memory segment");
         return 1;
 	}
-	// printf("My master segment id for shared memory is %d\n", shm_id);
+	// printf("My OS segment id for shared memory is %d\n", shm_id);
 	
-	int msgkey = 91514;
-	int msg_id = shmget(msgkey, sizeof(shared_memory), PERM | IPC_CREAT | IPC_EXCL);
-    if (msg_id == -1) {
-        perror("Failed to create shared memory segment");
-        return 1;
-	// printf("My master segment id for the msg share is %d\n", msg_id);
-
 	// attach shared memory segment
 	shared_memory* shared = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
@@ -59,33 +55,27 @@ int main(int argc, char * argv[])
         perror("Failed to attach shared memory segment");
         return 1;
         }
-	// printf("My master shared address is %x\n", shared);
+	// printf("My OS shared address is %x\n", shared);
 	
-	// test saving data
-	// shared->id  = 1;
-	// shared->data[0] = "test";
-	// shared->index  = 2;
-	// We can use the shared_memory shared to get access to shared memory.
-	// Could also be shared[0].index or shared[0].flag, etc.
-	// printf("The id is %d, the index is %d, the 1st string of the array is %s.\n", shared->id, shared->index, shared->data[0]);
-	// printf("Master: The id is %d, the index is %d.\n", shared->id, shared->index);
-	
-	FILE *fp = fopen(argv[1], "r");
-	if (fp == 0)
-    {
-        fprintf(stderr,"File %s not found\n",argv[1]);
+	int msgkey = 91514;
+	int msg_id = shmget(msgkey, sizeof(messaging), PERM | IPC_CREAT | IPC_EXCL);
+    if (msg_id == -1) {
+        perror("Failed to create shared memory segment");
         return 1;
-    }
+	// printf("My OS segment id for the msg share is %d\n", msg_id);
 	
-	int i = 0;
-	char line[LENGTH];
-	while (fgets(line, sizeof(line), fp)) {
-			line[strlen(line) - 1] = '\0';
-			strcpy(shared->data[i], line);
-			//printf("%s ", shared->data[i]);
-			i++;
-	  }
-
+	// attach shared memory segment
+	messaging* shmMsg = (messaging*)shmat(msg_id, NULL, 0);
+	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
+    if (shmMsg == (void*)-1) {
+        perror("Failed to attach shared message segment");
+        return 1;
+        }
+	// printf("My OS message address is %x\n", shared);
+	
+	shared->seconds  = 0;
+	shared->nanoseconds  = 0;
+	
 	pid_t childpid;
 	childpid = fork();
 		if (childpid == -1) {
@@ -114,18 +104,32 @@ int main(int argc, char * argv[])
 		// printf(shared->data[i]);
     // }
 	 
-	// detach from memory segment
+	// detach from shared memory segment
 	int detach = shmdt(shared);
 	if (detach == -1){
 		perror("Failed to detach shared memory segment");
 		return 1;
 	}
-	
+	// delete shared memory segment
 	int delete_mem = shmctl(shm_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove shared memory segment");
 		return 1;
 	}
+	
+	// detach from msg memory segment
+	int detach = shmdt(shmMsg);
+	if (detach == -1){
+		perror("Failed to detach msg memory segment");
+		return 1;
+	}
+	// delete msg memory segment
+	int delete_mem = shmctl(msg_id, IPC_RMID, NULL);
+	if (delete_mem == -1){
+		perror("Failed to remove msg memory segment");
+		return 1;
+	}
+
 
     return 0;
 }

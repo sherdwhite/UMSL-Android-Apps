@@ -11,49 +11,67 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <time.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define SIZE 50
 #define LENGTH 132
 
 typedef struct {
-	int id;
-	int index;  //key_t key;
-	char data[SIZE][LENGTH];
+	int seconds;
+	int nanoseconds;
 } shared_memory;
 
-time_t now;
-struct tm* tm_info;
+typedef struct {
+	char msg[SIZE][LENGTH];
+} messaging;
 
 int main(int argc, char * argv[]) 
 {
-	if (argc <= 2)
+	if (argc <= 1)
 	{
-		fprintf(stderr, "Not enough arguements passed..\n");
+		fprintf(stderr, "A missing or incorrect file specified.\n");
 		return 1;
 	}
-	
-	int pid = atoi(argv[1]);
-	int index = atoi(argv[2]);
-	
+
+	// create shared memory segment and get the segment id
+	// IPC_PRIVATE, child process, created after the parent has obtained the
+	// shared memory, so that the private key value can be passed to the child
+	// when it is created.  Key could be arbitrary integer also.
+	// IPC_CREAT says to create, but don't fail if it is already there
+	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
+	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
 	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
-	if (shm_id == -1) {
-		perror("Failed to find shared memory segment");
-		return 1;
+    if (shm_id == -1) {
+        perror("Failed to create shared memory segment");
+        return 1;
 	}
-	// printf("My palin segment id is %d\n", shm_id);
-
+	// printf("My user segment id for shared memory is %d\n", shm_id);
+	
 	// attach shared memory segment
 	shared_memory* shared = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-	if (shared == (void*)-1) {
-		perror("Failed to attach existing shared memory segment");
-		return 1;
-	}
-	// printf("My palin shared address is %x\n", shared);
-	// printf("Palin: The id is %d, the index is %d.\n", shared->id, shared->index);
+    if (shared == (void*)-1) {
+        perror("Failed to attach shared memory segment");
+        return 1;
+        }
+	// printf("My user shared address is %x\n", shared);
+	
+	int msgkey = 91514;
+	int msg_id = shmget(msgkey, sizeof(messaging), PERM | IPC_CREAT);
+    if (msg_id == -1) {
+        perror("Failed to create shared memory segment");
+        return 1;
+	// printf("My user segment id for the msg share is %d\n", msg_id);
+	
+	// attach shared memory segment
+	messaging* shmMsg = (messaging*)shmat(msg_id, NULL, 0);
+	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
+    if (shmMsg == (void*)-1) {
+        perror("Failed to attach message segment");
+        return 1;
+        }
+	// printf("My OS message address is %x\n", shared);
 
 	// int i = 0;
 	// Testing array of strings for data.
@@ -61,94 +79,20 @@ int main(int argc, char * argv[])
 		// printf("%s", shared->data[i]);
 	// }
 
-	// Start from leftmost and rightmost corners of str
-	int l = 0;
-	int r = strlen(shared->data[index]) - 1;
-	int palin = 1;
-	// Keep comparing characters while they are same
-	while (r > l)
-	{
-			if (shared->data[index][l] != shared->data[index][r]) {
-				// printf("%s Not Palindrome\n", word);
-				palin = 0;
-				break;
-			}
-			l++;
-			r--;
-	}
-	// if (palin == 1) {
-		// printf("%s Palindrome\n", word);
-	// }
-
-	/* Critical section */
-	time_t cur_time;
-    char* cur_t_string;
-    cur_time = time(NULL);
-    if (cur_time == ((time_t)-1))
-    {
-        fprintf(stderr, "Failure to get the current time.\n");
-    }
-    cur_t_string = ctime(&cur_time); //convert to local time format
-    if (cur_t_string == NULL)
-    {
-        fprintf(stderr, "Failure to convert the current time.\n");
-    }
-    printf("PID %d entered Critical Section at: %s", pid, cur_t_string);
-	// sleep for random amount of time (between 0 and 2 seconds);
-	srand(time(NULL));
-	int random = rand() % 3;
-	sleep(random);
-	// Write palindromes and non-palindromes to their files.
-	FILE *file;
-	char indx[2];
-	char cpid[2];
-	sprintf(indx, "%d", index);
-	sprintf(cpid, "%d", pid);
-	if (palin == 1) {
-		// write to palin.out
-		file = fopen("palin.out", "a");
-		fputs(cpid, file);
-		fputs(" ", file);
-		fputs(indx, file);
-		fputs(" ", file);
-		fputs(shared->data[index], file);
-		fputs("\n", file);
-	}
-	else {
-		// write to nopalin.out
-		file = fopen("nopalin.out", "a");
-		fputs(cpid, file);
-		fputs(" ", file);
-		fputs(indx, file);
-		fputs(" ", file);
-		fputs(shared->data[index], file);
-		fputs("\n", file);
-	}
-	fclose(file);
-	
-	// sleep for random amount of time (between 0 and 2 seconds);
-	random = rand() % 3;
-	sleep(random);
-	// execute code to exit from critical section;
-    cur_time = time(NULL);
-    if (cur_time == ((time_t)-1))
-    {
-        fprintf(stderr, "Failure to get the current time.\n");
-    }
-    cur_t_string = ctime(&cur_time); //convert to local time format
-    if (cur_t_string == NULL)
-    {
-        fprintf(stderr, "Failure to convert the current time.\n");
-    }
-    printf("PID %d exited Critical Section at: %s", pid, cur_t_string);
-
-	
-	// detach from memory segment
+		
+	// detach from shared memory segment
 	int detach = shmdt(shared);
 	if (detach == -1){
 		perror("Failed to detach shared memory segment");
 		return 1;
 	}
-
+	
+	// detach from msg memory segment
+	int detach = shmdt(shmMsg);
+	if (detach == -1){
+		perror("Failed to detach shared msg memory segment");
+		return 1;
+	}
+	
     return 0;
 }
