@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
 					return 1;
 				}
 			default:
-				abort ();
+				exit(1);
 		  }
 
 	// create shared memory segment and get the segment id
