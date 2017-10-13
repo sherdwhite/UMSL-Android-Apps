@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT);
+	int shm_id = shmget(key, sizeof(shared_memory), SHM_RDONLY | IPC_CREAT);
     if (shm_id == -1) {
         perror("Failed to create shared memory segment");
         return 1;
