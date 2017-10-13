@@ -30,6 +30,7 @@ FILE *file;
 
 int main(int argc, char * argv[]) 
 {
+	int c;
 	while ((c = getopt (argc, argv, "hs:l:t:")) != -1)
     switch (c)
 		  {
