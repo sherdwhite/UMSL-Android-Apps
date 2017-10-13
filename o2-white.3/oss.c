@@ -98,7 +98,7 @@ int main(int argc, char * argv[])
 	// for(i=0; i<50; i++){
 		// printf(shared->data[i]);
     // }
-	printf("Msg: %s\n", messaging->shmMsg);
+	printf("Msg: %s\n", shmMsg->msg);
 	 
 	// detach from shared memory segment
 	int detach = shmdt(shared);

@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
 	printf("seconds: %d\n", shared->seconds);
 	printf("nanoseconds: %ld\n", shared->nanoseconds);
 	 
-	strcpy(messaging->shmMsg, "Hello!");
+	strcpy(shmMsg->msg, "Hello!");
 
 	// int i = 0;
 	// Testing array of strings for data.
