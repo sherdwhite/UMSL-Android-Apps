@@ -73,8 +73,8 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS message address is %x\n", shared);
 	
-	printf("seconds: %s\n", shared->seconds);
-	printf("nanoseconds: %s\n", shared->nanoseconds);
+	printf("seconds: %d\n", shared->seconds);
+	printf("nanoseconds: %ld\n", shared->nanoseconds);
 	 
 	strcpy(messaging->shmMsg, "Hello!");
 
