@@ -147,27 +147,29 @@ int main(int argc, char * argv[])
 		// perror("Parent failed to wait due to signal or error");
 		// return 1;
 	// }
-	
-	for (int i = 0; i < max_children; i++) {
+	int i;
+	for (i = 0; i < max_children; i++) {
 		childpid = fork();
 		if (childpid == -1) {
 			perror("Failed to fork");
 			return 1;
 		}
 		if (childpid == 0) { /* child code */
-		// char cpid[12];
-		// sprintf(cpid, "%ld", (long)childpid);
-		// execlp("user", "user", cpid, NULL);  // lp for passing arguements
-		execl("user", "user", NULL);
-		perror("Child failed to execlp.\n");
-		return 1;
+			// char cpid[12];
+			// sprintf(cpid, "%ld", (long)childpid);
+			// execlp("user", "user", cpid, NULL);  // lp for passing arguements
+			execl("user", "user", NULL);
+			perror("Child failed to execlp.\n");
+			return 1;
+		}
 	}
 	
 	// wait for children
-	for (int j = 0; j < max_children; j++){
+	int j;
+	for (j = 0; j < max_children; j++){
 		wait(NULL);
 	}
-	printf(stderr, "All children returned.\n");
+	printf("All children returned.\n");
 	
     // printf("Msg: %s\n", shmMsg->msg);
 	 
