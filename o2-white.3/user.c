@@ -42,7 +42,7 @@ int main() //int argc, char * argv[])
 	int key = 92111;
 	int shm_id = shmget(key, sizeof(shared_memory), SHM_RDONLY | IPC_CREAT);
     if (shm_id == -1) {
-        perror("Failed to create shared memory segment");
+        perror("Failed to create shared memory segment. \n");
         return 1;
 	}
 	// printf("My user segment id for shared memory is %d\n", shm_id);
@@ -51,7 +51,7 @@ int main() //int argc, char * argv[])
 	shared_memory* shared = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (shared == (void*)-1) {
-        perror("Failed to attach shared memory segment");
+        perror("Failed to attach shared memory segment. \n");
         return 1;
     }
 	// printf("My user shared address is %x\n", shared);
@@ -59,7 +59,7 @@ int main() //int argc, char * argv[])
 	int msgkey = 91514;
 	int msg_id = shmget(msgkey, sizeof(messaging), PERM | IPC_CREAT);
     if (msg_id == -1) {
-        perror("Failed to create shared memory segment");
+        perror("Failed to create shared memory segment. \n");
         return 1;
 	}
 	// printf("My user segment id for the msg share is %d\n", msg_id);
@@ -68,7 +68,7 @@ int main() //int argc, char * argv[])
 	messaging* shmMsg = (messaging*)shmat(msg_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (shmMsg == (void*)-1) {
-        perror("Failed to attach message segment");
+        perror("Failed to attach message segment. \n");
         return 1;
     }
 	// printf("My OS message address is %x\n", shared);
@@ -78,24 +78,18 @@ int main() //int argc, char * argv[])
 	 
 	// strcpy(shmMsg->msg, "Hello!");  // for writing messages
 
-	// int i = 0;
-	// Testing array of strings for data.
-	// for(i = 0; i < 50; i++){
-		// printf("%s", shared->data[i]);
-	// }
-
 	printf("Child.\n");	
 	// detach from shared memory segment
 	int detach = shmdt(shared);
 	if (detach == -1){
-		perror("Failed to detach shared memory segment");
+		perror("Failed to detach shared memory segment. \n");
 		return 1;
 	}
 	
 	// detach from msg memory segment
 	detach = shmdt(shmMsg);
 	if (detach == -1){
-		perror("Failed to detach shared msg memory segment");
+		perror("Failed to detach shared msg memory segment. \n");
 		return 1;
 	}
 	
