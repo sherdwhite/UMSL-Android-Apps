@@ -62,6 +62,7 @@ int main(int argc, char * argv[])
     if (msg_id == -1) {
         perror("Failed to create shared memory segment");
         return 1;
+	}
 	// printf("My OS segment id for the msg share is %d\n", msg_id);
 	
 	// attach shared memory segment
@@ -70,7 +71,7 @@ int main(int argc, char * argv[])
     if (shmMsg == (void*)-1) {
         perror("Failed to attach shared message segment");
         return 1;
-        }
+    }
 	// printf("My OS message address is %x\n", shared);
 	
 	shared->seconds  = 0;
@@ -80,7 +81,7 @@ int main(int argc, char * argv[])
 	childpid = fork();
 		if (childpid == -1) {
 		perror("Failed to fork");
-	return 1;
+		return 1;
 	}
 	if (childpid == 0) { /* child code */
 		// shared->id  = 0;
@@ -91,8 +92,7 @@ int main(int argc, char * argv[])
 		// sprintf(indx, "%d", shared->index);
 		// execlp("palin", "palin", cpid, indx, NULL);
 		perror("Child failed to execv");
-
-	return 1;
+		return 1;
 	}
 	if (childpid != wait(NULL)) { /* parent code */
 		perror("Parent failed to wait due to signal or error");
