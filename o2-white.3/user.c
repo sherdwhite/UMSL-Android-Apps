@@ -73,10 +73,10 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS message address is %x\n", shared);
 	
-	printf("seconds: %d\n", shared->seconds);
-	printf("nanoseconds: %ld\n", shared->nanoseconds);
+	// printf("seconds: %d\n", shared->seconds);
+	// printf("nanoseconds: %ld\n", shared->nanoseconds);
 	 
-	strcpy(shmMsg->msg, "Hello!");
+	// strcpy(shmMsg->msg, "Hello!");  // for writing messages
 
 	// int i = 0;
 	// Testing array of strings for data.

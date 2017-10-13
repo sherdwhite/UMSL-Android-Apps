@@ -24,13 +24,61 @@ typedef struct {
 	char msg[LENGTH];
 } messaging;
 
+int max_time = 20;
+int max_children = 5;
+FILE *file;
+
 int main(int argc, char * argv[]) 
 {
-	if (argc <= 1)
-	{
-		fprintf(stderr, "A missing or incorrect file specified.\n");
-		return 1;
-	}
+	while ((c = getopt (argc, argv, "hs:l:t:")) != -1)
+    switch (c)
+		  {
+			case 'h':
+				break;
+			case 's':
+				max_children = atoi(optarg);
+				if (max_children <= 0 || max_children > 18) {
+					fprintf (stderr, "Can only specify 1 to 19 children.");
+					perror("Can only specify 1 to 19 children.");
+					return 1;
+				}
+				break;
+			case 'l':
+				file = fopen(optarg, "w");
+				break;
+			case 't':
+				max_time = atoi(optarg);
+				if (max_time <= 0 || max_time > 60) {
+					fprintf (stderr, "Can only specify time between 1 and 60 seconds.");
+					perror("Can only specify time between 1 and 60 seconds.");
+					return 1;
+				}
+				break;
+			case '?':
+				if (optopt == 's'){
+					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+					perror("No arguement value given!");
+				}
+				if (optopt == 'l'){
+					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+					perror("No arguement value given!");
+				}
+				if (optopt == 't'){
+					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+					perror("No arguement value given!");
+				}
+				else if (isprint (optopt)){
+					fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+					perror("Incorrect arguement given!");
+				}
+				else {
+					fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
+					perror("Unknown arguement given!");
+					return 1;
+				}
+			default:
+				abort ();
+		  }
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
@@ -83,9 +131,10 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	if (childpid == 0) { /* child code */
-		char cpid[12];
-		sprintf(cpid, "%ld", (long)childpid);
-		execlp("user", "user", cpid, NULL);
+		// char cpid[12];
+		// sprintf(cpid, "%ld", (long)childpid);
+		// execlp("user", "user", cpid, NULL);  // lp for passing arguements
+		execl("user", "user", NULL);
 		perror("Child failed to execlp.\n");
 		return 1;
 	}
@@ -94,11 +143,7 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	
-	// Testing array of strings for data.
-	// for(i=0; i<50; i++){
-		// printf(shared->data[i]);
-    // }
-	printf("Msg: %s\n", shmMsg->msg);
+    // printf("Msg: %s\n", shmMsg->msg);
 	 
 	// detach from shared memory segment
 	int detach = shmdt(shared);
