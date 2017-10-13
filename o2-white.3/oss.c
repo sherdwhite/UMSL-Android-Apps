@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
 				if (max_children <= 0 || max_children > 18) {
 					fprintf (stderr, "Can only specify 1 to 19 children.");
 					perror("Can only specify 1 to 19 children.");
-					return -1;
+					return 1;
 				}
 				break;
 			case 'l':
@@ -52,37 +52,37 @@ int main(int argc, char * argv[])
 				if (max_time <= 0 || max_time > 60) {
 					fprintf (stderr, "Can only specify time between 1 and 60 seconds.");
 					perror("Can only specify time between 1 and 60 seconds.");
-					return -1;
+					return 1;
 				}
 				break;
 			case '?':
 				if (optopt == 's'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 					perror("No arguement value given!");
-					return -1;
+					return 1;
 				}
 				if (optopt == 'l'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 					perror("No arguement value given!");
-					return -1;
+					return 1;
 				}
 				if (optopt == 't'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 					perror("No arguement value given!");
-					return -1;
+					return 1;
 				}
 				else if (isprint (optopt)){
 					fprintf (stderr, "Unknown option `-%c'.\n", optopt);
 					perror("Incorrect arguement given!");
-					return -1;
+					return 1;
 				}
 				else {
 					fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
 					perror("Unknown arguement given!");
-					return -1;
+					return 1;
 				}
 			default:
-				exit(-1);
+				exit(1);
 		  }
 
 	// create shared memory segment and get the segment id
@@ -130,12 +130,31 @@ int main(int argc, char * argv[])
 	shared->nanoseconds  = 0;
 	
 	pid_t childpid;
-	childpid = fork();
+	// childpid = fork();
+		// if (childpid == -1) {
+		// perror("Failed to fork");
+		// return 1;
+	// }
+	// if (childpid == 0) { /* child code */
+		// // char cpid[12];
+		// // sprintf(cpid, "%ld", (long)childpid);
+		// // execlp("user", "user", cpid, NULL);  // lp for passing arguements
+		// execl("user", "user", NULL);
+		// perror("Child failed to execlp.\n");
+		// return 1;
+	// }
+	// if (childpid != wait(NULL)) { /* parent code */
+		// perror("Parent failed to wait due to signal or error");
+		// return 1;
+	// }
+	
+	for (int i = 0; i < max_children; i++) {
+		childpid = fork();
 		if (childpid == -1) {
-		perror("Failed to fork");
-		return 1;
-	}
-	if (childpid == 0) { /* child code */
+			perror("Failed to fork");
+			return 1;
+		}
+		if (childpid == 0) { /* child code */
 		// char cpid[12];
 		// sprintf(cpid, "%ld", (long)childpid);
 		// execlp("user", "user", cpid, NULL);  // lp for passing arguements
@@ -143,10 +162,12 @@ int main(int argc, char * argv[])
 		perror("Child failed to execlp.\n");
 		return 1;
 	}
-	if (childpid != wait(NULL)) { /* parent code */
-		perror("Parent failed to wait due to signal or error");
-		return 1;
+	
+	// wait for children
+	for (int j = 0; j < max_children; j++){
+		wait(NULL);
 	}
+	printf(stderr, "All children returned.\n");
 	
     // printf("Msg: %s\n", shmMsg->msg);
 	 
