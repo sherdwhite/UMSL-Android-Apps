@@ -84,7 +84,7 @@ int main() //int argc, char * argv[])
 		// printf("%s", shared->data[i]);
 	// }
 
-		
+	printf("Child.\n");	
 	// detach from shared memory segment
 	int detach = shmdt(shared);
 	if (detach == -1){
