@@ -84,12 +84,12 @@ int main(int argc, char * argv[])
 	}
 	if (childpid == 0) { /* child code */
 		// shared->id  = 0;
-		shared->index  = 2;
-		char indx[2];
-		char cpid[12];
-		sprintf(cpid, "%ld", (long)childpid);
-		sprintf(indx, "%d", shared->index);
-		execlp("palin", "palin", cpid, indx, NULL);
+		// shared->index  = 2;
+		// char indx[2];
+		// char cpid[12];
+		// sprintf(cpid, "%ld", (long)childpid);
+		// sprintf(indx, "%d", shared->index);
+		// execlp("palin", "palin", cpid, indx, NULL);
 		perror("Child failed to execv");
 
 	return 1;
@@ -118,18 +118,17 @@ int main(int argc, char * argv[])
 	}
 	
 	// detach from msg memory segment
-	int detach = shmdt(shmMsg);
+	detach = shmdt(shmMsg);
 	if (detach == -1){
 		perror("Failed to detach msg memory segment");
 		return 1;
 	}
 	// delete msg memory segment
-	int delete_mem = shmctl(msg_id, IPC_RMID, NULL);
+	delete_mem = shmctl(msg_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove msg memory segment");
 		return 1;
 	}
-
 
     return 0;
 }

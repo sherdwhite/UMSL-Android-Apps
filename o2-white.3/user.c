@@ -72,6 +72,9 @@ int main(int argc, char * argv[])
         return 1;
         }
 	// printf("My OS message address is %x\n", shared);
+	
+	 printf("seconds: %s\n", shared->seconds);
+	 printf("nanoseconds %s\n", shared->nanoseconds);
 
 	// int i = 0;
 	// Testing array of strings for data.
@@ -88,7 +91,7 @@ int main(int argc, char * argv[])
 	}
 	
 	// detach from msg memory segment
-	int detach = shmdt(shmMsg);
+	detach = shmdt(shmMsg);
 	if (detach == -1){
 		perror("Failed to detach shared msg memory segment");
 		return 1;
