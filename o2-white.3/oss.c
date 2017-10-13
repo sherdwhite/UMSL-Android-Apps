@@ -84,14 +84,10 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	if (childpid == 0) { /* child code */
-		// shared->id  = 0;
-		// shared->index  = 2;
-		// char indx[2];
-		// char cpid[12];
-		// sprintf(cpid, "%ld", (long)childpid);
-		// sprintf(indx, "%d", shared->index);
-		// execlp("palin", "palin", cpid, indx, NULL);
-		perror("Child failed to execv");
+		char cpid[12];
+		sprintf(cpid, "%ld", (long)childpid);
+		execlp("user", "user", cpid, NULL);
+		perror("Child failed to execlp.\n");
 		return 1;
 	}
 	if (childpid != wait(NULL)) { /* parent code */
