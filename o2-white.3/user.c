@@ -24,13 +24,13 @@ typedef struct {
 	char msg[LENGTH];
 } messaging;
 
-int main(int argc, char * argv[]) 
+int main() //int argc, char * argv[]) 
 {
-	if (argc <= 1)
-	{
-		fprintf(stderr, "A missing or incorrect file specified.\n");
-		return 1;
-	}
+	// if (argc <= 1)
+	// {
+		// fprintf(stderr, "A missing or incorrect file specified.\n");
+		// return 1;
+	// }
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the

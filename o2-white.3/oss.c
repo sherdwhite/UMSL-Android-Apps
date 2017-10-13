@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
 				}
 				break;
 			case 'l':
-				file = fopen(optarg, "w");
+				file = fopen(optarg, "w+");
 				break;
 			case 't':
 				max_time = atoi(optarg);
