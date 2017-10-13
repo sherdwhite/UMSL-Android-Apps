@@ -13,7 +13,6 @@
 #include <string.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
-#define SIZE 50 
 #define LENGTH 132
 
 typedef struct {
@@ -22,7 +21,7 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
-	char msg[SIZE][LENGTH];
+	char msg[LENGTH];
 } messaging;
 
 int main(int argc, char * argv[]) 
@@ -99,6 +98,7 @@ int main(int argc, char * argv[])
 	// for(i=0; i<50; i++){
 		// printf(shared->data[i]);
     // }
+	printf("Msg: %s\n", messaging->shmMsg);
 	 
 	// detach from shared memory segment
 	int detach = shmdt(shared);

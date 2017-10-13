@@ -13,7 +13,6 @@
 #include <string.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
-#define SIZE 50
 #define LENGTH 132
 
 typedef struct {
@@ -22,7 +21,7 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
-	char msg[SIZE][LENGTH];
+	char msg[LENGTH];
 } messaging;
 
 int main(int argc, char * argv[]) 
@@ -74,8 +73,10 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS message address is %x\n", shared);
 	
-	 printf("seconds: %s\n", shared->seconds);
-	 printf("nanoseconds %s\n", shared->nanoseconds);
+	printf("seconds: %s\n", shared->seconds);
+	printf("nanoseconds: %s\n", shared->nanoseconds);
+	 
+	strcpy(messaging->shmMsg, "Hello!");
 
 	// int i = 0;
 	// Testing array of strings for data.
