@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
     if (shared == (void*)-1) {
         perror("Failed to attach shared memory segment");
         return 1;
-        }
+    }
 	// printf("My user shared address is %x\n", shared);
 	
 	int msgkey = 91514;
@@ -62,6 +62,7 @@ int main(int argc, char * argv[])
     if (msg_id == -1) {
         perror("Failed to create shared memory segment");
         return 1;
+	}
 	// printf("My user segment id for the msg share is %d\n", msg_id);
 	
 	// attach shared memory segment
@@ -70,7 +71,7 @@ int main(int argc, char * argv[])
     if (shmMsg == (void*)-1) {
         perror("Failed to attach message segment");
         return 1;
-        }
+    }
 	// printf("My OS message address is %x\n", shared);
 	
 	 printf("seconds: %s\n", shared->seconds);
