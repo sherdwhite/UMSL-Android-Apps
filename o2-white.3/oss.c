@@ -59,18 +59,22 @@ int main(int argc, char * argv[])
 				if (optopt == 's'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 					perror("No arguement value given!");
+					return 1;
 				}
 				if (optopt == 'l'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 					perror("No arguement value given!");
+					return 1;
 				}
 				if (optopt == 't'){
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 					perror("No arguement value given!");
+					return 1;
 				}
 				else if (isprint (optopt)){
 					fprintf (stderr, "Unknown option `-%c'.\n", optopt);
 					perror("Incorrect arguement given!");
+					return 1;
 				}
 				else {
 					fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);
