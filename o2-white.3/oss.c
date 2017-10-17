@@ -175,8 +175,7 @@ int main(int argc, char * argv[])
 	char shnano[10];
 	char msgsec[2];
 	char msgnano[10];
-	int active_children = total_children;
-	while (active_children > 0){
+	while (total_children > 0){
 		if(shared->nanoseconds  <= 999000000){
 			shared->nanoseconds += 100000;
 		}
@@ -201,7 +200,7 @@ int main(int argc, char * argv[])
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
-			active_children--;
+			total_children--;
 		}
 		else if(shared->seconds >= 100){
 			break;
