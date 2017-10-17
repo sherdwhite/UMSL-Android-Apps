@@ -18,13 +18,13 @@
 
 typedef struct {
 	int seconds;
-	int nanoseconds;
+	long nanoseconds;
 } shared_memory;
 
 typedef struct {
-	pid_t id;
+	pid_t pid;
 	int seconds;
-	int nanoseconds;
+	long nanoseconds;
 } messaging;
 
 int max_time = 20;
@@ -133,14 +133,23 @@ int main(int argc, char * argv[])
 	shared->nanoseconds  = 0;
 	
 	// set shmMsg to zero.
-	shmMsg->id = 0;
+	shmMsg->pid = 0;
 	shmMsg->seconds = 0;
 	shmMsg->nanoseconds = 0;
+	
+	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
+	// 0644 permission. 1 is the initial value of the semaphore
+	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
+	if(sem == SEM_FAILED) {
+        perror("Failed to sem_open. \n");
+        return;
+    }
 	
 	
 	
 	pid_t childpid;
 	int i;
+	int total_children = 0;
 	for (i = 0; i < max_children; i++) {
 		childpid = fork();
 		if (childpid == -1) {
@@ -148,16 +157,15 @@ int main(int argc, char * argv[])
 			return 1;
 		}
 		if (childpid == 0) { /* child code */
-			// char cpid[12];
-			// sprintf(cpid, "%ld", (long)childpid);
-			// execlp("user", "user", cpid, NULL);  // lp for passing arguements
-			execl("user", "user", NULL);
+			char cpid[12];
+			sprintf(cpid, "%ld", (long)childpid);
+			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			perror("Child failed to execlp. \n");
+			total_children++;
 			return 1;
 		}
 	}
 	
-	int total_children = max_children;
 	while (total_children < 100){
 		if(shared->nanoseconds  <= 1999000000){
 			shared->nanoseconds += 1000000;
@@ -173,9 +181,12 @@ int main(int argc, char * argv[])
 	for (j = 0; j < max_children; j++){
 		wait(NULL);
 	}
-	printf("All children returned.\n");
+	printf("All children returned. \n");
 	
     // printf("Msg: %s\n", shmMsg->msg);
+	
+	sem_close(sem);  // disconnect from semaphore
+	sem_unlink(sem); // destroy if all closed.
 	 
 	// detach from shared memory segment
 	int detach = shmdt(shared);

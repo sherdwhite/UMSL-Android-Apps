@@ -18,22 +18,24 @@
 
 typedef struct {
 	int seconds;
-	int nanoseconds;
+	long nanoseconds;
 } shared_memory;
 
 typedef struct {
-	pid_t id;
+	pid_t pid;
 	int seconds;
-	int nanoseconds;
+	long nanoseconds;
 } messaging;
 
-int main() //int argc, char * argv[]) 
+int main(int argc, char * argv[]) 
 {
-	// if (argc <= 1)
-	// {
-		// fprintf(stderr, "A missing or incorrect file specified.\n");
-		// return 1;
-	// }
+	if (argc <= 1)
+	{
+		fprintf(stderr, "A missing or incorrect file specified.\n");
+		return 1;
+	}
+	
+	int pid = atoi(argv[1]);
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
@@ -79,8 +81,55 @@ int main() //int argc, char * argv[])
 	// printf("seconds: %d\n", shared->seconds);
 	// printf("nanoseconds: %ld\n", shared->nanoseconds);
 	 
-	// strcpy(shmMsg->msg, "Hello!");  // for writing messages
-	//printf("Child.\n");	
+	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
+	// printf("Child.\n");	
+	
+	srand(pid * time(NULL));
+	long nano_end = 0;
+	int sec_end = 0;
+	long randomtime = rand() % 1000000 + 1;
+	if((shared->nanoseconds + random_time)  < 1000000000){
+			nano_end = shared->nanoseconds + rand() % 1000000 + 1;
+			sec_end = shared->seconds;
+		}
+	else if((shared->nanoseconds + random_time)  >= 1000000000){
+		nano_end = (shared->nanoseconds + random_time) - shared->nanoseconds ;
+		sec_end = shared->seconds  + 1;
+	}
+	
+	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
+	// 0644 permission. 1 is the initial value of the semaphore
+	sem_t *sem = sem_open("BellandJ", 1);
+	if(sem == SEM_FAILED) {
+        perror("Child Failed to sem_open. \n");
+        return;
+    }
+	
+	// int sem_value;
+	// sem_getvalue(sem, &sem_value);
+	// printf("Semaphore value is %d. \n", sem_value);
+	int clear = 0;
+	while(clear = 0){
+		sem_wait(sem);  // wait until we can subtract 1
+		// Critical Section
+		if(nano_end < shared->nanoseconds && sec_end < shared->seconds){
+			if(shmMsg->pid == 0 && shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
+				shmMsg->pid = pid;
+				shmMsg->seconds = shared->seconds;
+				shmMsg->nanoseconds = shared->nanoseconds;
+				sem_post(sem); // adds 1
+				clear = 1;
+			}
+			else{
+				sem_post(sem); // adds 1 to wait until shmMsg clear.
+			}
+		}
+		else {
+			sem_post(sem); // adds 1, cede CS, not ready to send msg.
+		}
+	}
+	
+	sem_close(sem);  // disconnect from semaphore
 	
 	// detach from shared memory segment
 	int detach = shmdt(shared);
