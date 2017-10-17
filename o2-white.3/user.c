@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
 	}
 	
 	int pid = atoi(argv[1]);
-	printf("Child: %d started. \n", pid);
+	// printf("Child: %d started. \n", pid);
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
@@ -112,6 +112,7 @@ int main(int argc, char * argv[])
 	int clear = 0;
 	while(clear = 0){
 		sem_wait(sem);  // wait until we can subtract 1
+		printf("Child: %d sem_wait. \n", pid);
 		// Critical Section
 		if(nano_end < shared->nanoseconds && sec_end < shared->seconds){
 			if(shmMsg->pid == 0 && shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
@@ -120,6 +121,7 @@ int main(int argc, char * argv[])
 				shmMsg->nanoseconds = shared->nanoseconds;
 				sem_post(sem); // adds 1
 				clear = 1;
+				printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmMsg->seconds, shmMsg->nanoseconds);
 			}
 			else{
 				sem_post(sem); // adds 1 to wait until shmMsg clear.
