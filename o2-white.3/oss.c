@@ -43,9 +43,9 @@ int main(int argc, char * argv[])
 				break;
 			case 's':
 				max_children = atoi(optarg);
-				if (max_children <= 0 || max_children > 19) {
-					fprintf (stderr, "Can only specify 1 to 19 children. \n");
-					// perror("Can only specify 1 to 19 children. \n");
+				if (max_children <= 0 || max_children > 16) {
+					fprintf (stderr, "Can only specify 1 to 16 children. \n");
+					// perror("Can only specify 1 to 16 children. \n");
 					return 1;
 				}
 				break;
@@ -175,6 +175,7 @@ int main(int argc, char * argv[])
 	char shnano[10];
 	char msgsec[2];
 	char msgnano[10];
+	char msgtext[132];
 	while (total_children > 0){
 		if(shared->nanoseconds  <= 999000000){
 			shared->nanoseconds += 100000;
@@ -188,7 +189,8 @@ int main(int argc, char * argv[])
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
 			sprintf(msgnano, "%ld", shmMsg->nanoseconds);
-			fputs("Master: Child pid is terminating at my time ", file);
+			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", shmMsg->pid);
+			fputs(msgtext, file);
 			fputs(shsec, file);
 			fputs(".", file);
 			fputs(shnano, file);
