@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
 		  }
 		  
 	// open log file
-	file = fopen(filename, "w+");
+	file = fopen(filename, "w");
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
