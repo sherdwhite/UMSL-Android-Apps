@@ -43,9 +43,9 @@ int main(int argc, char * argv[])
 				break;
 			case 's':
 				max_children = atoi(optarg);
-				if (max_children <= 0 || max_children > 16) {
-					fprintf (stderr, "Can only specify 1 to 16 children. \n");
-					// perror("Can only specify 1 to 16 children. \n");
+				if (max_children <= 0 || max_children > 19) {
+					fprintf (stderr, "Can only specify 1 to 19 children. \n");
+					// perror("Can only specify 1 to 19 children. \n");
 					return 1;
 				}
 				break;
@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
-	sem_t *sem = sem_open("BellandJ", O_CREAT, 0644, 1);
+	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
 	if(sem == SEM_FAILED) {
         perror("Failed to sem_open. \n");
         return;
