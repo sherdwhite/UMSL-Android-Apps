@@ -144,7 +144,7 @@ int main(int argc, char * argv[])
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
-	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
+	sem_t *sem = sem_open("BellandJ", O_CREAT, 0644, 1);
 	if(sem == SEM_FAILED) {
         perror("Failed to sem_open. \n");
         return;
