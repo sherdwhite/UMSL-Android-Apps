@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
 	srand(pid * time(NULL));
 	long nano_end = 0;
 	int sec_end = 0;
-	long randomtime = rand() % 1000000 + 1;
+	long random_time = rand() % 1000000 + 1;
 	if((shared->nanoseconds + random_time)  < 1000000000){
 			nano_end = shared->nanoseconds + rand() % 1000000 + 1;
 			sec_end = shared->seconds;
