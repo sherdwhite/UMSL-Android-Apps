@@ -1,5 +1,6 @@
 CC	= gcc
-CFLAGS = -g -pthread -lrt
+CFLAGS = -g 
+LIBS += -lpthread -lrt -pthread
 TARGET1	= oss
 TARGET2	= user
 OBJS1	= oss.o
