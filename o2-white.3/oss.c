@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
 				}
 				break;
 			case 'l':
-				filename = optarg;
+				filename[0] = optarg;
 				break;
 			case 't':
 				max_time = atoi(optarg);
