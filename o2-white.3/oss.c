@@ -206,7 +206,7 @@ int main(int argc, char * argv[])
 			break;
 		}
 		else {
-			shared->seconds  += 1;
+			shared->nanoseconds += 100000;
 		}
 	}
 	
