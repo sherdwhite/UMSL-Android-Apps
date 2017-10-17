@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <semaphore.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
@@ -21,7 +22,9 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
-	char msg[LENGTH];
+	pid_t id;
+	int seconds;
+	int nanoseconds;
 } messaging;
 
 int max_time = 20;
@@ -38,7 +41,7 @@ int main(int argc, char * argv[])
 				break;
 			case 's':
 				max_children = atoi(optarg);
-				if (max_children <= 0 || max_children > 18) {
+				if (max_children <= 0 || max_children > 19) {
 					fprintf (stderr, "Can only specify 1 to 19 children. \n");
 					// perror("Can only specify 1 to 19 children. \n");
 					return 1;
@@ -125,33 +128,23 @@ int main(int argc, char * argv[])
         return 1;
     }
 	// printf("My OS message address is %x\n", shared);
-	
+	// set shared to zero
 	shared->seconds  = 0;
 	shared->nanoseconds  = 0;
 	
+	// set shmMsg to zero.
+	shmMsg->id = 0;
+	shmMsg->seconds = 0;
+	shmMsg->nanoseconds = 0;
+	
+	
+	
 	pid_t childpid;
-	// childpid = fork();
-		// if (childpid == -1) {
-		// perror("Failed to fork");
-		// return 1;
-	// }
-	// if (childpid == 0) { /* child code */
-		// // char cpid[12];
-		// // sprintf(cpid, "%ld", (long)childpid);
-		// // execlp("user", "user", cpid, NULL);  // lp for passing arguements
-		// execl("user", "user", NULL);
-		// perror("Child failed to execlp.\n");
-		// return 1;
-	// }
-	// if (childpid != wait(NULL)) { /* parent code */
-		// perror("Parent failed to wait due to signal or error");
-		// return 1;
-	// }
 	int i;
 	for (i = 0; i < max_children; i++) {
 		childpid = fork();
 		if (childpid == -1) {
-			perror("Failed to fork");
+			perror("Failed to fork. \n");
 			return 1;
 		}
 		if (childpid == 0) { /* child code */
@@ -161,6 +154,17 @@ int main(int argc, char * argv[])
 			execl("user", "user", NULL);
 			perror("Child failed to execlp. \n");
 			return 1;
+		}
+	}
+	
+	int total_children = max_children;
+	while (total_children < 100){
+		if(shared->nanoseconds  <= 1999000000){
+			shared->nanoseconds += 1000000;
+		}
+		else if(shared->nanoseconds  > 1999000000){
+			shared->nanoseconds  = 0;
+			shared->seconds  += 1;
 		}
 	}
 	

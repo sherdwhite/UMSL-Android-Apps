@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <semaphore.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
@@ -21,7 +22,9 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
-	char msg[LENGTH];
+	pid_t id;
+	int seconds;
+	int nanoseconds;
 } messaging;
 
 int main() //int argc, char * argv[]) 
@@ -77,8 +80,8 @@ int main() //int argc, char * argv[])
 	// printf("nanoseconds: %ld\n", shared->nanoseconds);
 	 
 	// strcpy(shmMsg->msg, "Hello!");  // for writing messages
-
-	printf("Child.\n");	
+	//printf("Child.\n");	
+	
 	// detach from shared memory segment
 	int detach = shmdt(shared);
 	if (detach == -1){
