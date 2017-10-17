@@ -79,8 +79,8 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS message address is %x\n", shared);
 	
-	// printf("seconds: %d\n", shared->seconds);
-	// printf("nanoseconds: %ld\n", shared->nanoseconds);
+	printf("Child %d start at seconds: %d\n", pid, shared->seconds);
+	printf("Child %d start at nanoseconds: %ld\n", pid, shared->nanoseconds);
 	 
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
 	// printf("Child.\n");	
