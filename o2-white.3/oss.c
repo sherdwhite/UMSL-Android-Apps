@@ -166,14 +166,29 @@ int main(int argc, char * argv[])
 		}
 	}
 	
-	while (total_children < 100){
-		if(shared->nanoseconds  <= 1999000000){
+	int active_children = total_children;
+	while (active_children > 0){
+		if(shared->nanoseconds  <= 999000000){
 			shared->nanoseconds += 1000000;
 		}
-		else if(shared->nanoseconds  > 1999000000){
+		else if(shared->nanoseconds  > 999000000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
+		else if(shmMsg->pid != 0 || shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
+			fputs("Master: Child pid is terminating at my time ", file);
+			fputs(shared->seconds, file);
+			fputs(".", file);
+			fputs(shared->nanoseconds, file);
+			fputs(" because it reached ", file);
+			fputs(shmMsg->seconds, file);
+			fputs(".", file);
+			fputs(shmMsg->nanoseconds, file);
+			fputs(" in slave. \n", file);
+			shmMsg->pid = 0;
+			shmMsg->seconds = 0;
+			shmMsg->nanoseconds = 0;
+			active_children--;
 	}
 	
 	// wait for children
