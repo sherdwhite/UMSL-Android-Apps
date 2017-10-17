@@ -210,7 +210,7 @@ int main(int argc, char * argv[])
     // printf("Msg: %s\n", shmMsg->msg);
 	
 	sem_close(sem);  // disconnect from semaphore
-	sem_unlink(sem); // destroy if all closed.
+	sem_unlink("BellandJ"); // destroy if all closed.
 	 
 	// detach from shared memory segment
 	int detach = shmdt(shared);
