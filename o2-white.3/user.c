@@ -106,9 +106,9 @@ int main(int argc, char * argv[])
         return;
     }
 	
-	// int sem_value;
-	// sem_getvalue(sem, &sem_value);
-	// printf("Semaphore value is %d. \n", sem_value);
+	int sem_value;
+	sem_getvalue(sem, &sem_value);
+	printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
 	int clear = 0;
 	while(clear = 0){
 		sem_wait(sem);  // wait until we can subtract 1
