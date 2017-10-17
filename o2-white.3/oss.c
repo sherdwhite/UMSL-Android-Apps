@@ -31,6 +31,7 @@ typedef struct {
 int max_time = 20;
 int max_children = 5;
 FILE *file;
+char filename[30] = "log";
 
 int main(int argc, char * argv[]) 
 {
@@ -49,7 +50,7 @@ int main(int argc, char * argv[])
 				}
 				break;
 			case 'l':
-				file = fopen(optarg, "w+");
+				filename = optarg;
 				break;
 			case 't':
 				max_time = atoi(optarg);
@@ -88,6 +89,9 @@ int main(int argc, char * argv[])
 			default:
 				exit(1);
 		  }
+		  
+	// open log file
+	file = fopen(filename, "w+");
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
