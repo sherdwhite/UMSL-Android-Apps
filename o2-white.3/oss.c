@@ -157,6 +157,7 @@ int main(int argc, char * argv[])
 	int total_children = 0;
 	for (i = 0; i < max_children; i++) {
 		childpid = fork();
+		total_children++;
 		if (childpid == -1) {
 			perror("Failed to fork. \n");
 			return 1;
@@ -166,7 +167,6 @@ int main(int argc, char * argv[])
 			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			perror("Child failed to execlp. \n");
-			total_children++;
 			return 1;
 		}
 	}
