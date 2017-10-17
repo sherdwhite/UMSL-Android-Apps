@@ -110,7 +110,7 @@ int main(int argc, char * argv[])
 	sem_getvalue(sem, &sem_value);
 	printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
 	int clear = 0;
-	while(clear = 0){
+	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
