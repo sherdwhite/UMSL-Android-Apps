@@ -121,7 +121,7 @@ int main(int argc, char * argv[])
 				shmMsg->nanoseconds = shared->nanoseconds;
 				sem_post(sem); // adds 1
 				clear = 1;
-				printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmMsg->seconds, shmMsg->nanoseconds);
+				printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shared->seconds, shared->nanoseconds);
 			}
 			else{
 				sem_post(sem); // adds 1 to wait until shmMsg clear.
