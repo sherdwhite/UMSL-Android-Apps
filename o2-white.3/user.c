@@ -79,8 +79,7 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS message address is %x\n", shared);
 	
-	printf("Child %d start at seconds: %d\n", pid, shared->seconds);
-	printf("Child %d start at nanoseconds: %ld\n", pid, shared->nanoseconds);
+	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shared->seconds, shared->nanoseconds);
 	 
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
 	// printf("Child.\n");	
@@ -97,6 +96,8 @@ int main(int argc, char * argv[])
 		nano_end = (shared->nanoseconds + random_time) - shared->nanoseconds ;
 		sec_end = shared->seconds  + 1;
 	}
+	
+	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
