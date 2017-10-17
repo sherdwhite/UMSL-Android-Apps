@@ -31,7 +31,7 @@ typedef struct {
 int max_time = 20;
 int max_children = 5;
 FILE *file;
-char filename[30] = "log";
+char *filename = "log";
 
 int main(int argc, char * argv[]) 
 {
@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
 				}
 				break;
 			case 'l':
-				filename[0] = optarg;
+				filename = strdup(optarg);
 				break;
 			case 't':
 				max_time = atoi(optarg);
