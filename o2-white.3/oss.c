@@ -206,6 +206,9 @@ int main(int argc, char * argv[])
 		else if(shared->seconds >= 100){
 			break;
 		}
+		else {
+			shared->seconds  += 1;
+		}
 	}
 	
 	// wait for children
