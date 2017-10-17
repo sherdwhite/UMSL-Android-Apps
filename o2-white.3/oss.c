@@ -163,7 +163,7 @@ int main(int argc, char * argv[])
 		}
 		if (childpid == 0) { /* child code */
 			char cpid[12];
-			sprintf(cpid, "%ld", (long)childpid);
+			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			perror("Child failed to execlp. \n");
 			total_children++;
