@@ -171,7 +171,7 @@ int main(int argc, char * argv[])
 		}
 	}
 	
-	printf("Total Children: %d. \n", total_children)
+	printf("Total Children: %d. \n", total_children);
 	
 	char shsec[2];
 	char shnano[10];
