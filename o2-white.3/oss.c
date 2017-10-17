@@ -188,7 +188,8 @@ int main(int argc, char * argv[])
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
 			sprintf(msgnano, "%ld", shmMsg->nanoseconds);
-			fputs("Master: Child pid %d is terminating at my time ", shmMsg->pid, file);
+			char *log_msg = ("Master: Child pid %d is terminating at my time ", shmMsg->pid);
+			fputs(log_msg, file);
 			fputs(shsec, file);
 			fputs(".", file);
 			fputs(shnano, file);
