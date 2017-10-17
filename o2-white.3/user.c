@@ -111,8 +111,8 @@ int main(int argc, char * argv[])
 	printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
 	int clear = 0;
 	while(clear = 0){
-		while(sem_wait(sem));  // wait until we can subtract 1
-		printf("Child: %d sem_wait. \n", pid);
+		sem_wait(sem);  // wait until we can subtract 1
+		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
 		if(nano_end < shared->nanoseconds && sec_end < shared->seconds){
 			if(shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
