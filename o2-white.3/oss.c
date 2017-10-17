@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
 		  }
 		  
 	// open log file
-	file = fopen(filename, "w");
+	file = fopen(filename, "w+");
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
@@ -144,13 +144,11 @@ int main(int argc, char * argv[])
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
-	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
+	sem_t *sem = sem_open("BellandJ", O_CREAT, 0644, 1);
 	if(sem == SEM_FAILED) {
         perror("Failed to sem_open. \n");
         return;
-    }
-	
-	
+    }	
 	
 	pid_t childpid;
 	int i;
