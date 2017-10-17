@@ -179,11 +179,11 @@ int main(int argc, char * argv[])
 		if(shared->nanoseconds  <= 999000000){
 			shared->nanoseconds += 100000;
 		}
-		else if(shared->nanoseconds  > 999000000){
+		if(shared->nanoseconds  > 999000000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
-		else if(shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
+		if(shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
 			sprintf(shsec, "%d", shared->seconds);
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
@@ -202,7 +202,7 @@ int main(int argc, char * argv[])
 			shmMsg->nanoseconds = 0;
 			total_children--;
 		}
-		else if(shared->seconds >= 100){
+		if(shared->seconds >= 100){
 			break;
 		}
 		else {
