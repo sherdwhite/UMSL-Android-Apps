@@ -184,7 +184,7 @@ int main(int argc, char * argv[])
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
-		else if(shmMsg->pid != 0 || shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
+		else if(shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
 			sprintf(shsec, "%d", shared->seconds);
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
