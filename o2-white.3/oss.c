@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
 	shmMsg->nanoseconds = 0;
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
-	// 0644 permission. 1 is the initial value of the semaphore
+	// 0644 permission. 1 is the initial value of the semaphore. cd /dev/shm to delete if hung.
 	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
 	if(sem == SEM_FAILED) {
         perror("Failed to sem_open. \n");
@@ -175,6 +175,7 @@ int main(int argc, char * argv[])
 	char shnano[10];
 	char msgsec[2];
 	char msgnano[10];
+	char msg_text[132];
 	while (total_children > 0){
 		if(shared->nanoseconds  <= 999000000){
 			shared->nanoseconds += 100000;
@@ -188,8 +189,8 @@ int main(int argc, char * argv[])
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
 			sprintf(msgnano, "%ld", shmMsg->nanoseconds);
-			char *log_msg = ("Master: Child pid %d is terminating at my time ", shmMsg->pid);
-			fputs(log_msg, file);
+			sprintf(msg_text, "Master: Child pid %d is terminating at my time ", shmMsg->pid");
+			fputs(msg_text, file);
 			fputs(shsec, file);
 			fputs(".", file);
 			fputs(shnano, file);
