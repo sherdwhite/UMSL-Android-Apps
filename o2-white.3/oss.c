@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <semaphore.h>
+#include <fcntl.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
@@ -166,6 +167,10 @@ int main(int argc, char * argv[])
 		}
 	}
 	
+	char shsec[2];
+	char shnano[10];
+	char msgsec[2];
+	char msgnano[10];
 	int active_children = total_children;
 	while (active_children > 0){
 		if(shared->nanoseconds  <= 999000000){
@@ -176,14 +181,18 @@ int main(int argc, char * argv[])
 			shared->seconds  += 1;
 		}
 		else if(shmMsg->pid != 0 || shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
+			sprintf(shsec, "%d", shared->seconds);
+			sprintf(shnano, "%ld", shared->nanoseconds);
+			sprintf(msgsec, "%d", shmMsg->seconds);
+			sprintf(msgnano, "%ld", shmMsg->nanoseconds);
 			fputs("Master: Child pid is terminating at my time ", file);
-			fputs(shared->seconds, file);
+			fputs(shsec, file);
 			fputs(".", file);
-			fputs(shared->nanoseconds, file);
+			fputs(shnano, file);
 			fputs(" because it reached ", file);
-			fputs(shmMsg->seconds, file);
+			fputs(msgsec, file);
 			fputs(".", file);
-			fputs(shmMsg->nanoseconds, file);
+			fputs(msgnano, file);
 			fputs(" in slave. \n", file);
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
