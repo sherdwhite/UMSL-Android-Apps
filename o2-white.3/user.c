@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
 		printf("Child: %d sem_wait. \n", pid);
 		// Critical Section
 		if(nano_end < shared->nanoseconds && sec_end < shared->seconds){
-			if(shmMsg->pid == 0 && shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
+			if(shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
 				shmMsg->pid = pid;
 				shmMsg->seconds = shared->seconds;
 				shmMsg->nanoseconds = shared->nanoseconds;
