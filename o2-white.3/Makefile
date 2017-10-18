@@ -19,7 +19,5 @@ $(TARGET2): $(OBJS2)
 .c.o:
 	$(CC) -c $(CFLAGS) $<
 
-.PHONY: clean
-
-clean :
-	rm $(OBJS1) $(OBJS2)
+clean:
+	rm oss.o user.o
