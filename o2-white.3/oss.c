@@ -17,6 +17,8 @@
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
 
+void sigHandler();
+
 typedef struct {
 	int seconds;
 	long nanoseconds;
@@ -36,6 +38,9 @@ char *filename = "log";
 
 int main(int argc, char * argv[]) 
 {
+	// signal handler
+	signal(SIGINT, sigHandler);
+	
 	int c;
 	while ((c = getopt (argc, argv, "hs:l:t:")) != -1)
     switch (c)
@@ -206,7 +211,8 @@ int main(int argc, char * argv[])
 			continue;
 
 		}
-		if(shared->seconds >= 20){
+		if(shared->seconds >= 2){
+			sigHandler();
 			break;
 		}
 	}
@@ -252,3 +258,18 @@ int main(int argc, char * argv[])
 
     return 0;
 }
+
+// Kills all when signal is received
+void signHandler() {
+    pid_t pid = getpgrp();  // gets process group
+	printf("Terminating PID: %i due to limit met. \n", pid);
+	sem_close(sem);  // disconnect from semaphore
+	sem_unlink("BellandJ"); // destroy if all closed.
+	shmctl(shm_id, IPC_RMID, NULL);
+	shmctl(msg_id, IPC_RMID, NULL);
+	shmdt(shared);
+	shmdt(shmMsg);
+    killpg(pid, SIGINT);  // kills the process group
+    exit(EXIT_SUCCESS);
+}
+
