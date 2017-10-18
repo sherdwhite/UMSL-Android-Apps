@@ -202,7 +202,9 @@ int main(int argc, char * argv[])
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
-			total_children--;
+			i++;
+			sprintf(cpid, "%d", i);
+			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			shmMsg->ready = 0;
 			break;
 		}
@@ -213,7 +215,7 @@ int main(int argc, char * argv[])
 	
 	// wait for children
 	int j;
-	for (j = 0; j < max_children; j++){
+	for (j = 0; j < total_children; j++){
 		wait(NULL);
 	}
 	printf("All children returned. \n");
