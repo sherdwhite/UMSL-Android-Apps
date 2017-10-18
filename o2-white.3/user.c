@@ -22,6 +22,7 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
+	int ready;
 	pid_t pid;
 	int seconds;
 	long nanoseconds;
@@ -115,19 +116,15 @@ int main(int argc, char * argv[])
 		sem_wait(sem);  // wait until we can subtract 1
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		if(sec_end > shared->seconds || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds)){  // this condition is wrong.  May cause seconds to increase too far. 
-			if(shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
-				shmMsg->pid = pid;
-				shmMsg->seconds = shared->seconds;
-				shmMsg->nanoseconds = shared->nanoseconds;
-				sem_post(sem); // adds 1
-				clear = 1;
-				printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shared->seconds, shared->nanoseconds);
-				break;
-			}
-			else{
-				sem_post(sem); // adds 1 to wait until shmMsg clear.
-				break;
+		if((sec_end > shared->seconds && shmMsg->ready == 0) || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds && shmMsg->ready == 0)){  // this condition is wrong.  May cause seconds to increase too far. 
+			shmMsg->pid = pid;
+			shmMsg->seconds = shared->seconds;
+			shmMsg->nanoseconds = shared->nanoseconds;
+			sem_post(sem); // adds 1
+			clear = 1;
+			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shared->seconds, shared->nanoseconds);
+			shmMsg->ready = 1;
+			break;
 			}
 		}
 		else {

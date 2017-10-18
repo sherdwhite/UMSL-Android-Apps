@@ -23,6 +23,7 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
+	int ready;
 	pid_t pid;
 	int seconds;
 	long nanoseconds;
@@ -141,6 +142,7 @@ int main(int argc, char * argv[])
 	shmMsg->pid = 0;
 	shmMsg->seconds = 0;
 	shmMsg->nanoseconds = 0;
+	shmMsg->ready = 0;
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
@@ -182,7 +184,7 @@ int main(int argc, char * argv[])
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
-		if(shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
+		if(shmMsg->ready == 1){
 			sprintf(shsec, "%d", shared->seconds);
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
@@ -201,6 +203,7 @@ int main(int argc, char * argv[])
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
 			total_children--;
+			shmMsg->ready = 0;
 			break;
 		}
 		if(shared->seconds >= 2){
