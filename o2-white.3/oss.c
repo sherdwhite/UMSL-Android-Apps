@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
     if (shared == (void*)-1) {
         perror("Failed to attach shared memory segment. \n");
         return 1;
-        }
+    }
 	// printf("My OS shared address is %x\n", shared);
 	
 	int msgkey = 91514;

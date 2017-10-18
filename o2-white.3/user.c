@@ -125,7 +125,6 @@ int main(int argc, char * argv[])
 			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shared->seconds, shared->nanoseconds);
 			shmMsg->ready = 1;
 			break;
-			}
 		}
 		else {
 			sem_post(sem); // adds 1, cede CS, not ready to send msg.
