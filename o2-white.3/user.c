@@ -117,7 +117,7 @@ int main(int argc, char * argv[])
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
 		if(sec_end > shared->seconds || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds)){  // this condition is wrong.  May cause seconds to increase too far. 
-			if(shmMsg->seconds == 0 && shmMsg->nanoseconds == 0){
+			if(shmMsg->ready == 0){
 				shmMsg->ready = 1;
 				shmMsg->pid = pid;
 				shmMsg->seconds = shared->seconds;
