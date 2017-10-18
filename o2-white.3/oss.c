@@ -204,8 +204,9 @@ int main(int argc, char * argv[])
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
-			shmMsg->ready == 0;
+			shmMsg->ready = 0;
 			total_children--;
+			break;
 		}
 		if(shared->seconds >= 50){
 			break;
