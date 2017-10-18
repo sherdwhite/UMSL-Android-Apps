@@ -204,8 +204,8 @@ int main(int argc, char * argv[])
 			shmMsg->ready = 0;
 		}
 		if(shared->seconds >= 2){
-			break;
 			i = -1;
+			break;
 		}
 	}
 	
