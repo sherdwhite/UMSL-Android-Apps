@@ -127,10 +127,12 @@ int main(int argc, char * argv[])
 			}
 			else{
 				sem_post(sem); // adds 1 to wait until shmMsg clear.
+				break;
 			}
 		}
 		else {
 			sem_post(sem); // adds 1, cede CS, not ready to send msg.
+			break;
 		}
 	}
 	
