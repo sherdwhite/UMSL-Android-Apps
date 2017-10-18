@@ -203,9 +203,6 @@ int main(int argc, char * argv[])
 			shmMsg->nanoseconds = 0;
 			shmMsg->ready = 0;
 		}
-		else{
-			break;
-		}
 	}
 	
 	// wait for children
