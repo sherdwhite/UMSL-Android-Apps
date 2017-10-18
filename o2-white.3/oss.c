@@ -203,10 +203,6 @@ int main(int argc, char * argv[])
 			shmMsg->nanoseconds = 0;
 			shmMsg->ready = 0;
 		}
-		if(shared->seconds >= 2){
-			i = -1;
-			break;
-		}
 	}
 	
 	// wait for children
