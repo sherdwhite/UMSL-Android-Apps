@@ -44,8 +44,8 @@ int main(int argc, char * argv[])
 			case 's':
 				max_children = atoi(optarg);
 				if (max_children <= 0 || max_children > 16) {
-					fprintf (stderr, "Can only specify 1 to 16 children. \n");
-					// perror("Can only specify 1 to 16 children. \n");
+					fprintf (stderr, "Can only specify 1 to 18 children. \n");
+					// perror("Can only specify 1 to 18 children. \n");
 					return 1;
 				}
 				break;
