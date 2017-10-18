@@ -108,15 +108,15 @@ int main(int argc, char * argv[])
         return;
     }
 	
-	int sem_value;
-	sem_getvalue(sem, &sem_value);
-	printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
+	// int sem_value;
+	// sem_getvalue(sem, &sem_value);
+	// printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
 	int clear = 0;
 	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		if((sec_end > shared->seconds && shmMsg->ready == 0) || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds && shmMsg->ready == 0)){  // this condition is wrong.  May cause seconds to increase too far. 
+		if((sec_end > shared->seconds && shmMsg->ready == 0) || (nano_end <= shared->nanoseconds && sec_end >= shared->seconds && shmMsg->ready == 0)){  // this condition is wrong.  May cause seconds to increase too far. 
 			shmMsg->pid = pid;
 			shmMsg->seconds = shared->seconds;
 			shmMsg->nanoseconds = shared->nanoseconds;

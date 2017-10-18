@@ -4,20 +4,21 @@ Assignment 3
 
 Objective: 
 
-	The goal of this assignment is to read in up to 50 lines of strings from a file, that are seperated a line feed, into shared memory.
-	Then we check to see if each string at the correct index is a palindrome, i.e. the same forward and backward, and to write palindromes 
-	to palin.out and non-palindromes to nopalin.out.  It achieves this by forking off 19 or less processes to check the string at their 
-	assigned index and using exec to call palin.c to do the check and file write. 
+	The goal of this assignment is to simulate a system clock, spawn children off, have them exit at a semi-random time, and then 
+	send a message back to the oss program.  The oss program writes the time info to a log.  As the program receives messages, 
+	it spawns a new process up to a total of 100 or until time runs out. 
 
 Details regarding the base program:
 
-	Master.c handles the forking process while palin.c handles the critical section. The program should use the multiprocess IPC
-	but I wasn't able to get to that part of the program.  I have the shared memory set up and in use.  The critical section occurs.
-	I have the program running with the parent and one fork.  I unfortunately ran out of time for the control of the shared resources
-	portion of the assignment.  
+	oss.c handles the forking process while user.c handles the critical section via a semaphore. 
 	
 Instructions:
 	
-	A make file is included with the program.  Simply type make on the command line to compile the files master.c and palin.c.  
-	The executable for this assignment will simply be called master.  To run the program, simply type master filename where "filename"
-	is the path of the text file to read in.  The output files palin.out and nopalin.out will be created automatically.  
+	A make file is included with the program.  Simply type make on the command line to compile the files oss.c and user.c.  
+	The executable for this assignment will simply be called oss.  To run the program, simply type oss with the arguements
+	h
+	-s x
+	-l filename
+	-t z
+	where x is the maximum number of slave processes spawned (default 5) and filename is the log file used. The
+	parameter z is the time in seconds when the master will terminate itself and all children (default 20)

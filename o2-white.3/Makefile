@@ -21,5 +21,5 @@ $(TARGET2): $(OBJS2)
 
 .PHONY: clean
 
-clean:
-	/bin/rm -f core *.o $(TARGET1) $(TARGET2)
+clean :
+	rm $(OBJS1) $(OBJS2)
