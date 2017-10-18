@@ -213,7 +213,7 @@ int main(int argc, char * argv[])
 			continue;
 
 		}
-		if(shared->seconds >= 2 || i >= 100 || elapsed_secs >= max_time){
+		if(shared->seconds >= 2 || i >= 100 || elapsed_secs > max_time){
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
 			sem_close(sem);  // disconnect from semaphore
