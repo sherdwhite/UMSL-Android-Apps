@@ -114,7 +114,7 @@ int main(int argc, char * argv[])
 	int clear = 0;
 	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
-		printf("Child: %d cleared sem_wait. \n", pid);
+		// printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
 		if((sec_end < shared->seconds && shmMsg->ready == 0) || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds && shmMsg->ready == 0)){  
 			shmMsg->pid = pid;
