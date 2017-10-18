@@ -202,6 +202,7 @@ int main(int argc, char * argv[])
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
 			shmMsg->ready = 0;
+			continue;
 
 		}
 		if(shared->seconds >= 2){
