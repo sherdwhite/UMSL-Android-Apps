@@ -10,13 +10,14 @@ Objective:
 
 Details regarding the base program:
 
-	oss.c handles the forking process while user.c handles the critical section via a semaphore. 
+	oss.c handles the forking process while user.c handles the critical section via a semaphore.  All requirements implimented 
+	except spawning of new processes as ones complete.
 	
 Instructions:
 	
 	A make file is included with the program.  Simply type make on the command line to compile the files oss.c and user.c.  
 	The executable for this assignment will simply be called oss.  To run the program, simply type oss with the arguements
-	h
+	-h
 	-s x
 	-l filename
 	-t z
