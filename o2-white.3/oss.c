@@ -202,24 +202,11 @@ int main(int argc, char * argv[])
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
 			shmMsg->ready = 0;
-			if(i < 100){
-				i++;
-				childpid = fork();
-				if (childpid == -1) {
-					perror("Failed to fork. \n");
-					return 1;
-				}
-				if (childpid == 0) { /* child code */
-					sprintf(cpid, "%d", i);
-					execlp("user", "user", cpid, NULL);  // lp for passing arguements
-					perror("Child failed to execlp. \n");
-					return 1;
-				}
-			}
+			i--;
 			continue;
 
 		}
-		if(shared->seconds >= 100){
+		if(shared->seconds >= 20){
 			break;
 		}
 	}
