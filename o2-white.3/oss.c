@@ -13,6 +13,7 @@
 #include <string.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include <time.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
@@ -37,6 +38,10 @@ char *filename = "log";
 int main(int argc, char * argv[]) 
 {
 	int c;
+	clock_t begin = clock();
+	clock_t end;
+	double elapsed_secs;
+
 	while ((c = getopt (argc, argv, "hs:l:t:")) != -1)
     switch (c)
 		  {
@@ -178,6 +183,8 @@ int main(int argc, char * argv[])
 	char msgtext[132];
 	while (i > 0){
 		shared->nanoseconds += 1000;
+		end = clock();
+		elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
 		if(shared->nanoseconds  > 999999000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
@@ -206,7 +213,7 @@ int main(int argc, char * argv[])
 			continue;
 
 		}
-		if(shared->seconds >= 2){
+		if(shared->seconds >= 2 || i >= 100 || elapsed_secs >= max_time){
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
 			sem_close(sem);  // disconnect from semaphore
