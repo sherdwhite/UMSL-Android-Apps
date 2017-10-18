@@ -155,10 +155,8 @@ int main(int argc, char * argv[])
 	pid_t childpid;
 	char cpid[12];
 	int i;
-	int total_children = 0;
 	for (i = 0; i < max_children; i++) {
 		childpid = fork();
-		total_children++;
 		if (childpid == -1) {
 			perror("Failed to fork. \n");
 			return 1;
@@ -171,14 +169,14 @@ int main(int argc, char * argv[])
 		}
 	}
 	
-	printf("Total Children: %d. \n", total_children);
+	printf("Total Children: %d. \n", i);
 	
 	char shsec[2];
 	char shnano[10];
 	char msgsec[2];
 	char msgnano[10];
 	char msgtext[132];
-	while (total_children > 0){
+	while (i > 0){
 		shared->nanoseconds += 10000;
 		if(shared->nanoseconds  > 999995000){
 			shared->nanoseconds  = 0;
@@ -205,7 +203,6 @@ int main(int argc, char * argv[])
 			i++;
 			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
-			total_children++;
 			shmMsg->ready = 0;
 			break;
 		}
@@ -216,11 +213,11 @@ int main(int argc, char * argv[])
 	
 	// wait for children
 	int j;
-	for (j = 0; j < total_children; j++){
+	for (j = 0; j < i; j++){
 		wait(NULL);
 	}
 	printf("All children returned. \n");
-	printf("Total Children end: %d. \n", total_children);
+	printf("Total Children end: %d. \n", i);
 	
     // printf("Msg: %s\n", shmMsg->msg);
 	
