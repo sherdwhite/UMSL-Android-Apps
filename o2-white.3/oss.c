@@ -184,7 +184,7 @@ int main(int argc, char * argv[])
 	while (i > 0){
 		shared->nanoseconds += 1000;
 		end = clock();
-		elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
+		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
 		if(shared->nanoseconds  > 999999000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
