@@ -182,6 +182,7 @@ int main(int argc, char * argv[])
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
+		printf("i: %d. \n", i);
 		if(shmMsg->ready == 1){
 			sprintf(shsec, "%d", shared->seconds);
 			sprintf(shnano, "%ld", shared->nanoseconds);
