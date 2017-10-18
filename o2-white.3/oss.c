@@ -179,10 +179,10 @@ int main(int argc, char * argv[])
 	char msgnano[10];
 	char msgtext[132];
 	while (total_children > 0){
-		if(shared->nanoseconds  <= 999000000){
+		if(shared->nanoseconds  <= 999990000){
 			shared->nanoseconds += 10000;
 		}
-		if(shared->nanoseconds  > 999000000){
+		if(shared->nanoseconds  > 999990000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
@@ -208,11 +208,9 @@ int main(int argc, char * argv[])
 			total_children--;
 			break;
 		}
-		if(shared->seconds >= 50){
+		if(shared->seconds >= 10){
+			total_children = 0;
 			break;
-		}
-		else {
-			shared->nanoseconds += 10000;
 		}
 	}
 	
