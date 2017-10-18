@@ -116,7 +116,7 @@ int main(int argc, char * argv[])
 		sem_wait(sem);  // wait until we can subtract 1
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		if((sec_end > shared->seconds && shmMsg->ready == 0) || (nano_end <= shared->nanoseconds && sec_end >= shared->seconds && shmMsg->ready == 0)){  // this condition is wrong.  May cause seconds to increase too far. 
+		if((sec_end > shared->seconds && shmMsg->ready == 0) || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds && shmMsg->ready == 0)){  // this condition is wrong.  May cause seconds to increase too far. 
 			shmMsg->pid = pid;
 			shmMsg->seconds = shared->seconds;
 			shmMsg->nanoseconds = shared->nanoseconds;
@@ -128,7 +128,6 @@ int main(int argc, char * argv[])
 		}
 		else {
 			sem_post(sem); // adds 1, cede CS, not ready to send msg.
-			clear = 0;
 			continue;
 		}
 	}

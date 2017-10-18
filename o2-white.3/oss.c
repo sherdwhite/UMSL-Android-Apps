@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
 	char msgsec[2];
 	char msgnano[10];
 	char msgtext[132];
-	while (i >= 0){
+	while (i > 0){
 		shared->nanoseconds += 10000;
 		if(shared->nanoseconds  > 999995000){
 			shared->nanoseconds  = 0;
