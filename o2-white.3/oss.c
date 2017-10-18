@@ -200,9 +200,6 @@ int main(int argc, char * argv[])
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
-			i++;
-			sprintf(cpid, "%d", i);
-			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			shmMsg->ready = 0;
 		}
 		if(shared->seconds >= 2){
