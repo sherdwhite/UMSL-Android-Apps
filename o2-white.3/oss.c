@@ -153,9 +153,9 @@ int main(int argc, char * argv[])
     }	
 	
 	pid_t childpid;
+	char cpid[12];
 	int i;
 	int total_children = 0;
-	char cpid[12];
 	for (i = 0; i < max_children; i++) {
 		childpid = fork();
 		total_children++;
@@ -203,9 +203,9 @@ int main(int argc, char * argv[])
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
 			i++;
-			total_children++;
 			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
+			total_children++;
 			shmMsg->ready = 0;
 			break;
 		}
