@@ -204,7 +204,6 @@ int main(int argc, char * argv[])
 			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			shmMsg->ready = 0;
-			break;
 		}
 		if(shared->seconds >= 2){
 			break;
