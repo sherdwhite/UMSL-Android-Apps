@@ -204,6 +204,9 @@ int main(int argc, char * argv[])
 			shmMsg->ready = 0;
 			break;
 		}
+		else{
+			break;
+		}
 	}
 	
 	// wait for children
