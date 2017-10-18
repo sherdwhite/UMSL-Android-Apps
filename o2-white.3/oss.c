@@ -179,7 +179,7 @@ int main(int argc, char * argv[])
 	char msgnano[10];
 	char msgtext[132];
 	while (total_children > 0){
-		shared->nanoseconds += 5000;
+		shared->nanoseconds += 10000;
 		if(shared->nanoseconds  > 999995000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
