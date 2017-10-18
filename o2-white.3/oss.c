@@ -23,7 +23,6 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
-	int ready;
 	pid_t pid;
 	int seconds;
 	long nanoseconds;
@@ -139,7 +138,6 @@ int main(int argc, char * argv[])
 	shared->nanoseconds  = 0;
 	
 	// set shmMsg to zero.
-	shmMsg->ready = 0;
 	shmMsg->pid = 0;
 	shmMsg->seconds = 0;
 	shmMsg->nanoseconds = 0;
@@ -179,14 +177,12 @@ int main(int argc, char * argv[])
 	char msgnano[10];
 	char msgtext[132];
 	while (total_children > 0){
-		if(shared->nanoseconds  <= 999990000){
-			shared->nanoseconds += 10000;
-		}
+		shared->nanoseconds += 10000;
 		if(shared->nanoseconds  > 999990000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
-		if(shmMsg->ready == 1){
+		if(shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
 			sprintf(shsec, "%d", shared->seconds);
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
@@ -204,12 +200,9 @@ int main(int argc, char * argv[])
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
-			shmMsg->ready = 0;
 			total_children--;
-			break;
 		}
 		if(shared->seconds >= 10){
-			total_children = 0;
 			break;
 		}
 	}
@@ -220,6 +213,7 @@ int main(int argc, char * argv[])
 		wait(NULL);
 	}
 	printf("All children returned. \n");
+	printf("Total Children end: %d. \n", total_children);
 	
     // printf("Msg: %s\n", shmMsg->msg);
 	
