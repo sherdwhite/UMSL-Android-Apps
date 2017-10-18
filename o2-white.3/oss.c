@@ -201,6 +201,7 @@ int main(int argc, char * argv[])
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
 			total_children--;
+			break;
 		}
 		if(shared->seconds >= 2){
 			break;
