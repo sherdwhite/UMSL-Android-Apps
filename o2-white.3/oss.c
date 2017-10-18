@@ -155,6 +155,7 @@ int main(int argc, char * argv[])
 	pid_t childpid;
 	int i;
 	int total_children = 0;
+	char cpid[12];
 	for (i = 0; i < max_children; i++) {
 		childpid = fork();
 		total_children++;
@@ -163,7 +164,6 @@ int main(int argc, char * argv[])
 			return 1;
 		}
 		if (childpid == 0) { /* child code */
-			char cpid[12];
 			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			perror("Child failed to execlp. \n");
@@ -203,6 +203,7 @@ int main(int argc, char * argv[])
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
 			i++;
+			total_children++;
 			sprintf(cpid, "%d", i);
 			execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			shmMsg->ready = 0;
