@@ -23,6 +23,7 @@ typedef struct {
 } shared_memory;
 
 typedef struct {
+	int ready;
 	pid_t pid;
 	int seconds;
 	long nanoseconds;
@@ -138,6 +139,7 @@ int main(int argc, char * argv[])
 	shared->nanoseconds  = 0;
 	
 	// set shmMsg to zero.
+	shmMsg->ready = 0;
 	shmMsg->pid = 0;
 	shmMsg->seconds = 0;
 	shmMsg->nanoseconds = 0;
@@ -184,7 +186,7 @@ int main(int argc, char * argv[])
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
-		if(shmMsg->seconds != 0 || shmMsg->nanoseconds != 0){
+		if(shmMsg->ready == 1){
 			sprintf(shsec, "%d", shared->seconds);
 			sprintf(shnano, "%ld", shared->nanoseconds);
 			sprintf(msgsec, "%d", shmMsg->seconds);
@@ -202,6 +204,7 @@ int main(int argc, char * argv[])
 			shmMsg->pid = 0;
 			shmMsg->seconds = 0;
 			shmMsg->nanoseconds = 0;
+			shmMsg->ready == 0;
 			total_children--;
 		}
 		if(shared->seconds >= 50){
