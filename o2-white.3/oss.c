@@ -182,10 +182,10 @@ int main(int argc, char * argv[])
 	char msgnano[10];
 	char msgtext[132];
 	while (i > 0){
-		shared->nanoseconds += 100000;
+		shared->nanoseconds += 1000000;
 		end = clock();
 		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
-		if(shared->nanoseconds  > 999900000){
+		if(shared->nanoseconds  > 999000000){
 			shared->nanoseconds  = 0;
 			shared->seconds  += 1;
 		}
