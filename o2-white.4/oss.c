@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
 	unsigned int seconds;
 	unsigned int nanoseconds;
-} time;
+} timer;
 
 int max_time = 20;
 int max_children = 18;
@@ -115,15 +115,15 @@ int main(int argc, char * argv[])
 	// printf("My OS shared address is %x\n", shared);
 	
 	int clock_key = 91514;
-	int time_id = shmget(clock_key, sizeof(time), PERM | IPC_CREAT | IPC_EXCL);
-    if (time_id == -1) {
+	int timer_id = shmget(clock_key, sizeof(timer), PERM | IPC_CREAT | IPC_EXCL);
+    if (timer_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
 	}
-	// printf("My OS segment id for the msg share is %d\n", time_id);
+	// printf("My OS segment id for the msg share is %d\n", timer_id);
 	
 	// attach shared memory segment
-	time* shmTime = (time*)shmat(time_id, NULL, 0);
+	timer* shmTime = (timer*)shmat(timer_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (shmTime == (void*)-1) {
         perror("Failed to attach shared message segment. \n");
@@ -182,12 +182,12 @@ int main(int argc, char * argv[])
 		shmTime->nanoseconds += 100000;
 		end = clock();
 		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
-		if(PCB->nanoseconds  > 999900000){
+		if(shmTime->nanoseconds  > 999900000){
 			shmTime->nanoseconds  = 0;
 			shmTime->seconds  += 1;
 		}
 
-		if(shmTime->complete == 1){
+		if(PCB->complete == 1){
 			sprintf(shsec, "%d", shmTime->seconds);
 			sprintf(shnano, "%ld", shmTime->nanoseconds);
 			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB->pid);
@@ -249,7 +249,7 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	// delete msg memory segment
-	delete_mem = shmctl(time_id, IPC_RMID, NULL);
+	delete_mem = shmctl(timer_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove msg memory segment. \n");
 		return 1;

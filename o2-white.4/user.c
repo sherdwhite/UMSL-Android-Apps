@@ -28,7 +28,7 @@ typedef struct {
 typedef struct {
 	unsigned int seconds;
 	unsigned int nanoseconds;
-} time;
+} timer;
 
 
 int main(int argc, char * argv[]) 
@@ -67,15 +67,15 @@ int main(int argc, char * argv[])
 	// printf("My user shared address is %x\n", PCB);
 	
 	int clock_key = 91514;
-	int time_id = shmget(clock_key, sizeof(time), PERM | IPC_CREAT);
-    if (time_id == -1) {
+	int timer_id = shmget(clock_key, sizeof(timer), PERM | IPC_CREAT);
+    if (timer_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
 	}
-	// printf("My user segment id for the time share is %d\n", time_id);
+	// printf("My user segment id for the time share is %d\n", timer_id);
 	
 	// attach shared memory segment
-	time* shmTime = (time*)shmat(time_id, NULL, 0);
+	timer* shmTime = (timer*)shmat(timer_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (shmTime == (void*)-1) {
         perror("Failed to attach message segment. \n");
@@ -141,7 +141,7 @@ int main(int argc, char * argv[])
 	}
 	
 	// detach from msg memory segment
-	detach = shmdt(shmMsg);
+	detach = shmdt(shmTime);
 	if (detach == -1){
 		perror("Failed to detach shared msg memory segment. \n");
 		return 1;
