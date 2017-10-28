@@ -1,5 +1,5 @@
 // Sherd White
-// cs4760 Assignment 4
+// cs4760 Assignment 4  
 // 10/04/2017
 
 #include <stdio.h>
@@ -19,19 +19,21 @@
 #define LENGTH 132
 
 typedef struct {
-	int seconds;
-	long nanoseconds;
-} shared_memory;
+	long total_CPU_time;
+	long total_time;
+	long last_burst;
+	int priority;
+	pid_t pid;
+	int complete;
+} pcb;
 
 typedef struct {
-	int ready;
-	pid_t pid;
-	int seconds;
-	long nanoseconds;
-} messaging;
+	unsigned int seconds;
+	unsigned int nanoseconds;
+} time;
 
 int max_time = 20;
-int max_children = 5;
+int max_children = 18;
 FILE *file;
 char *filename = "log";
 
@@ -41,19 +43,13 @@ int main(int argc, char * argv[])
 	clock_t begin = clock();
 	clock_t end;
 	double elapsed_secs;
+	int pcb_control[18];
+	int total_log_lines = 0;
 
-	while ((c = getopt (argc, argv, "hs:l:t:")) != -1)
+	while ((c = getopt (argc, argv, "hl:t:")) != -1)
     switch (c)
 		  {
 			case 'h':
-				break;
-			case 's':
-				max_children = atoi(optarg);
-				if (max_children <= 0 || max_children > 18) {
-					fprintf (stderr, "Can only specify 1 to 18 children. \n");
-					// perror("Can only specify 1 to 18 children. \n");
-					return 1;
-				}
 				break;
 			case 'l':
 				filename = strdup(optarg);
@@ -67,11 +63,6 @@ int main(int argc, char * argv[])
 				}
 				break;
 			case '?':
-				if (optopt == 's'){
-					fprintf (stderr, "Option -%c requires an argument. \n", optopt);
-					perror("No arguement value given! \n");
-					return 1;
-				}
 				if (optopt == 'l'){
 					fprintf (stderr, "Option -%c requires an argument. \n", optopt);
 					perror("No arguement value given! \n");
@@ -107,47 +98,42 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_id = shmget(key, sizeof(shared_memory), PERM | IPC_CREAT | IPC_EXCL);
-    if (shm_id == -1) {
+	int pcb_id = shmget(key, sizeof(pcb), PERM | IPC_CREAT | IPC_EXCL);
+    if (pcb_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
 	}
-	// printf("My OS segment id for shared memory is %d\n", shm_id);
+	// printf("My OS segment id for shared memory is %d\n", pcb_id);
 	
 	// attach shared memory segment
-	shared_memory* shared = (shared_memory*)shmat(shm_id, NULL, 0);
+	pcb* PCB = (pcb*)shmat(pcb_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (shared == (void*)-1) {
+    if (PCB == (void*)-1) {
         perror("Failed to attach shared memory segment. \n");
         return 1;
     }
 	// printf("My OS shared address is %x\n", shared);
 	
-	int msgkey = 91514;
-	int msg_id = shmget(msgkey, sizeof(messaging), PERM | IPC_CREAT | IPC_EXCL);
-    if (msg_id == -1) {
+	int clock_key = 91514;
+	int time_id = shmget(clock_key, sizeof(time), PERM | IPC_CREAT | IPC_EXCL);
+    if (time_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
 	}
-	// printf("My OS segment id for the msg share is %d\n", msg_id);
+	// printf("My OS segment id for the msg share is %d\n", time_id);
 	
 	// attach shared memory segment
-	messaging* shmMsg = (messaging*)shmat(msg_id, NULL, 0);
+	time* shmTime = (time*)shmat(time_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (shmMsg == (void*)-1) {
+    if (shmTime == (void*)-1) {
         perror("Failed to attach shared message segment. \n");
         return 1;
     }
-	// printf("My OS message address is %x\n", shared);
-	// set shared to zero
-	shared->seconds  = 0;
-	shared->nanoseconds  = 0;
+	// printf("My OS message address is %x\n", PCB);
 	
-	// set shmMsg to zero.
-	shmMsg->pid = 0;
-	shmMsg->seconds = 0;
-	shmMsg->nanoseconds = 0;
-	shmMsg->ready = 0;
+	// set shmTime to zero.
+	shmTime->seconds = 0;
+	shmTime->nanoseconds = 0;
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
@@ -156,6 +142,19 @@ int main(int argc, char * argv[])
         perror("Failed to sem_open. \n");
         return;
     }	
+	
+	srand(time(NULL));
+	unsigned int nano_end = 0;
+	unsigned int sec_end = 0;
+	unsigned int random_time = rand() % 1000000 + 1;
+	if((shmTime->nanoseconds + random_time)  < 1000000000){
+			nano_end = shmTime->nanoseconds + rand() % 1000000 + 1;
+			sec_end = shmTime->seconds;
+		}
+	else if((shmTime->nanoseconds + random_time)  >= 1000000000){
+		nano_end = (shmTime->nanoseconds + random_time) - shmTime->nanoseconds ;
+		sec_end = shmTime->seconds  + 1;
+	}
 	
 	pid_t childpid;
 	char cpid[12];
@@ -178,50 +177,39 @@ int main(int argc, char * argv[])
 	
 	char shsec[2];
 	char shnano[10];
-	char msgsec[2];
-	char msgnano[10];
 	char msgtext[132];
 	while (i > 0){
-		shared->nanoseconds += 100000;
+		shmTime->nanoseconds += 100000;
 		end = clock();
 		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
-		if(shared->nanoseconds  > 999900000){
-			shared->nanoseconds  = 0;
-			shared->seconds  += 1;
+		if(PCB->nanoseconds  > 999900000){
+			shmTime->nanoseconds  = 0;
+			shmTime->seconds  += 1;
 		}
 
-		if(shmMsg->ready == 1){
-			sprintf(shsec, "%d", shared->seconds);
-			sprintf(shnano, "%ld", shared->nanoseconds);
-			sprintf(msgsec, "%d", shmMsg->seconds);
-			sprintf(msgnano, "%ld", shmMsg->nanoseconds);
-			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", shmMsg->pid);
+		if(shmTime->complete == 1){
+			sprintf(shsec, "%d", shmTime->seconds);
+			sprintf(shnano, "%ld", shmTime->nanoseconds);
+			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB->pid);
 			fputs(msgtext, file);
 			fputs(shsec, file);
 			fputs(".", file);
 			fputs(shnano, file);
-			fputs(" because it reached ", file);
-			fputs(msgsec, file);
-			fputs(".", file);
-			fputs(msgnano, file);
-			fputs(" in slave. \n", file);
-			shmMsg->pid = 0;
-			shmMsg->seconds = 0;
-			shmMsg->nanoseconds = 0;
-			shmMsg->ready = 0;
+			fputs(". \n", file);
+			total_log_lines += 1;
 			i--;
 			continue;
 
 		}
-		if(shared->seconds >= 2 || i >= 100 || elapsed_secs > max_time){
+		if(shmTime->seconds >= 2 || i >= 100 || elapsed_secs > max_time || total_log_lines >= 10000){
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
 			sem_close(sem);  // disconnect from semaphore
 			sem_unlink("BellandJ"); // destroy if all closed.
-			shmctl(shm_id, IPC_RMID, NULL);
-			shmctl(msg_id, IPC_RMID, NULL);
-			shmdt(shared);
-			shmdt(shmMsg);
+			shmctl(pcb_id, IPC_RMID, NULL);
+			shmctl(time_id, IPC_RMID, NULL);
+			shmdt(PCB);
+			shmdt(shmTime);
 			killpg(pid, SIGINT);  // kills the process group
 			exit(EXIT_SUCCESS);
 			// break;
@@ -236,32 +224,32 @@ int main(int argc, char * argv[])
 	printf("All children returned. \n");
 	printf("Total Children end: %d. \n", i);
 	
-    // printf("Msg: %s\n", shmMsg->msg);
+    // printf("Msg: %s\n", shmTime->msg);
 	
 	sem_close(sem);  // disconnect from semaphore
 	sem_unlink("BellandJ"); // destroy if all closed.
 	 
 	// detach from shared memory segment
-	int detach = shmdt(shared);
+	int detach = shmdt(PCB);
 	if (detach == -1){
 		perror("Failed to detach shared memory segment. \n");
 		return 1;
 	}
 	// delete shared memory segment
-	int delete_mem = shmctl(shm_id, IPC_RMID, NULL);
+	int delete_mem = shmctl(pcb_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove shared memory segment. \n");
 		return 1;
 	}
 	
 	// detach from msg memory segment
-	detach = shmdt(shmMsg);
+	detach = shmdt(shmTime);
 	if (detach == -1){
 		perror("Failed to detach msg memory segment. \n");
 		return 1;
 	}
 	// delete msg memory segment
-	delete_mem = shmctl(msg_id, IPC_RMID, NULL);
+	delete_mem = shmctl(time_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove msg memory segment. \n");
 		return 1;
