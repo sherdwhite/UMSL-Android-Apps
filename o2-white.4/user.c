@@ -21,6 +21,7 @@ typedef struct {
 	long total_time;
 	long last_burst;
 	int priority;
+	int quantum;
 	pid_t pid;
 	int complete;
 } pcb;
@@ -83,6 +84,14 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS time address is %x\n", shmTime);
 	
+	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
+	// 0644 permission. 1 is the initial value of the semaphore
+	sem_t *sem = sem_open("BellandJ", 1);
+	if(sem == SEM_FAILED) {
+        perror("Child Failed to sem_open. \n");
+        return;
+    }
+	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shmTime->seconds, shmTime->nanoseconds);
 	 
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
@@ -100,15 +109,7 @@ int main(int argc, char * argv[])
 		sec_end = shmTime->seconds  + 1;
 	}
 	
-	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
-	
-	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
-	// 0644 permission. 1 is the initial value of the semaphore
-	sem_t *sem = sem_open("BellandJ", 1);
-	if(sem == SEM_FAILED) {
-        perror("Child Failed to sem_open. \n");
-        return;
-    }
+	// printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
 	// int sem_value;
 	// sem_getvalue(sem, &sem_value);

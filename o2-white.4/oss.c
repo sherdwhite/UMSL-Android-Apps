@@ -19,10 +19,14 @@
 #define LENGTH 132
 
 typedef struct {
-	long total_CPU_time;
-	long total_time;
-	long last_burst;
+	long total_CPU_time_sec;
+	long total_CPU_time_ns;
+	long total_time_sec;
+	long total_time_ns;
+	long last_burst_sec;
+	long last_burst_ns;
 	int priority;
+	int quantum;
 	pid_t pid;
 	int complete;
 } pcb;
@@ -131,10 +135,6 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS message address is %x\n", PCB);
 	
-	// set shmTime to zero.
-	shmTime->seconds = 0;
-	shmTime->nanoseconds = 0;
-	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
 	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
@@ -142,6 +142,29 @@ int main(int argc, char * argv[])
         perror("Failed to sem_open. \n");
         return;
     }	
+	
+	// set shmTime to zero.
+	shmTime->seconds = 0;
+	shmTime->nanoseconds = 0;
+	
+	PCB->quantum = 0;
+	PCB->pid = 0;
+	PCB->complete = 0;
+	for(i = 0; i < max_children; i++){
+		PCB[i].total_CPU_time_sec = 0;
+		PCB[i].total_CPU_time_ns = 0;
+		PCB[i].total_time_sec = 0;
+		PCB[i].total_time_ns = 0;
+		PCB[i].last_burst_sec = 0;
+		PCB[i].last_burst_ns = 0;
+		PCB[i].CPUTime.ns = 0;
+		PCB[i].totalTime.seconds = 0;
+		PCB[i].totalTime.ns = 0;
+		PCB[i].prevTime.seconds = 0;
+		PCB[i].prevTime.ns = 0;
+		PCB[i].priority = 0;
+		PCB[i].pid = 0;
+	}	
 	
 	srand(time(NULL));
 	unsigned int nano_end = 0;
