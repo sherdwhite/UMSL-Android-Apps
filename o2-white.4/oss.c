@@ -207,7 +207,7 @@ int main(int argc, char * argv[])
 			sem_close(sem);  // disconnect from semaphore
 			sem_unlink("BellandJ"); // destroy if all closed.
 			shmctl(pcb_id, IPC_RMID, NULL);
-			shmctl(time_id, IPC_RMID, NULL);
+			shmctl(timer_id, IPC_RMID, NULL);
 			shmdt(PCB);
 			shmdt(shmTime);
 			killpg(pid, SIGINT);  // kills the process group
