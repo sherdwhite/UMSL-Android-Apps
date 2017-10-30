@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int pcb_id = shmget(key, sizeof(pcb), SHM_RDONLY | IPC_CREAT);
+	int pcb_id = shmget(key, sizeof(pcb)*18, SHM_RDONLY | IPC_CREAT);
     if (pcb_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
@@ -92,22 +92,19 @@ int main(int argc, char * argv[])
         return;
     }
 	
+	// Initialize 2nd named semaphore for scheduler.  Create it if it wasn't created, 
+	// 0644 permission. 18 is the initial value of the semaphore
+	sem_t *schedule = sem_open("JulesandB", O_CREAT | O_EXCL, 0644, 18);
+	if(schedule == SEM_FAILED) {
+        perror("Failed to sem_open scheduler. \n");
+        return;
+    }		
+	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shmTime->seconds, shmTime->nanoseconds);
 	 
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
 	
 	srand(pid * time(NULL));
-	long nano_end = 0;
-	int sec_end = 0;
-	long random_time = rand() % 1000000 + 1;
-	if((shmTime->nanoseconds + random_time)  < 1000000000){
-			nano_end = shmTime->nanoseconds + rand() % 1000000 + 1;
-			sec_end = shmTime->seconds;
-		}
-	else if((shmTime->nanoseconds + random_time)  >= 1000000000){
-		nano_end = (shmTime->nanoseconds + random_time) - shmTime->nanoseconds ;
-		sec_end = shmTime->seconds  + 1;
-	}
 	
 	// printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
@@ -133,6 +130,7 @@ int main(int argc, char * argv[])
 	}
 	
 	sem_close(sem);  // disconnect from semaphore
+	sem_close(scheduler);  // disconnect from semaphore
 	
 	// detach from shared memory segment
 	int detach = shmdt(PCB);

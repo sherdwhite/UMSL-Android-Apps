@@ -102,7 +102,7 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int pcb_id = shmget(key, sizeof(pcb), PERM | IPC_CREAT | IPC_EXCL);
+	int pcb_id = shmget(key, sizeof(pcb)*18, PERM | IPC_CREAT | IPC_EXCL);
     if (pcb_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
@@ -139,9 +139,17 @@ int main(int argc, char * argv[])
 	// 0644 permission. 1 is the initial value of the semaphore
 	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
 	if(sem == SEM_FAILED) {
-        perror("Failed to sem_open. \n");
+        perror("Failed to sem_open clock. \n");
         return;
-    }	
+    }
+
+	// Initialize 2nd named semaphore for scheduler.  Create it if it wasn't created, 
+	// 0644 permission. 18 is the initial value of the semaphore to cover all processes.
+	sem_t *schedule = sem_open("JulesandB", O_CREAT | O_EXCL, 0644, 18);
+	if(schedule == SEM_FAILED) {
+        perror("Failed to sem_open scheduler. \n");
+        return;
+    }		
 	
 	// set shmTime to zero.
 	shmTime->seconds = 0;
@@ -165,19 +173,6 @@ int main(int argc, char * argv[])
 		PCB[i].priority = 0;
 		PCB[i].pid = 0;
 	}	
-	
-	srand(time(NULL));
-	unsigned int nano_end = 0;
-	unsigned int sec_end = 0;
-	unsigned int random_time = rand() % 1000000 + 1;
-	if((shmTime->nanoseconds + random_time)  < 1000000000){
-			nano_end = shmTime->nanoseconds + rand() % 1000000 + 1;
-			sec_end = shmTime->seconds;
-		}
-	else if((shmTime->nanoseconds + random_time)  >= 1000000000){
-		nano_end = (shmTime->nanoseconds + random_time) - shmTime->nanoseconds ;
-		sec_end = shmTime->seconds  + 1;
-	}
 	
 	pid_t childpid;
 	char cpid[12];
@@ -228,7 +223,9 @@ int main(int argc, char * argv[])
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
 			sem_close(sem);  // disconnect from semaphore
+			sem_close(scheduler);  // disconnect from semaphore
 			sem_unlink("BellandJ"); // destroy if all closed.
+			sem_unlink("JulesandB"); // destroy if all closed.
 			shmctl(pcb_id, IPC_RMID, NULL);
 			shmctl(timer_id, IPC_RMID, NULL);
 			shmdt(PCB);
@@ -250,7 +247,9 @@ int main(int argc, char * argv[])
     // printf("Msg: %s\n", shmTime->msg);
 	
 	sem_close(sem);  // disconnect from semaphore
+	sem_close(scheduler);  // disconnect from semaphore
 	sem_unlink("BellandJ"); // destroy if all closed.
+	sem_unlink("JulesandB"); // destroy if all closed.
 	 
 	// detach from shared memory segment
 	int detach = shmdt(PCB);
