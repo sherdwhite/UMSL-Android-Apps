@@ -24,10 +24,14 @@
 #define QUANTUM 50000
 
 typedef struct {
-	long total_CPU_time;
-	long total_time;
-	long last_burst;
+	long total_CPU_time_sec;
+	long total_CPU_time_ns;
+	long total_time_sec;
+	long total_time_ns;
+	long last_burst_sec;
+	long last_burst_ns;
 	int priority;
+	int scheduled;
 	int quantum;
 	pid_t pid;
 	int complete;
