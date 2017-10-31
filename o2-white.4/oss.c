@@ -155,15 +155,15 @@ int main(int argc, char * argv[])
 	int i;
 	// initialize all PCB blocks
 	for(i = 0; i < max_children; i++){
-		PCB[i]->total_CPU_time_sec = 0;
-		PCB[i]->total_CPU_time_ns = 0;
-		PCB[i]->total_time_sec = 0;
-		PCB[i]->total_time_ns = 0;
-		PCB[i]->last_burst_sec = 0;
-		PCB[i]->last_burst_ns = 0;
-		PCB[i]->priority = 0;
-		PCB[i]->pid = 0;
-		PCB[i]->complete = 0;
+		PCB[i].total_CPU_time_sec = 0;
+		PCB[i].total_CPU_time_ns = 0;
+		PCB[i].total_time_sec = 0;
+		PCB[i].total_time_ns = 0;
+		PCB[i].last_burst_sec = 0;
+		PCB[i].last_burst_ns = 0;
+		PCB[i].priority = 0;
+		PCB[i].pid = 0;
+		PCB[i].complete = 0;
 	}	
 	
 	char shsec[2];
@@ -211,22 +211,22 @@ int main(int argc, char * argv[])
 		
 		
 		for (i = 0; i < max_children; i++) {
-			if(active_children < 18 && PCB[i]->complete == 0){
+			if(active_children < 18 && PCB[i].complete == 0){
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Failed to fork. \n");
 				}
 				if (childpid == 0) { 
 					sprintf(cpid, "%d", i);
-					PCB[i]->pid = cpid;
-					PCB[i]->total_CPU_time_sec = 0;
-					PCB[i]->total_CPU_time_ns = 0;
-					PCB[i]->total_time_sec = 0;
-					PCB[i]->total_time_ns = 0;
-					PCB[i]->last_burst_sec = 0;
-					PCB[i]->last_burst_ns = 0;
-					PCB[i]->priority = 0;
-					PCB[i]->complete = 0;
+					PCB[i].pid = cpid;
+					PCB[i].total_CPU_time_sec = 0;
+					PCB[i].total_CPU_time_ns = 0;
+					PCB[i].total_time_sec = 0;
+					PCB[i].total_time_ns = 0;
+					PCB[i].last_burst_sec = 0;
+					PCB[i].last_burst_ns = 0;
+					PCB[i].priority = 0;
+					PCB[i].complete = 0;
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
 					active_children +=1;
@@ -234,17 +234,17 @@ int main(int argc, char * argv[])
 					continue;
 				}
 			}
-			if (PCB[i]->complete == 1){
+			if (PCB[i].complete == 1){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
-				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB->pid);
+				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(".", file);
 				fputs(shnano, file);
 				fputs(". \n", file);
 				total_log_lines += 1;
-				PCB[i]->complete = 0;
+				PCB[i].complete = 0;
 				active_children -= 1;
 			}
 		}
