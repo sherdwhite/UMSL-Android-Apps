@@ -216,9 +216,9 @@ int main(int argc, char * argv[])
 				if (childpid == -1) {
 					perror("Failed to fork. \n");
 				}
-				if (childpid == 0) { /* child code */
+				if (childpid == 0) { 
 					sprintf(cpid, "%d", i);
-					PCB[i].pid = cpid;
+					PCB[i]->pid = cpid;
 					PCB[i]->total_CPU_time_sec = 0;
 					PCB[i]->total_CPU_time_ns = 0;
 					PCB[i]->total_time_sec = 0;
