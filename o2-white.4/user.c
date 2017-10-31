@@ -92,14 +92,6 @@ int main(int argc, char * argv[])
         return;
     }
 	
-	// Initialize 2nd named semaphore for scheduler.  Create it if it wasn't created, 
-	// 0644 permission. 18 is the initial value of the semaphore
-	sem_t *schedule = sem_open("JulesandB", O_CREAT | O_EXCL, 0644, 18);
-	if(schedule == SEM_FAILED) {
-        perror("Failed to sem_open scheduler. \n");
-        return;
-    }		
-	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shmTime->seconds, shmTime->nanoseconds);
 	 
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
@@ -130,7 +122,6 @@ int main(int argc, char * argv[])
 	}
 	
 	sem_close(sem);  // disconnect from semaphore
-	sem_close(scheduler);  // disconnect from semaphore
 	
 	// detach from shared memory segment
 	int detach = shmdt(PCB);
