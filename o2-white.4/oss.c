@@ -171,6 +171,9 @@ int main(int argc, char * argv[])
 	pid_t childpid;
 	char cpid[12];
 	int active_children = 0;
+	long nano = 0;
+	int sec = 0;
+	long random_time = 0;
 	do {
 		shmTime->nanoseconds += 100000;
 		end = clock();
@@ -181,12 +184,11 @@ int main(int argc, char * argv[])
 		}
 		
 		srand(shmTime->nanoseconds * time(NULL));
-		long nano = 0;
-		int sec = 0;
-		long random_time = rand() % 2000000000 + 1;
+		nano = 0;
+		sec = 0;
+		random_time = rand() % 1999999999 + 1;
 		if((shmTime->nanoseconds + random_time)  < 1000000000){
 				nano = random_time;
-				sec = 0;
 			}
 		else if((shmTime->nanoseconds + random_time)  >= 1000000000){
 			nano = random_time - 1000000000;
@@ -197,6 +199,15 @@ int main(int argc, char * argv[])
 		delay.tv_sec = sec;
 		delay.tv_nsec = nano;
 		nanosleep(&delay, NULL);
+		
+		if((shmTime->nanoseconds + nano)  < 1000000000){
+				shmTime->nanoseconds += nano;
+			}
+		else if((shmTime->nanoseconds + nano)  >= 1000000000){
+			shmTime->nanoseconds  = 0;
+			shmTime->seconds  += 1;
+		}
+		
 		
 		for (i = 0; i < max_children; i++) {
 			if(active_children < 18 && PCB[i]->complete == 0){
