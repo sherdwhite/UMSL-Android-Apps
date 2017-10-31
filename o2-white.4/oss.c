@@ -152,6 +152,7 @@ int main(int argc, char * argv[])
 	shmTime->seconds = 0;
 	shmTime->nanoseconds = 0;
 	
+	int i;
 	// initialize all PCB blocks
 	for(i = 0; i < max_children; i++){
 		PCB[i]->total_CPU_time_sec = 0;
@@ -174,7 +175,6 @@ int main(int argc, char * argv[])
 	long nano = 0;
 	int sec = 0;
 	long random_time = 0;
-	int i;
 	do {
 		shmTime->nanoseconds += 100000;
 		end = clock();
