@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <semaphore.h>
+#include <fcntl.h>
+#include <time.h>
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
