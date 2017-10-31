@@ -32,6 +32,7 @@ typedef struct {
 	long last_burst_sec;
 	long last_burst_ns;
 	int priority;
+	int scheduled;
 	int quantum;
 	pid_t pid;
 	int complete;
@@ -162,6 +163,7 @@ int main(int argc, char * argv[])
 		PCB[i].last_burst_sec = 0;
 		PCB[i].last_burst_ns = 0;
 		PCB[i].priority = 0;
+		PCB[i].scheduled = 0;
 		PCB[i].pid = 0;
 		PCB[i].complete = 0;
 	}	
@@ -176,15 +178,19 @@ int main(int argc, char * argv[])
 	int sec = 0;
 	long random_time = 0;
 	do {
-		shmTime->nanoseconds += 100000;
+		srand(shmTime->nanoseconds * time(NULL));
+		random_time = rand() % 1000 + 1;
 		end = clock();
 		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
-		if(shmTime->nanoseconds  > 999900000){
-			shmTime->nanoseconds  = 0;
-			shmTime->seconds  += 1;
+		if((random_time + shmTime->nanoseconds)  > 999999000){
+			shmTime->nanoseconds = 0;
+			shmTime->seconds  += 2;
+		}
+		else {
+			shmTime->nanoseconds += random_time;
+			shmTime->seconds += 1;
 		}
 		
-		srand(shmTime->nanoseconds * time(NULL));
 		nano = 0;
 		sec = 0;
 		random_time = rand() % 1999999999 + 1;
@@ -201,12 +207,12 @@ int main(int argc, char * argv[])
 		delay.tv_nsec = nano;
 		nanosleep(&delay, NULL);
 		
-		if((shmTime->nanoseconds + nano)  < 1000000000){
+		if((shmTime->nanoseconds + nano) < 1000000000){
 				shmTime->nanoseconds += nano;
 			}
-		else if((shmTime->nanoseconds + nano)  >= 1000000000){
-			shmTime->nanoseconds  = 0;
-			shmTime->seconds  += 1;
+		else if((shmTime->nanoseconds + nano) >= 1000000000){
+			shmTime->nanoseconds = ((shmTime->nanoseconds + nano) - 1000000000);
+			shmTime->seconds += 1;
 		}
 		
 		
@@ -217,16 +223,17 @@ int main(int argc, char * argv[])
 					perror("Failed to fork. \n");
 				}
 				if (childpid == 0) { 
-					sprintf(cpid, "%d", i);
-					PCB[i].pid = cpid;
+					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
 					PCB[i].total_time_sec = 0;
 					PCB[i].total_time_ns = 0;
 					PCB[i].last_burst_sec = 0;
 					PCB[i].last_burst_ns = 0;
+					PCB[i].scheduled = 0;
 					PCB[i].priority = 0;
 					PCB[i].complete = 0;
+					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
 					active_children +=1;
