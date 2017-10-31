@@ -53,7 +53,6 @@ int main(int argc, char * argv[])
 	clock_t begin = clock();
 	clock_t end;
 	double elapsed_secs;
-	int pcb_control[18];
 	int total_log_lines = 0;
 
 	while ((c = getopt (argc, argv, "hl:t:")) != -1)
@@ -153,6 +152,7 @@ int main(int argc, char * argv[])
 	shmTime->seconds = 0;
 	shmTime->nanoseconds = 0;
 	
+	// initialize all PCB blocks
 	for(i = 0; i < max_children; i++){
 		PCB[i]->total_CPU_time_sec = 0;
 		PCB[i]->total_CPU_time_ns = 0;
@@ -218,6 +218,14 @@ int main(int argc, char * argv[])
 				if (childpid == 0) { /* child code */
 					sprintf(cpid, "%d", i);
 					PCB[i].pid = cpid;
+					PCB[i]->total_CPU_time_sec = 0;
+					PCB[i]->total_CPU_time_ns = 0;
+					PCB[i]->total_time_sec = 0;
+					PCB[i]->total_time_ns = 0;
+					PCB[i]->last_burst_sec = 0;
+					PCB[i]->last_burst_ns = 0;
+					PCB[i]->priority = 0;
+					PCB[i]->complete = 0;
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
 					active_children +=1;
@@ -253,11 +261,11 @@ int main(int argc, char * argv[])
 			exit(EXIT_SUCCESS);
 			// break;
 		}
-	}while (i > 0)
+	}while (active_children > 0)
 	
 	// wait for children
 	int j;
-	for (j = 0; j <= i; j++){
+	for (j = 0; j <= max_children; j++){
 		wait(NULL);
 	}
 	printf("All children returned. \n");
