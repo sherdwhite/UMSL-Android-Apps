@@ -53,6 +53,10 @@ int main(int argc, char * argv[])
 	
 	int pid = atoi(argv[1]);
 	// printf("Child: %d started. \n", pid);
+	
+	clock_t begin;
+	clock_t end;
+	double elapsed_secs;
 
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
@@ -104,30 +108,68 @@ int main(int argc, char * argv[])
     }
 	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shmTime->seconds, shmTime->nanoseconds);
-	 
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
 	
 	srand(pid * time(NULL));
-	
-	// printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
 	// int sem_value;
 	// sem_getvalue(sem, &sem_value);
 	// printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
 	int clear = 0;
+	int quantum_check, completed;
+	unsigned int run_time = QUANTUM;
 	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
 		// printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
+		begin = clock();
 		if(PCB[pid].scheduled == 1){  
 			//shmTime->seconds = PCB->seconds;
-			sem_post(sem); // adds 1
-			clear = 1;
-			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
-			break;
+			quantum_check = rand() % 2;
+			if(quantum_check == 0){
+				run_time = rand() % QUANTUM;
+				PCB[pid].last_burst_ns = run_time;
+				PCB[pid].total_CPU_time_ns += run_time;
+				PCB[pid].total_time_ns += run_time;
+				completed = rand() % 2;
+				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
+					sem_post(sem); // adds 1
+					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);
+					continue;	
+				}
+				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
+					sem_post(sem); // adds 1
+					clear = 1;
+					end = clock();
+					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);  
+					PCB[pid].complete = 1;
+					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
+					break;
+				}
+			}
+			else {
+				PCB[pid].last_burst_ns = QUANTUM;
+				PCB[pid].total_CPU_time_ns += QUANTUM;
+				PCB[pid].total_time_ns += QUANTUM;
+				completed = rand() % 2;
+				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
+					sem_post(sem); // adds 1
+					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);
+					continue;	
+				}
+				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
+					sem_post(sem); // adds 1
+					clear = 1;
+					end = clock();
+					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);
+					PCB[pid].complete = 1;
+					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
+					break;
+				}
+			}
 		}
 		else {
-			sem_post(sem); // adds 1, cede CS, not ready to send msg.
+			sem_post(sem); // adds 1, cede CS, not scheduled.
 			continue;
 		}
 	}

@@ -43,7 +43,7 @@ typedef struct {
 	unsigned int nanoseconds;
 } timer;
 
-int max_time = 20;
+int max_time = 10;
 int max_children = 18;
 FILE *file;
 char *filename = "log";
@@ -237,6 +237,14 @@ int main(int argc, char * argv[])
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
 					active_children +=1;
+					sprintf(shsec, "%d", shmTime->seconds);
+					sprintf(shnano, "%ld", shmTime->nanoseconds);
+					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(":", file);
+					fputs(shnano, file);
+					fputs(". \n", file);
 					// printf("Active Children: %d. \n", active_children);
 					continue;
 				}
