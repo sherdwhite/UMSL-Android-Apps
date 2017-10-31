@@ -174,6 +174,7 @@ int main(int argc, char * argv[])
 	long nano = 0;
 	int sec = 0;
 	long random_time = 0;
+	int i;
 	do {
 		shmTime->nanoseconds += 100000;
 		end = clock();
@@ -261,7 +262,7 @@ int main(int argc, char * argv[])
 			exit(EXIT_SUCCESS);
 			// break;
 		}
-	}while (active_children > 0)
+	}while (active_children > 0);
 	
 	// wait for children
 	int j;
