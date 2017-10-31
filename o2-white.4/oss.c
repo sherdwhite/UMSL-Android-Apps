@@ -151,46 +151,42 @@ int main(int argc, char * argv[])
 	shmTime->nanoseconds = 0;
 	
 	for(i = 0; i < max_children; i++){
-		PCB[i].total_CPU_time_sec = 0;
-		PCB[i].total_CPU_time_ns = 0;
-		PCB[i].total_time_sec = 0;
-		PCB[i].total_time_ns = 0;
-		PCB[i].last_burst_sec = 0;
-		PCB[i].last_burst_ns = 0;
-		PCB[i].CPUTime.ns = 0;
-		PCB[i].totalTime.seconds = 0;
-		PCB[i].totalTime.ns = 0;
-		PCB[i].prevTime.seconds = 0;
-		PCB[i].prevTime.ns = 0;
-		PCB[i].priority = 0;
-		PCB[i].pid = 0;
-		PCB[i]->quantum = 0;
+		PCB[i]->total_CPU_time_sec = 0;
+		PCB[i]->total_CPU_time_ns = 0;
+		PCB[i]->total_time_sec = 0;
+		PCB[i]->total_time_ns = 0;
+		PCB[i]->last_burst_sec = 0;
+		PCB[i]->last_burst_ns = 0;
+		PCB[i]->priority = 0;
 		PCB[i]->pid = 0;
 		PCB[i]->complete = 0;
 	}	
 	
-	pid_t childpid;
-	char cpid[12];
-	int i;
-	for (i = 0; i < max_children; i++) {
-		childpid = fork();
-		if (childpid == -1) {
-			perror("Failed to fork. \n");
-			return 1;
-		}
-		if (childpid == 0) { /* child code */
-			sprintf(cpid, "%d", i);
-			execlp("user", "user", cpid, NULL);  // lp for passing arguements
-			perror("Child failed to execlp. \n");
-			return 1;
-		}
-	}
+	// pid_t childpid;
+	// char cpid[12];
+	// int i;
+	// for (i = 0; i < max_children; i++) {
+		// childpid = fork();
+		// if (childpid == -1) {
+			// perror("Failed to fork. \n");
+			// return 1;
+		// }
+		// if (childpid == 0) { /* child code */
+			// sprintf(cpid, "%d", i);
+			// execlp("user", "user", cpid, NULL);  // lp for passing arguements
+			// perror("Child failed to execlp. \n");
+			// return 1;
+		// }
+	// }
 	
-	printf("Total Children: %d. \n", i);
+	// printf("Total Children: %d. \n", i);
 	
 	char shsec[2];
 	char shnano[10];
 	char msgtext[132];
+	pid_t childpid;
+	char cpid[12];
+	int i;
 	while (i > 0){
 		shmTime->nanoseconds += 100000;
 		end = clock();
@@ -212,9 +208,9 @@ int main(int argc, char * argv[])
 				PCB[i].pid = cpid;
 				execlp("user", "user", cpid, NULL);  // lp for passing arguements
 			}
-	}
+		}
 
-		if(PCB->complete == 1){
+		if(PCB[i]->complete == 1){
 			sprintf(shsec, "%d", shmTime->seconds);
 			sprintf(shnano, "%ld", shmTime->nanoseconds);
 			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB->pid);
@@ -226,8 +222,8 @@ int main(int argc, char * argv[])
 			total_log_lines += 1;
 			i--;
 			continue;
-
 		}
+		
 		if(shmTime->seconds >= 2 || i >= 100 || elapsed_secs > max_time || total_log_lines >= 10000){
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
