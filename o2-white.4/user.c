@@ -15,6 +15,13 @@
 
 #define PERM (S_IRUSR | S_IWUSR)
 #define LENGTH 132
+#define HIPRIORITY 10000					
+#define MEDIUMPRIORITY 1000000			
+#define LOWPRIORITY 100000000
+#define HI 0
+#define MEDIUM 1
+#define LOW 2
+#define QUANTUM 50000
 
 typedef struct {
 	long total_CPU_time;
@@ -108,7 +115,7 @@ int main(int argc, char * argv[])
 		sem_wait(sem);  // wait until we can subtract 1
 		// printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		if((sec_end < shmTime->seconds && PCB->complete == 0) || (nano_end <= shmTime->nanoseconds && sec_end <= shmTime->seconds && PCB->complete == 0)){  
+		if(PCB[pid].scheduled == 1){  
 			//shmTime->seconds = PCB->seconds;
 			sem_post(sem); // adds 1
 			clear = 1;
