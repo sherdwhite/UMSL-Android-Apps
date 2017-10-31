@@ -20,6 +20,9 @@
 #define HIPRIORITY 10000					
 #define MEDIUMPRIORITY 1000000			
 #define LOWPRIORITY 100000000
+#define HI 0
+#define MEDIUM 1
+#define LOW 2
 
 typedef struct {
 	long total_CPU_time_sec;
@@ -176,6 +179,24 @@ int main(int argc, char * argv[])
 			shmTime->nanoseconds  = 0;
 			shmTime->seconds  += 1;
 		}
+		
+		srand(shmTime->nanoseconds * time(NULL));
+		long nano = 0;
+		int sec = 0;
+		long random_time = rand() % 2000000000 + 1;
+		if((shmTime->nanoseconds + random_time)  < 1000000000){
+				nano = random_time;
+				sec = 0;
+			}
+		else if((shmTime->nanoseconds + random_time)  >= 1000000000){
+			nano = random_time - 1000000000;
+			sec = 1;
+		}
+		
+		struct timespec delay;
+		delay.tv_sec = sec;
+		delay.tv_nsec = nano;
+		nanosleep(&delay, NULL);
 		
 		for (i = 0; i < max_children; i++) {
 			if(active_children < 18 && PCB[i]->complete == 0){
