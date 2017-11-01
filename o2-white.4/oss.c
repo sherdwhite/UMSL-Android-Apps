@@ -24,6 +24,7 @@
 #define MEDIUM 1
 #define LOW 2
 #define QUANTUM 50000
+#define max_children 18;
 
 typedef struct {
 	long total_CPU_time_sec;
@@ -50,7 +51,6 @@ typedef struct {
 } timer;
 
 int max_time = 60;
-int max_children = 18;
 FILE *file;
 char *filename = "log";
 int hi_queue[max_children] = {0};
