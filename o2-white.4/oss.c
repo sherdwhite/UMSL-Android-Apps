@@ -24,7 +24,7 @@
 #define MEDIUM 1
 #define LOW 2
 #define QUANTUM 50000
-#define max_children 18;
+#define MAXCHILDREN 18
 
 typedef struct {
 	long total_CPU_time_sec;
@@ -53,9 +53,9 @@ typedef struct {
 int max_time = 60;
 FILE *file;
 char *filename = "log";
-int hi_queue[max_children] = {0};
-int med_queue[max_children] = {0};
-int low_queue[max_children] = {0};
+int hi_queue[MAXCHILDREN] = {0};
+int med_queue[MAXCHILDREN] = {0};
+int low_queue[MAXCHILDREN] = {0};
 
 int main(int argc, char * argv[]) 
 {
@@ -164,7 +164,7 @@ int main(int argc, char * argv[])
 	
 	int i, k;
 	// initialize all PCB blocks
-	for(i = 0; i < max_children; i++){
+	for(i = 0; i < MAXCHILDREN; i++){
 		PCB[i].total_CPU_time_sec = 0;
 		PCB[i].total_CPU_time_ns = 0;
 		PCB[i].total_time_sec = 0;
@@ -232,7 +232,7 @@ int main(int argc, char * argv[])
 			// sec = 1;
 		// }
 		
-		for (i = 0; i < max_children; i++) {
+		for (i = 0; i < MAXCHILDREN; i++) {
 			if (PCB[i].complete == 1){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
@@ -297,7 +297,7 @@ int main(int argc, char * argv[])
 				}
 			}
 			// code here for scheduling
-			for (i = 0; i < max_children; i++) {
+			for (i = 0; i < MAXCHILDREN; i++) {
 				if(PID[i].scheduled == 1) {
 					schedule_flag = 1;
 				}
@@ -307,7 +307,7 @@ int main(int argc, char * argv[])
 	
 	// wait for children
 	int j;
-	for (j = 0; j <= max_children; j++){
+	for (j = 0; j <= MAXCHILDREN; j++){
 		wait(NULL);
 	}
 	printf("All children returned. \n");
