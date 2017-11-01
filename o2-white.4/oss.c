@@ -240,8 +240,8 @@ int main(int argc, char * argv[])
 				total_log_lines += 1;
 				PCB[i].complete = 0;
 				// active_children -= 1;
-
 			}
+			
 			if(active_children < 18 && PCB[i].complete == 0){
 				childpid = fork();
 				if (childpid == -1) {
@@ -301,7 +301,7 @@ int main(int argc, char * argv[])
 				
 				
 				// if a process isn't scheduled, need to keep track of wait time.
-				if(PCB[i].scheduled == 0)
+				if(PCB[i].scheduled == 0) {
 					PCB[i].end = clock();
 					PCB[i].wait_total += (((PCB[i].end - PCB[i].begin) / CLOCKS_PER_SEC) * 1000000000);
 					PCB[i].begin = clock();
@@ -319,7 +319,6 @@ int main(int argc, char * argv[])
 					hi_queue[MAXCHILDREN][0] = 0;
 					med_queue[MAXCHILDREN][0] = 1;
 					low_queue[MAXCHILDREN][0] = 0;
-					
 				}
 				else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
 					PCB[i].priority = LOW;
