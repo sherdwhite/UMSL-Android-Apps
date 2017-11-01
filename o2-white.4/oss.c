@@ -36,7 +36,7 @@ typedef struct {
 	long wait_start_sec;
 	long wait_start_ns;
 	long wait_end_sec;
-	long wait_end_ns
+	long wait_end_ns;
 	int priority;
 	int scheduled;
 	int quantum;
