@@ -34,10 +34,8 @@ typedef struct {
 	long last_burst_sec;
 	long last_burst_ns;
 	long wait_total;
-	long wait_start_sec;
-	long wait_start_ns;
-	long wait_end_sec;
-	long wait_end_ns;
+	clock_t begin;
+	clock_t end;
 	int priority;
 	int scheduled;
 	int quantum;
@@ -53,17 +51,13 @@ typedef struct {
 int max_time = 60;
 FILE *file;
 char *filename = "log";
-int hi_queue[MAXCHILDREN] = {0};
-int med_queue[MAXCHILDREN] = {0};
-int low_queue[MAXCHILDREN] = {0};
+unsigned int hi_queue[MAXCHILDREN][2] = {0};
+unsigned int med_queue[MAXCHILDREN][2] = {0};
+unsigned int low_queue[MAXCHILDREN][2] = {0};
 
 int main(int argc, char * argv[]) 
 {
 	int c;
-	clock_t begin;
-	clock_t end;
-	double elapsed_secs;
-	int total_log_lines = 0;
 
 	while ((c = getopt (argc, argv, "hl:t:")) != -1)
     switch (c)
@@ -171,16 +165,14 @@ int main(int argc, char * argv[])
 		PCB[i].total_time_ns = 0;
 		PCB[i].last_burst_sec = 0;
 		PCB[i].last_burst_ns = 0;
-		PCB[i].priority = 0;
+		PCB[i].priority = HI;
 		PCB[i].scheduled = 0;
 		PCB[i].quantum = QUANTUM;
 		PCB[i].pid = 0;
 		PCB[i].complete = 0;
 		PCB[i].wait_total = 0;
-		PCB[i].wait_start_sec = 0;
-		PCB[i].wait_start_ns = 0;
-		PCB[i].wait_end_sec = 0;
-		PCB[i].wait_end_ns = 0;
+		PCB[i].begin = 0;
+		PCB[i].end = 0;
 	}	
 	
 	char shsec[2];
@@ -192,8 +184,11 @@ int main(int argc, char * argv[])
 	long nano = 0;
 	int sec = 0;
 	long random_time = 0;
+	int random_number;
 	struct timespec delay;
-	int schedule_flag = 0;
+	int total_log_lines = 0;
+	unsigned int average_wait[3][2] = {0};
+	int count = 0;
 	do {
 				
 		if(shmTime->seconds >= max_time || active_children > 18 || total_log_lines >= 10000){
@@ -245,6 +240,7 @@ int main(int argc, char * argv[])
 				total_log_lines += 1;
 				PCB[i].complete = 0;
 				// active_children -= 1;
+
 			}
 			if(active_children < 18 && PCB[i].complete == 0){
 				childpid = fork();
@@ -273,13 +269,11 @@ int main(int argc, char * argv[])
 					PCB[i].last_burst_sec = 0;
 					PCB[i].last_burst_ns = 0;
 					PCB[i].scheduled = 0;
-					PCB[i].priority = 0;
+					PCB[i].priority = HI;
 					PCB[i].complete = 0;
 					PCB[i].wait_total = 0;
-					PCB[i].wait_start_sec = shmTime->seconds;
-					PCB[i].wait_start_ns = shmTime->nanoseconds;
-					// PCB[i].wait_end_sec = 0;
-					// PCB[i].wait_end_ns = 0;
+					hi_queue[i][0] = 1;
+					PCB[i].begin = clock();
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
@@ -299,9 +293,42 @@ int main(int argc, char * argv[])
 			// code here for scheduling
 			for (i = 0; i < MAXCHILDREN; i++) {
 				if(PCB[i].scheduled == 1) {
-					schedule_flag = 1;
+					random_number = rand() % 4;
+					if(random_number == 0){
+						// kill PID
+					}
+				}
+				
+				
+				// if a process isn't scheduled, need to keep track of wait time.
+				if(PCB[i].scheduled == 0)
+					PCB[i].end = clock();
+					PCB[i].wait_total += (((PCB[i].end - PCB[i].begin) / CLOCKS_PER_SEC) * 1000000000);
+					PCB[i].begin = clock();
+				}
+				
+				
+				if(PCB[i].wait_total < HIPRIORITY) {
+					PCB[i].priority = HI;
+					hi_queue[MAXCHILDREN][0] = 1;
+					med_queue[MAXCHILDREN][0] = 0;
+					low_queue[MAXCHILDREN][0] = 0;
+				}
+				else if(PCB[i].wait_total >= HIPRIORITY  && PCB[i].wait_total < LOWPRIORITY) {
+					PCB[i].priority = MEDIUM;
+					hi_queue[MAXCHILDREN][0] = 0;
+					med_queue[MAXCHILDREN][0] = 1;
+					low_queue[MAXCHILDREN][0] = 0;
+					
+				}
+				else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
+					PCB[i].priority = LOW;
+					hi_queue[MAXCHILDREN][0] = 0;
+					med_queue[MAXCHILDREN][0] = 0;
+					low_queue[MAXCHILDREN][0] = 1;
 				}
 			}
+			
 		}
 	}while (active_children > 0);
 	

@@ -4,22 +4,20 @@ Assignment 4
 
 Objective: 
 
-	The goal of this assignment is to simulate a system clock, spawn children off, have them exit at a semi-random time, and then 
-	send a message back to the oss program.  The oss program writes the time info to a log.  As the program receives messages, 
-	it spawns a new process up to a total of 100 or until time runs out. 
+	The goal of this assignment is to simulate a system clock, spawn children off, have them execute at a semi-random time via a 
+	scheduler controlling execution.  The oss program writes the wait, CPU, execution time, exit and start info for the children to a log.  
+	We spawn new processes and start them off in the HI queue.  As time goes on, we move our children into the medium, and then low queues.  
 
 Details regarding the base program:
 
-	oss.c handles the forking process while user.c handles the critical section via a semaphore.  All requirements implimented 
-	except spawning of new processes as ones complete.
+	oss.c handles the forking process while user.c handles the critical section via a semaphore.  Having a lot of trouble executing this program.
+	I am honestly a bit frustrated as I am not finding enough time to complete these projects.  
 	
 Instructions:
 	
 	A make file is included with the program.  Simply type make on the command line to compile the files oss.c and user.c.  
 	The executable for this assignment will simply be called oss.  To run the program, simply type oss with the arguements
 	-h
-	-s x
 	-l filename
 	-t z
-	where x is the maximum number of slave processes spawned (default 5) and filename is the log file used. The
-	parameter z is the time in seconds when the master will terminate itself and all children (default 20)
+	where filename is the log file used. The parameter z is the time in seconds when the master will terminate itself and all children (default 20)
