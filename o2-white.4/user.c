@@ -56,10 +56,6 @@ int main(int argc, char * argv[])
 	int pid = atoi(argv[1]);
 	// printf("Child: %d started. \n", pid);
 	
-	clock_t begin;
-	clock_t end;
-	double elapsed_secs;
-
 	// create shared memory segment and get the segment id
 	// IPC_PRIVATE, child process, created after the parent has obtained the
 	// shared memory, so that the private key value can be passed to the child
@@ -124,7 +120,6 @@ int main(int argc, char * argv[])
 		sem_wait(sem);  // wait until we can subtract 1
 		// printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		begin = clock();
 		if(PCB[pid].scheduled == 1){  
 			//shmTime->seconds = PCB->seconds;
 			quantum_check = rand() % 2;
@@ -132,18 +127,14 @@ int main(int argc, char * argv[])
 				run_time = rand() % QUANTUM;
 				PCB[pid].last_burst_ns = run_time;
 				PCB[pid].total_CPU_time_ns += run_time;
-				PCB[pid].total_time_ns += run_time;
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
-					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
 					sem_post(sem); // adds 1
 					clear = 1;
-					end = clock();
-					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);  
 					PCB[pid].complete = 1;
 					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
 					break;
@@ -152,18 +143,14 @@ int main(int argc, char * argv[])
 			else {
 				PCB[pid].last_burst_ns = QUANTUM;
 				PCB[pid].total_CPU_time_ns += QUANTUM;
-				PCB[pid].total_time_ns += QUANTUM;
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
-					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
 					sem_post(sem); // adds 1
 					clear = 1;
-					end = clock();
-					PCB[pid].total_time_ns += (((double)(end - begin) / CLOCKS_PER_SEC) * 1000000000);
 					PCB[pid].complete = 1;
 					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
 					break;

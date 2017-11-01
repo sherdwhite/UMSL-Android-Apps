@@ -23,6 +23,7 @@
 #define HI 0
 #define MEDIUM 1
 #define LOW 2
+#define QUANTUM 50000
 
 typedef struct {
 	long total_CPU_time_sec;
@@ -31,6 +32,11 @@ typedef struct {
 	long total_time_ns;
 	long last_burst_sec;
 	long last_burst_ns;
+	long wait_total;
+	long wait_start_sec;
+	long wait_start_ns;
+	long wait_end_sec;
+	long wait_end_ns
 	int priority;
 	int scheduled;
 	int quantum;
@@ -43,15 +49,18 @@ typedef struct {
 	unsigned int nanoseconds;
 } timer;
 
-int max_time = 10;
+int max_time = 60;
 int max_children = 18;
 FILE *file;
 char *filename = "log";
+int hi_queue[max_children] = {0};
+int med_queue[max_children] = {0};
+int low_queue[max_children] = {0};
 
 int main(int argc, char * argv[]) 
 {
 	int c;
-	clock_t begin = clock();
+	clock_t begin;
 	clock_t end;
 	double elapsed_secs;
 	int total_log_lines = 0;
@@ -153,7 +162,7 @@ int main(int argc, char * argv[])
 	shmTime->seconds = 0;
 	shmTime->nanoseconds = 0;
 	
-	int i;
+	int i, k;
 	// initialize all PCB blocks
 	for(i = 0; i < max_children; i++){
 		PCB[i].total_CPU_time_sec = 0;
@@ -164,8 +173,14 @@ int main(int argc, char * argv[])
 		PCB[i].last_burst_ns = 0;
 		PCB[i].priority = 0;
 		PCB[i].scheduled = 0;
+		PCB[i].quantum = QUANTUM;
 		PCB[i].pid = 0;
 		PCB[i].complete = 0;
+		PCB[i].wait_total = 0;
+		PCB[i].wait_start_sec = 0;
+		PCB[i].wait_start_ns = 0;
+		PCB[i].wait_end_sec = 0;
+		PCB[i].wait_end_ns = 0;
 	}	
 	
 	char shsec[2];
@@ -177,11 +192,26 @@ int main(int argc, char * argv[])
 	long nano = 0;
 	int sec = 0;
 	long random_time = 0;
+	struct timespec delay;
+	int schedule_flag = 0;
 	do {
+				
+		if(shmTime->seconds >= max_time || active_children > 18 || total_log_lines >= 10000){
+			pid_t pid = getpgrp();  // gets process group
+			printf("Terminating PID: %i due to limit met. \n", pid);
+			sem_close(sem);  // disconnect from semaphore
+			sem_unlink("BellandJ"); // destroy if all closed.
+			shmctl(pcb_id, IPC_RMID, NULL);
+			shmctl(timer_id, IPC_RMID, NULL);
+			shmdt(PCB);
+			shmdt(shmTime);
+			killpg(pid, SIGINT);  // kills the process group
+			exit(EXIT_SUCCESS);
+			// break;
+		}
+		
 		srand(shmTime->nanoseconds * time(NULL));
 		random_time = rand() % 1000 + 1;
-		end = clock();
-		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
 		if((random_time + shmTime->nanoseconds)  > 999999000){
 			shmTime->nanoseconds = 0;
 			shmTime->seconds  += 2;
@@ -191,38 +221,50 @@ int main(int argc, char * argv[])
 			shmTime->seconds += 1;
 		}
 		
-		nano = 0;
-		sec = 0;
-		random_time = rand() % 1999999999 + 1;
-		if((shmTime->nanoseconds + random_time)  < 1000000000){
-				nano = random_time;
-			}
-		else if((shmTime->nanoseconds + random_time)  >= 1000000000){
-			nano = random_time - 1000000000;
-			sec = 1;
-		}
-		
-		struct timespec delay;
-		delay.tv_sec = sec;
-		delay.tv_nsec = nano;
-		nanosleep(&delay, NULL);
-		
-		if((shmTime->nanoseconds + nano) < 1000000000){
-				shmTime->nanoseconds += nano;
-			}
-		else if((shmTime->nanoseconds + nano) >= 1000000000){
-			shmTime->nanoseconds = ((shmTime->nanoseconds + nano) - 1000000000);
-			shmTime->seconds += 1;
-		}
-		
+		// nano = 0;
+		// sec = 0;
+		// random_time = rand() % 1999999999 + 1;
+		// if((shmTime->nanoseconds + random_time)  < 1000000000){
+				// nano = random_time;
+			// }
+		// else if((shmTime->nanoseconds + random_time)  >= 1000000000){
+			// nano = random_time - 1000000000;
+			// sec = 1;
+		// }
 		
 		for (i = 0; i < max_children; i++) {
+			if (PCB[i].complete == 1){
+				sprintf(shsec, "%d", shmTime->seconds);
+				sprintf(shnano, "%ld", shmTime->nanoseconds);
+				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
+				fputs(msgtext, file);
+				fputs(shsec, file);
+				fputs(".", file);
+				fputs(shnano, file);
+				fputs(". \n", file);
+				total_log_lines += 1;
+				PCB[i].complete = 0;
+				// active_children -= 1;
+			}
 			if(active_children < 18 && PCB[i].complete == 0){
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Failed to fork. \n");
 				}
 				if (childpid == 0) { 
+					delay.tv_sec = 1; // sec;
+					delay.tv_nsec = 0; // nano;
+					nanosleep(&delay, NULL);
+					shmTime->seconds += 1;
+					
+					// if((shmTime->nanoseconds + nano) < 1000000000){
+							// shmTime->nanoseconds += nano;
+						// }
+					// else if((shmTime->nanoseconds + nano) >= 1000000000){
+						// shmTime->nanoseconds = ((shmTime->nanoseconds + nano) - 1000000000);
+						// shmTime->seconds += 1;
+					// }
+					
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
@@ -233,6 +275,11 @@ int main(int argc, char * argv[])
 					PCB[i].scheduled = 0;
 					PCB[i].priority = 0;
 					PCB[i].complete = 0;
+					PCB[i].wait_total = 0;
+					PCB[i].wait_start_sec = shmTime->seconds;
+					PCB[i].wait_start_ns = shmTime->nanoseconds;
+					// PCB[i].wait_end_sec = 0;
+					// PCB[i].wait_end_ns = 0;
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
@@ -246,36 +293,15 @@ int main(int argc, char * argv[])
 					fputs(shnano, file);
 					fputs(". \n", file);
 					// printf("Active Children: %d. \n", active_children);
-					continue;
+					// continue;
 				}
 			}
-			if (PCB[i].complete == 1){
-				sprintf(shsec, "%d", shmTime->seconds);
-				sprintf(shnano, "%ld", shmTime->nanoseconds);
-				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
-				fputs(msgtext, file);
-				fputs(shsec, file);
-				fputs(".", file);
-				fputs(shnano, file);
-				fputs(". \n", file);
-				total_log_lines += 1;
-				PCB[i].complete = 0;
-				active_children -= 1;
+			// code here for scheduling
+			for (i = 0; i < max_children; i++) {
+				if(PID[i].scheduled == 1) {
+					schedule_flag = 1;
+				}
 			}
-		}
-		
-		if(shmTime->seconds >= max_time || active_children > 18 || total_log_lines >= 10000){
-			pid_t pid = getpgrp();  // gets process group
-			printf("Terminating PID: %i due to limit met. \n", pid);
-			sem_close(sem);  // disconnect from semaphore
-			sem_unlink("BellandJ"); // destroy if all closed.
-			shmctl(pcb_id, IPC_RMID, NULL);
-			shmctl(timer_id, IPC_RMID, NULL);
-			shmdt(PCB);
-			shmdt(shmTime);
-			killpg(pid, SIGINT);  // kills the process group
-			exit(EXIT_SUCCESS);
-			// break;
 		}
 	}while (active_children > 0);
 	
