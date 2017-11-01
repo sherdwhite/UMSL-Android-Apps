@@ -298,7 +298,7 @@ int main(int argc, char * argv[])
 			}
 			// code here for scheduling
 			for (i = 0; i < MAXCHILDREN; i++) {
-				if(PID[i].scheduled == 1) {
+				if(PCB[i].scheduled == 1) {
 					schedule_flag = 1;
 				}
 			}
