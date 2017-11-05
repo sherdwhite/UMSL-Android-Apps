@@ -36,11 +36,11 @@ typedef struct {
 	long wait_total;
 	clock_t begin;
 	clock_t end;
+	pid_t pid;
 	int priority;
 	int scheduled;
-	int quantum;
-	pid_t pid;
 	int complete;
+	int ready;
 } pcb;
 
 typedef struct {
@@ -73,7 +73,7 @@ void pop(node_t ** head) {
     node_t * next_node = NULL;
 
     if (*head == NULL) {
-        return -1;
+        return;
     }
 
     next_node = (*head)->next;
@@ -191,10 +191,10 @@ int main(int argc, char * argv[])
 		PCB[i].total_time_ns = 0;
 		PCB[i].last_burst_sec = 0;
 		PCB[i].last_burst_ns = 0;
+		PCB[i].pid = 0;
 		PCB[i].priority = HI;
 		PCB[i].scheduled = 0;
-		PCB[i].quantum = QUANTUM;
-		PCB[i].pid = 0;
+		PCB[i].ready = 1;
 		PCB[i].complete = 0;
 		PCB[i].wait_total = 0;
 		PCB[i].begin = 0;
@@ -213,7 +213,6 @@ int main(int argc, char * argv[])
 	int random_number;
 	struct timespec delay;
 	int total_log_lines = 0;
-	int count = 0;
 	
 	node_t * hi_queue = malloc(sizeof(node_t));
 
@@ -256,7 +255,7 @@ int main(int argc, char * argv[])
 		// }
 		
 		for (i = 0; i < MAXCHILDREN; i++) {
-			if (PCB[i].scheduled == 1 && PCB[i].complete == 1 && PCB[i].queue == HI){
+			if (PCB[i].scheduled == 1 && PCB[i].complete == 1 && PCB[i].priority == HI){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
 				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
@@ -268,10 +267,11 @@ int main(int argc, char * argv[])
 				total_log_lines += 1;
 				pop(&hi_queue);
 				PCB[i].complete = 0;
+				PCB[i].ready = 1;
 				// active_children -= 1;
 			}
 			
-			if(active_children < 18 && PCB[i].complete == 0){
+			if(active_children < 18 && PCB[i].ready == 1){
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Failed to fork. \n");
@@ -300,8 +300,9 @@ int main(int argc, char * argv[])
 					PCB[i].scheduled = 0;
 					PCB[i].priority = HI;
 					PCB[i].complete = 0;
+					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
-					push(&hi_queue, PCB[i].pid);
+					push(&hi_queue, i);
 					PCB[i].begin = clock();
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
@@ -349,7 +350,7 @@ int main(int argc, char * argv[])
 					// PCB[i].priority = LOW;
 
 				// }
-			}
+			// }
 			
 		}
 	}while (active_children > 0);

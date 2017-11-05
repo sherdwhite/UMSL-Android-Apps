@@ -32,17 +32,20 @@ typedef struct {
 	long total_time_ns;
 	long last_burst_sec;
 	long last_burst_ns;
+	long wait_total;
+	clock_t begin;
+	clock_t end;
+	pid_t pid;
 	int priority;
 	int scheduled;
-	pid_t pid;
 	int complete;
+	int ready;
 } pcb;
 
 typedef struct {
 	unsigned int seconds;
 	unsigned int nanoseconds;
 } timer;
-
 
 int main(int argc, char * argv[]) 
 {
