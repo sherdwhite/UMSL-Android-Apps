@@ -366,7 +366,7 @@ int main(int argc, char * argv[])
 			// }
 			
 		}
-	}while (active_children => 0);
+	}while (active_children >= 0);
 	
 	// wait for children
 	int j;
