@@ -198,27 +198,27 @@ int main(int argc, char * argv[])
 		PCB[i].end = 0;
 	}	
 	
-	// pid_t childpid;
-	// char cpid[12];
-	// int i;
-	// for (i = 0; i < max_children; i++) {
-		// childpid = fork();
-		// if (childpid == -1) {
-			// perror("Failed to fork. \n");
-			// return 1;
-		// }
-		// if (childpid == 0) { /* child code */
-			// sprintf(cpid, "%d", i);
-			// execlp("user", "user", cpid, NULL);  // lp for passing arguements
-			// perror("Child failed to execlp. \n");
-			// return 1;
-		// }
-	// }
+	pid_t childpid;
+	char cpid[12];
+	int i;
+	for (i = 0; i < 5; i++) {
+		childpid = fork();
+		if (childpid == -1) {
+			perror("Failed to fork. \n");
+			return 1;
+		}
+		if (childpid == 0) { /* child code */
+			sprintf(cpid, "%d", i);
+			execlp("user", "user", cpid, NULL);  // lp for passing arguements
+			perror("Child failed to execlp. \n");
+			return 1;
+		}
+	}
 	
 	char shsec[2];
 	char shnano[10];
 	char msgtext[132];
-	pid_t childpid;
+	// pid_t childpid;
 	char cpid[12];
 	int active_children = 0;
 	long nano = 0;
