@@ -200,7 +200,7 @@ int main(int argc, char * argv[])
 	
 	pid_t childpid;
 	char cpid[12];
-	int i;
+	// int i;
 	for (i = 0; i < 5; i++) {
 		childpid = fork();
 		if (childpid == -1) {
@@ -219,7 +219,7 @@ int main(int argc, char * argv[])
 	char shnano[10];
 	char msgtext[132];
 	// pid_t childpid;
-	char cpid[12];
+	//char cpid[12];
 	int active_children = 0;
 	long nano = 0;
 	int sec = 0;
