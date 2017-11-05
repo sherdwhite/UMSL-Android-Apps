@@ -306,7 +306,7 @@ int main(int argc, char * argv[])
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
-					active_children +=1;
+					active_children ++;
 					sprintf(shsec, "%d", shmTime->seconds);
 					sprintf(shnano, "%ld", shmTime->nanoseconds);
 					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
@@ -320,7 +320,7 @@ int main(int argc, char * argv[])
 				}
 			}
 			// code here for scheduling
-			for (i = 0; i < MAXCHILDREN; i++) {
+			// for (i = 0; i < MAXCHILDREN; i++) {
 				// if(PCB[i].scheduled == 1 && PCB[i].complete == 0 && PCB[i].queue == HI) {
 					// random_number = rand() % 4;
 					// if(random_number == 0){
