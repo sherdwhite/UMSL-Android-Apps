@@ -155,7 +155,7 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS shared address is %x\n", shared);
 	
-	int clock_key = 91514;
+	int clock_key = 91514;  
 	int timer_id = shmget(clock_key, sizeof(timer), PERM | IPC_CREAT | IPC_EXCL);
     if (timer_id == -1) {
         perror("Failed to create shared memory segment. \n");
@@ -173,7 +173,7 @@ int main(int argc, char * argv[])
 	// printf("My OS message address is %x\n", PCB);
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
-	// 0644 permission. 1 is the initial value of the semaphore
+	// 0644 permission. 1 is the initial value of the semaphore.  Named semaphore stored at /dev/shm
 	sem_t *sem = sem_open("BellandJ", O_CREAT | O_EXCL, 0644, 1);
 	if(sem == SEM_FAILED) {
         perror("Failed to sem_open clock. \n");
