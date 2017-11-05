@@ -48,12 +48,38 @@ typedef struct {
 	unsigned int nanoseconds;
 } timer;
 
+typedef struct node {
+    int val;
+    struct node * next;
+} node_t;
+
 int max_time = 60;
 FILE *file;
 char *filename = "log";
-unsigned int hi_queue[MAXCHILDREN][2] = {0};
-unsigned int med_queue[MAXCHILDREN][2] = {0};
-unsigned int low_queue[MAXCHILDREN][2] = {0};
+
+void push(node_t * head, int val) {
+    node_t * current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+
+    /* now we can add a new variable */
+    current->next = malloc(sizeof(node_t));
+    current->next->val = val;
+    current->next->next = NULL;
+}
+
+void pop(node_t ** head) {
+    node_t * next_node = NULL;
+
+    if (*head == NULL) {
+        return -1;
+    }
+
+    next_node = (*head)->next;
+    free(*head);
+    *head = next_node;
+}
 
 int main(int argc, char * argv[]) 
 {
@@ -187,8 +213,10 @@ int main(int argc, char * argv[])
 	int random_number;
 	struct timespec delay;
 	int total_log_lines = 0;
-	unsigned int average_wait[3][2] = {0};
 	int count = 0;
+	
+	node_t * hi_queue = malloc(sizeof(node_t));
+
 	do {
 				
 		if(shmTime->seconds >= max_time || active_children > 18 || total_log_lines >= 10000){
@@ -228,7 +256,7 @@ int main(int argc, char * argv[])
 		// }
 		
 		for (i = 0; i < MAXCHILDREN; i++) {
-			if (PCB[i].complete == 1){
+			if (PCB[i].scheduled == 1 && PCB[i].complete == 1 && PCB[i].queue == HI){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
 				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
@@ -238,6 +266,7 @@ int main(int argc, char * argv[])
 				fputs(shnano, file);
 				fputs(". \n", file);
 				total_log_lines += 1;
+				pop(&hi_queue);
 				PCB[i].complete = 0;
 				// active_children -= 1;
 			}
@@ -272,7 +301,7 @@ int main(int argc, char * argv[])
 					PCB[i].priority = HI;
 					PCB[i].complete = 0;
 					PCB[i].wait_total = 0;
-					hi_queue[i][0] = 1;
+					push(&hi_queue, PCB[i].pid);
 					PCB[i].begin = clock();
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
@@ -292,40 +321,34 @@ int main(int argc, char * argv[])
 			}
 			// code here for scheduling
 			for (i = 0; i < MAXCHILDREN; i++) {
-				if(PCB[i].scheduled == 1) {
-					random_number = rand() % 4;
-					if(random_number == 0){
+				// if(PCB[i].scheduled == 1 && PCB[i].complete == 0 && PCB[i].queue == HI) {
+					// random_number = rand() % 4;
+					// if(random_number == 0){
 						// kill PID
-					}
-				}
+					// }
+				// }
 				
 				
 				// if a process isn't scheduled, need to keep track of wait time.
-				if(PCB[i].scheduled == 0) {
-					PCB[i].end = clock();
-					PCB[i].wait_total += (((PCB[i].end - PCB[i].begin) / CLOCKS_PER_SEC) * 1000000000);
-					PCB[i].begin = clock();
-				}
+				// if(PCB[i].scheduled == 0) {
+					// PCB[i].end = clock();
+					// PCB[i].wait_total += (((PCB[i].end - PCB[i].begin) / CLOCKS_PER_SEC) * 1000000000);
+					// PCB[i].begin = clock();
+				// }
 				
 				
-				if(PCB[i].wait_total < HIPRIORITY) {
-					PCB[i].priority = HI;
-					hi_queue[MAXCHILDREN][0] = 1;
-					med_queue[MAXCHILDREN][0] = 0;
-					low_queue[MAXCHILDREN][0] = 0;
-				}
-				else if(PCB[i].wait_total >= HIPRIORITY  && PCB[i].wait_total < LOWPRIORITY) {
-					PCB[i].priority = MEDIUM;
-					hi_queue[MAXCHILDREN][0] = 0;
-					med_queue[MAXCHILDREN][0] = 1;
-					low_queue[MAXCHILDREN][0] = 0;
-				}
-				else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
-					PCB[i].priority = LOW;
-					hi_queue[MAXCHILDREN][0] = 0;
-					med_queue[MAXCHILDREN][0] = 0;
-					low_queue[MAXCHILDREN][0] = 1;
-				}
+				// if(PCB[i].wait_total < HIPRIORITY) {
+					// PCB[i].priority = HI;
+
+				// }
+				// else if(PCB[i].wait_total >= HIPRIORITY  && PCB[i].wait_total < LOWPRIORITY) {
+					// PCB[i].priority = MEDIUM;
+
+				// }
+				// else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
+					// PCB[i].priority = LOW;
+
+				// }
 			}
 			
 		}
@@ -372,3 +395,4 @@ int main(int argc, char * argv[])
 
     return 0;
 }
+

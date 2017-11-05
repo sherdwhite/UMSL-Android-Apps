@@ -34,7 +34,6 @@ typedef struct {
 	long last_burst_ns;
 	int priority;
 	int scheduled;
-	int quantum;
 	pid_t pid;
 	int complete;
 } pcb;
@@ -110,6 +109,8 @@ int main(int argc, char * argv[])
 	
 	srand(pid * time(NULL));
 	
+	struct timespec delay;
+	
 	// int sem_value;
 	// sem_getvalue(sem, &sem_value);
 	// printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
@@ -125,6 +126,9 @@ int main(int argc, char * argv[])
 			quantum_check = rand() % 2;
 			if(quantum_check == 0){
 				run_time = rand() % QUANTUM;
+				delay.tv_sec = 0; // sec;
+				delay.tv_nsec = run_time; // nano;
+				nanosleep(&delay, NULL);
 				PCB[pid].last_burst_ns = run_time;
 				PCB[pid].total_CPU_time_ns += run_time;
 				completed = rand() % 2;
@@ -143,6 +147,9 @@ int main(int argc, char * argv[])
 			else {
 				PCB[pid].last_burst_ns = QUANTUM;
 				PCB[pid].total_CPU_time_ns += QUANTUM;
+				run_time = QUANTUM;
+				delay.tv_sec = 0; // sec;
+				delay.tv_nsec = run_time; // nano;
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
