@@ -267,7 +267,7 @@ int main(int argc, char * argv[])
 				fputs(shnano, file);
 				fputs(". \n", file);
 				total_log_lines += 1;
-				pop(&hi_queue);
+				pop(hi_queue);
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				// active_children -= 1;
@@ -304,7 +304,7 @@ int main(int argc, char * argv[])
 					PCB[i].complete = 0;
 					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
-					push(&hi_queue, i);
+					push(hi_queue, i);
 					PCB[i].begin = clock();
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
