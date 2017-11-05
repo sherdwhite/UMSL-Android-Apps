@@ -64,6 +64,7 @@ void push(node_t * head, int val) {
     current->next->val = val;
     current->next->next = NULL;
 	printf("Pushed %x\n", val);
+	return;
 }
 
 void pop(node_t ** head) {
@@ -77,6 +78,7 @@ void pop(node_t ** head) {
     free(*head);
     *head = next_node;
 	printf("Popped val");
+	return;
 }
 
 int main(int argc, char * argv[]) 
@@ -321,7 +323,7 @@ int main(int argc, char * argv[])
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					perror("Child failed to execlp. \n");
-					active_children ++;
+					active_children++;
 					sprintf(shsec, "%d", shmTime->seconds);
 					sprintf(shnano, "%ld", shmTime->nanoseconds);
 					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
