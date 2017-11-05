@@ -67,6 +67,7 @@ void push(node_t * head, int val) {
     current->next = malloc(sizeof(node_t));
     current->next->val = val;
     current->next->next = NULL;
+	printf("Pushed %x\n", val);
 }
 
 void pop(node_t ** head) {
@@ -79,6 +80,7 @@ void pop(node_t ** head) {
     next_node = (*head)->next;
     free(*head);
     *head = next_node;
+	printf("Popped val");
 }
 
 int main(int argc, char * argv[]) 
