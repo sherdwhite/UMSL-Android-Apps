@@ -81,6 +81,16 @@ void pop(node_t ** head) {
 	return;
 }
 
+void print_list(node_t * head) {
+    node_t * current = head;
+
+    while (current != NULL) {
+        printf("%d\n", current->val);
+        current = current->next;
+    }
+	return;
+}
+
 int main(int argc, char * argv[]) 
 {
 	int c;
@@ -308,6 +318,7 @@ int main(int argc, char * argv[])
 					// }
 					
 					push(&hi_queue, i);
+					print_list(&hi_queue);
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
