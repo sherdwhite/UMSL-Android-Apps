@@ -20,9 +20,6 @@
 #define HIPRIORITY 10000					
 #define MEDIUMPRIORITY 1000000			
 #define LOWPRIORITY 100000000
-#define HI 0
-#define MEDIUM 1
-#define LOW 2
 #define QUANTUM 50000
 
 typedef struct {
@@ -36,7 +33,6 @@ typedef struct {
 	clock_t begin;
 	clock_t end;
 	pid_t pid;
-	int priority;
 	int scheduled;
 	int complete;
 	int ready;

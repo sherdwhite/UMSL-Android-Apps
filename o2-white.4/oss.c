@@ -20,9 +20,6 @@
 #define HIPRIORITY 10000					
 #define MEDIUMPRIORITY 1000000			
 #define LOWPRIORITY 100000000
-#define HI 0
-#define MEDIUM 1
-#define LOW 2
 #define QUANTUM 50000
 #define MAXCHILDREN 18
 
@@ -37,7 +34,6 @@ typedef struct {
 	clock_t begin;
 	clock_t end;
 	pid_t pid;
-	int priority;
 	int scheduled;
 	int complete;
 	int ready;
@@ -194,7 +190,6 @@ int main(int argc, char * argv[])
 		PCB[i].last_burst_sec = 0;
 		PCB[i].last_burst_ns = 0;
 		PCB[i].pid = 0;
-		PCB[i].priority = HI;
 		PCB[i].scheduled = 0;
 		PCB[i].ready = 1;
 		PCB[i].complete = 0;
@@ -202,6 +197,23 @@ int main(int argc, char * argv[])
 		PCB[i].begin = 0;
 		PCB[i].end = 0;
 	}	
+	
+	// pid_t childpid;
+	// char cpid[12];
+	// int i;
+	// for (i = 0; i < max_children; i++) {
+		// childpid = fork();
+		// if (childpid == -1) {
+			// perror("Failed to fork. \n");
+			// return 1;
+		// }
+		// if (childpid == 0) { /* child code */
+			// sprintf(cpid, "%d", i);
+			// execlp("user", "user", cpid, NULL);  // lp for passing arguements
+			// perror("Child failed to execlp. \n");
+			// return 1;
+		// }
+	// }
 	
 	char shsec[2];
 	char shnano[10];
@@ -219,7 +231,17 @@ int main(int argc, char * argv[])
 	node_t * hi_queue = malloc(sizeof(node_t));
 
 	do {
-				
+		srand(shmTime->nanoseconds * time(NULL));
+		random_time = rand() % 1000 + 1;
+		if((random_time + shmTime->nanoseconds)  > 999999000){
+			shmTime->nanoseconds = 0;
+			shmTime->seconds  += 2;
+		}
+		else {
+			shmTime->nanoseconds += random_time;
+			shmTime->seconds += 1;
+		}
+		
 		if(shmTime->seconds >= max_time || active_children > 18 || total_log_lines >= 10000){
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
@@ -234,17 +256,6 @@ int main(int argc, char * argv[])
 			// break;
 		}
 		
-		srand(shmTime->nanoseconds * time(NULL));
-		random_time = rand() % 1000 + 1;
-		if((random_time + shmTime->nanoseconds)  > 999999000){
-			shmTime->nanoseconds = 0;
-			shmTime->seconds  += 2;
-		}
-		else {
-			shmTime->nanoseconds += random_time;
-			shmTime->seconds += 1;
-		}
-		
 		// nano = 0;
 		// sec = 0;
 		// random_time = rand() % 1999999999 + 1;
@@ -257,7 +268,7 @@ int main(int argc, char * argv[])
 		// }
 		
 		for (i = 0; i < MAXCHILDREN; i++) {
-			if (PCB[i].scheduled == 1 && PCB[i].complete == 1 && PCB[i].priority == HI){
+			if (PCB[i].scheduled == 1 && PCB[i].complete == 1){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
 				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
@@ -270,6 +281,7 @@ int main(int argc, char * argv[])
 				pop(&hi_queue);
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
+				PCB[i].scheduled = 0;
 				// active_children -= 1;
 			}
 			
@@ -292,6 +304,7 @@ int main(int argc, char * argv[])
 						// shmTime->seconds += 1;
 					// }
 					
+					push(&hi_queue, i);
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
@@ -299,12 +312,10 @@ int main(int argc, char * argv[])
 					PCB[i].total_time_ns = 0;
 					PCB[i].last_burst_sec = 0;
 					PCB[i].last_burst_ns = 0;
-					PCB[i].scheduled = 0;
-					PCB[i].priority = HI;
+					PCB[i].scheduled = 1;
 					PCB[i].complete = 0;
 					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
-					push(&hi_queue, i);
 					PCB[i].begin = clock();
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
@@ -355,7 +366,7 @@ int main(int argc, char * argv[])
 			// }
 			
 		}
-	}while (active_children > 0);
+	}while (active_children => 0);
 	
 	// wait for children
 	int j;
