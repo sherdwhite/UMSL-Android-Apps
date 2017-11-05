@@ -295,6 +295,7 @@ int main(int argc, char * argv[])
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
+					fprintf("Master: Child pid %d is starting.\n ", i);
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
 							// shmTime->nanoseconds += nano;
