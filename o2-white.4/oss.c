@@ -23,6 +23,9 @@
 #define QUANTUM 50000
 #define MAXCHILDREN 18
 
+int hi_queue[MAXCHILDREN];
+int front = -1, rear = -1;
+
 typedef struct {
 	long total_CPU_time_sec;
 	long total_CPU_time_ns;
@@ -44,50 +47,72 @@ typedef struct {
 	unsigned int nanoseconds;
 } timer;
 
-typedef struct node {
-    int val;
-    struct node * next;
-} node_t;
-
 int max_time = 60;
 FILE *file;
 char *filename = "log";
 
-void push(node_t * head, int val) {
-    node_t * current = head;
-    while (current->next != NULL) {
-        current = current->next;
-    }
-
-    /* now we can add a new variable */
-    current->next = malloc(sizeof(node_t));
-    current->next->val = val;
-    current->next->next = NULL;
-	printf("Pushed %x\n", val);
-	return;
-}
-
-void pop(node_t ** head) {
-    node_t * next_node = NULL;
-
-    if (*head == NULL) {
+void push(int child) {
+    if (rear >= MAX - 1)
+    {
+        printf("\nQueue overflow no more elements can be inserted");
         return;
     }
-
-    next_node = (*head)->next;
-    free(*head);
-    *head = next_node;
-	printf("Popped val");
+    if ((front == -1) && (rear == -1))
+    {
+        front++;
+        rear++;
+        hi_queue[rear] = child;
+        return;
+    }    
+    else
+        check(child);
+    rear++;
 	return;
 }
 
-void print_list(node_t * head) {
-    node_t * current = head;
-
-    while (current != NULL) {
-        printf("%d\n", current->val);
-        current = current->next;
+void pop(int child) {
+    int i;
+ 
+    if ((front==-1) && (rear==-1))
+    {
+        printf("\nQueue is empty no elements to delete");
+        return;
     }
+ 
+    for (i = 0; i <= rear; i++)
+    {
+        if (child == hi_queue[i])
+        {
+            for (; i < rear; i++)
+            {
+                hi_queue[i] = hi_queue[i + 1];
+            }
+ 
+        hi_queue[i] = -99;
+        rear--;
+ 
+        if (rear == -1) 
+            front = -1;
+        return;
+        }
+    }
+    printf("\n%d not found in queue to delete", child);
+	return;
+}
+
+void print_list() {
+    if ((front == -1) && (rear == -1))
+    {
+        printf("\nQueue is empty");
+        return;
+    }
+ 
+    for (; front <= rear; front++)
+    {
+        printf(" %d ", pri_que[front]);
+    }
+ 
+    front = 0;
 	return;
 }
 
@@ -290,7 +315,7 @@ int main(int argc, char * argv[])
 				fputs(shnano, file);
 				fputs(". \n", file);
 				total_log_lines += 1;
-				pop(&hi_queue);
+				pop(i);
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
@@ -317,8 +342,8 @@ int main(int argc, char * argv[])
 						// shmTime->seconds += 1;
 					// }
 					
-					push(&hi_queue, i);
-					print_list(&hi_queue);
+					push(i);
+					print_list();
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
