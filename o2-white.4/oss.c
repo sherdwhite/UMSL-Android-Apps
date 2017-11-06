@@ -52,20 +52,32 @@ FILE *file;
 char *filename = "log";
 
 void push(int child) {
-    if (rear >= MAX - 1)
+    if (rear >= MAXCHILDREN - 1)
     {
         printf("\nQueue overflow no more elements can be inserted");
         return;
     }
-    if ((front == -1) && (rear == -1))
-    {
+    if ((front == -1) && (rear == -1)){
         front++;
         rear++;
         hi_queue[rear] = child;
         return;
     }    
-    else
-        check(child);
+    else{
+        int i,j;
+ 
+		for (i = 0; i <= rear; i++){
+			if (child >= hi_queue[i]){
+				for (j = rear + 1; j > i; j--)
+				{
+					hi_queue[j] = hi_queue[j - 1];
+				}
+				hi_queue[i] = child;
+				return;
+			}
+		}
+		hi_queue[i] = child;
+	}
     rear++;
 	return;
 }
@@ -109,7 +121,7 @@ void print_list() {
  
     for (; front <= rear; front++)
     {
-        printf(" %d ", pri_que[front]);
+        printf(" %d ", hi_queue[front]);
     }
  
     front = 0;
@@ -265,8 +277,6 @@ int main(int argc, char * argv[])
 	struct timespec delay;
 	int total_log_lines = 0;
 	
-	node_t * hi_queue = malloc(sizeof(node_t));
-
 	do {
 		srand(shmTime->nanoseconds * time(NULL));
 		random_time = rand() % 1000 + 1;
