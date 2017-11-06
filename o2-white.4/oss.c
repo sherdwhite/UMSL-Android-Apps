@@ -79,7 +79,6 @@ void push(int child) {
 		hi_queue[i] = child;
 	}
     rear++;
-	return;
 }
 
 void pop(int child) {
@@ -119,7 +118,7 @@ void print_list() {
         return;
     }
  
-    for (; front <= rear; front++)
+    for (front = 0; front <= rear; front++)
     {
         printf(" %d ", hi_queue[front]);
     }
