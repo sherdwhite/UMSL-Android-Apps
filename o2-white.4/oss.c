@@ -335,9 +335,10 @@ int main(int argc, char * argv[])
 			if(active_children < 18 && PCB[i].ready == 1){
 				childpid = fork();
 				if (childpid == -1) {
-					perror("Failed to fork. \n");
+					perror("Master: Failed to fork");
+					return 1;
 				}
-				if (childpid == 0) { 
+				if (childpid != 0) { 
 					delay.tv_sec = 1; // sec;
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
@@ -368,7 +369,7 @@ int main(int argc, char * argv[])
 					PCB[i].begin = clock();
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
-					perror("Child failed to execlp. \n");
+					//perror("Child failed to execlp. \n");
 					active_children++;
 					sprintf(shsec, "%d", shmTime->seconds);
 					sprintf(shnano, "%ld", shmTime->nanoseconds);
@@ -380,7 +381,7 @@ int main(int argc, char * argv[])
 					fputs(". \n", file);
 					printf("Active Children: %d. \n", active_children);
 					// continue;
-				}
+				//}
 			}
 			// code here for scheduling
 			// for (i = 0; i < MAXCHILDREN; i++) {
