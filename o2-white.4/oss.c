@@ -342,7 +342,7 @@ int main(int argc, char * argv[])
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
-					printf("Master: Child pid %d is starting.\n ", i);
+					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
 							// shmTime->nanoseconds += nano;
