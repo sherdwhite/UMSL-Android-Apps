@@ -276,7 +276,7 @@ int main(int argc, char * argv[])
 	struct timespec delay;
 	int total_log_lines = 0;
 	front = -1, rear = -1;
-	srand(shmTime->nanoseconds * time(NULL));
+	srand(time(NULL));
 	
 	do {
 		random_time = rand() % 1000 + 1;
@@ -343,6 +343,7 @@ int main(int argc, char * argv[])
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
+					active_children++;
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
@@ -372,7 +373,6 @@ int main(int argc, char * argv[])
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
 					//perror("Child failed to execlp. \n");
-					active_children++;
 					sprintf(shsec, "%d", shmTime->seconds);
 					sprintf(shnano, "%ld", shmTime->nanoseconds);
 					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
