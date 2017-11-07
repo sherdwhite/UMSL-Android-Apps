@@ -381,7 +381,7 @@ int main(int argc, char * argv[])
 					fputs(". \n", file);
 					printf("Active Children: %d. \n", active_children);
 					// continue;
-				//}
+				}
 			}
 			// code here for scheduling
 			// for (i = 0; i < MAXCHILDREN; i++) {
