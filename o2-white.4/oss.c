@@ -86,7 +86,7 @@ void pop(int child) {
  
     if ((front==-1) && (rear==-1))
     {
-        printf("\nQueue is empty no elements to delete");
+        printf("Queue is empty no elements to delete. \n");
         return;
     }
  
@@ -107,7 +107,7 @@ void pop(int child) {
         return;
         }
     }
-    printf("\n%d not found in queue to delete", child);
+    printf("%d not found in queue to delete. \n", child);
 	return;
 }
 
@@ -329,7 +329,7 @@ int main(int argc, char * argv[])
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
-				// active_children -= 1;
+				active_children -= 1;
 			}
 			
 			if(active_children < 18 && PCB[i].ready == 1){
