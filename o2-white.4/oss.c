@@ -285,6 +285,7 @@ int main(int argc, char * argv[])
 			shmTime->seconds  += 2;
 		}
 		else {
+			printf("Test.\n");
 			shmTime->nanoseconds += random_time;
 			shmTime->seconds += 1;
 		}
