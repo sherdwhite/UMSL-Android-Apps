@@ -21,7 +21,7 @@
 #define MEDIUMPRIORITY 1000000			
 #define LOWPRIORITY 100000000
 #define QUANTUM 50000
-#define MAXCHILDREN 18
+#define MAXCHILDREN 5 // 18
 
 int hi_queue[MAXCHILDREN];
 int front, rear;
@@ -333,12 +333,12 @@ int main(int argc, char * argv[])
 			}
 			
 			if(active_children < 18 && PCB[i].ready == 1){
-				//childpid = fork();
-				//if (childpid == -1) {
-				//	perror("Master: Failed to fork.");
-				//	return 1;
-				//}
-				//if (childpid == 0) { 
+				childpid = fork();
+				if (childpid == -1) {
+					perror("Master: Failed to fork.");
+					return 1;
+				}
+				if (childpid == 0) { 
 					delay.tv_sec = 1; // sec;
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
@@ -352,7 +352,9 @@ int main(int argc, char * argv[])
 						// shmTime->nanoseconds = ((shmTime->nanoseconds + nano) - 1000000000);
 						// shmTime->seconds += 1;
 					// }
-					
+				}
+				
+				if (childpid !== 0) {
 					push(i);
 					print_list();
 					PCB[i].pid = i;    
@@ -381,7 +383,7 @@ int main(int argc, char * argv[])
 					fputs(". \n", file);
 					printf("Active Children: %d. \n", active_children);
 					// continue;
-				//}
+				}
 			}
 			// code here for scheduling
 			// for (i = 0; i < MAXCHILDREN; i++) {
