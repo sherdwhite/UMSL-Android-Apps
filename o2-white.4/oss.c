@@ -276,9 +276,9 @@ int main(int argc, char * argv[])
 	struct timespec delay;
 	int total_log_lines = 0;
 	front = -1, rear = -1;
+	srand(shmTime->nanoseconds * time(NULL));
 	
 	do {
-		srand(shmTime->nanoseconds * time(NULL));
 		random_time = rand() % 1000 + 1;
 		if((random_time + shmTime->nanoseconds)  > 999999000){
 			shmTime->nanoseconds += 0;
