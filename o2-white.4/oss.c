@@ -354,7 +354,7 @@ int main(int argc, char * argv[])
 					// }
 				}
 				
-				if (childpid !== 0) {
+				if (childpid != 0) {
 					push(i);
 					print_list();
 					PCB[i].pid = i;    
