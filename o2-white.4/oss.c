@@ -24,7 +24,7 @@
 #define MAXCHILDREN 18
 
 int hi_queue[MAXCHILDREN];
-int front = -1, rear = -1;
+int front, rear;
 
 typedef struct {
 	long total_CPU_time_sec;
@@ -275,6 +275,7 @@ int main(int argc, char * argv[])
 	int random_number;
 	struct timespec delay;
 	int total_log_lines = 0;
+	front = -1, rear = -1;
 	
 	do {
 		srand(shmTime->nanoseconds * time(NULL));
