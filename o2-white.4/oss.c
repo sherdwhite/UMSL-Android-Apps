@@ -338,7 +338,7 @@ int main(int argc, char * argv[])
 					perror("Master: Failed to fork.");
 					return 1;
 				}
-				if (childpid != 0) { 
+				if (childpid == 0) { 
 					delay.tv_sec = 1; // sec;
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
