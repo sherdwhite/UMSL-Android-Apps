@@ -335,7 +335,7 @@ int main(int argc, char * argv[])
 			if(active_children < 18 && PCB[i].ready == 1){
 				childpid = fork();
 				if (childpid == -1) {
-					perror("Master: Failed to fork");
+					perror("Master: Failed to fork %d. \n", i);
 					return 1;
 				}
 				if (childpid != 0) { 
