@@ -318,7 +318,7 @@ int main(int argc, char * argv[])
 			if (PCB[i].scheduled == 1 && PCB[i].complete == 1){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
-				sprintf(msgtext, "Master: Child pid %d is terminating at my time ", PCB[i].pid);
+				sprintf(msgtext, "Master: Child pid %d is terminating at my time %d:%ld. \n ", PCB[i].pid, shmTime->seconds, shmTime->nanoseconds);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(".", file);
