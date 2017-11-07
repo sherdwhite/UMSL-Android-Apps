@@ -332,7 +332,7 @@ int main(int argc, char * argv[])
 				// active_children -= 1;
 			}
 			
-			if(active_children < MAXCHILDREN && PCB[i].ready == 1){
+			if(active_children <= MAXCHILDREN && PCB[i].ready == 1){
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Master: Failed to fork.");
