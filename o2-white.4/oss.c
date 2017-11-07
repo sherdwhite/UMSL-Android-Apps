@@ -343,7 +343,6 @@ int main(int argc, char * argv[])
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
-					active_children++;
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
@@ -356,7 +355,6 @@ int main(int argc, char * argv[])
 					fputs(":", file);
 					fputs(shnano, file);
 					fputs(". \n", file);
-					printf("Active Children: %d. \n", active_children);
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
 							// shmTime->nanoseconds += nano;
@@ -382,6 +380,8 @@ int main(int argc, char * argv[])
 					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
 					PCB[i].begin = clock();
+					active_children++;
+					printf("Active Children: %d. \n", active_children);
 
 					// continue;
 					random_time = rand() % 1000 + 1;
