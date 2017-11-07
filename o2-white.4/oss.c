@@ -329,7 +329,7 @@ int main(int argc, char * argv[])
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
-				active_children -= 1;
+				// active_children -= 1;
 			}
 			
 			if(active_children < 18 && PCB[i].ready == 1){
