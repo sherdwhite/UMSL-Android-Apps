@@ -332,7 +332,7 @@ int main(int argc, char * argv[])
 				// active_children -= 1;
 			}
 			
-			if(active_children < 18 && PCB[i].ready == 1){
+			if(active_children < MAXCHILDREN && PCB[i].ready == 1){
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Master: Failed to fork.");
@@ -383,6 +383,15 @@ int main(int argc, char * argv[])
 					fputs(". \n", file);
 					printf("Active Children: %d. \n", active_children);
 					// continue;
+					random_time = rand() % 1000 + 1;
+					if((random_time + shmTime->nanoseconds)  > 999999000){
+						shmTime->nanoseconds += 0;
+						shmTime->seconds  += 2;
+					}
+					else {
+						shmTime->nanoseconds += random_time;
+						shmTime->seconds += 1;
+					}
 				}
 			}
 			// code here for scheduling
