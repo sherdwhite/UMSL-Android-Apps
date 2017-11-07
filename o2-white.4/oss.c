@@ -285,7 +285,6 @@ int main(int argc, char * argv[])
 			shmTime->seconds  += 2;
 		}
 		else {
-			printf("Test.\n");
 			shmTime->nanoseconds += random_time;
 			shmTime->seconds += 1;
 		}
@@ -379,7 +378,7 @@ int main(int argc, char * argv[])
 					fputs(":", file);
 					fputs(shnano, file);
 					fputs(". \n", file);
-					// printf("Active Children: %d. \n", active_children);
+					printf("Active Children: %d. \n", active_children);
 					// continue;
 				}
 			}
