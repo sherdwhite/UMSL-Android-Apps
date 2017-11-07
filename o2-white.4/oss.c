@@ -281,7 +281,7 @@ int main(int argc, char * argv[])
 		srand(shmTime->nanoseconds * time(NULL));
 		random_time = rand() % 1000 + 1;
 		if((random_time + shmTime->nanoseconds)  > 999999000){
-			shmTime->nanoseconds = 0;
+			shmTime->nanoseconds += 0;
 			shmTime->seconds  += 2;
 		}
 		else {
