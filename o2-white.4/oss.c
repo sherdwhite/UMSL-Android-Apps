@@ -22,8 +22,13 @@
 #define LOWPRIORITY 100000000
 #define QUANTUM 50000
 #define MAXCHILDREN 5 // 18
+#define HI 0
+#define MED 1
+#define LOW 2
 
 int hi_queue[MAXCHILDREN];
+int med_queue[MAXCHILDREN];
+int low_queue[MAXCHILDREN];
 int front, rear;
 
 typedef struct {
@@ -33,6 +38,8 @@ typedef struct {
 	long total_time_ns;
 	long last_burst_sec;
 	long last_burst_ns;
+	long start_wait;
+	long end_wait;
 	long wait_total;
 	clock_t begin;
 	clock_t end;
@@ -51,7 +58,7 @@ int max_time = 60;
 FILE *file;
 char *filename = "log";
 
-void push(int child) {
+void push_hi(int child, char ) {
     if (rear >= MAXCHILDREN - 1) {
         printf("\nQueue overflow no more elements can be inserted");
         return;
@@ -79,7 +86,63 @@ void push(int child) {
     rear++;
 }
 
-void pop(int child) {
+void push_med(int child, char ) {
+    if (rear >= MAXCHILDREN - 1) {
+        printf("\nQueue overflow no more elements can be inserted");
+        return;
+    }
+    if ((front == -1) && (rear == -1)){
+        front++;
+        rear++;
+        med_queue[rear] = child;
+        return;
+    }    
+    else{
+        int i,j;
+ 
+		for (i = 0; i <= rear; i++){
+			if (child >= med_queue[i]){
+				for (j = rear + 1; j > i; j--){
+					med_queue[j] = med_queue[j - 1];
+				}
+				med_queue[i] = child;
+				return;
+			}
+		}
+		med_queue[i] = child;
+	}
+    rear++;
+}
+
+void push_low(int child, char ) {
+    if (rear >= MAXCHILDREN - 1) {
+        printf("\nQueue overflow no more elements can be inserted");
+        return;
+    }
+    if ((front == -1) && (rear == -1)){
+        front++;
+        rear++;
+        low_queue[rear] = child;
+        return;
+    }    
+    else{
+        int i,j;
+ 
+		for (i = 0; i <= rear; i++){
+			if (child >= low_queue[i]){
+				for (j = rear + 1; j > i; j--){
+					low_queue[j] = low_queue[j - 1];
+				}
+				low_queue[i] = child;
+				return;
+			}
+		}
+		low_queue[i] = child;
+	}
+    rear++;
+}
+
+void pop_hi(int child) {
     int i;
  
     if ((front==-1) && (rear==-1)) {
@@ -94,6 +157,58 @@ void pop(int child) {
             }
  
         hi_queue[i] = -99;
+        rear--;
+ 
+        if (rear == -1) 
+            front = -1;
+        return;
+        }
+    }
+    printf("%d not found in queue to delete. \n", child);
+	return;
+}
+
+void pop_med(int child) {
+    int i;
+ 
+    if ((front==-1) && (rear==-1)) {
+        printf("Queue is empty no elements to delete. \n");
+        return;
+    }
+ 
+    for (i = 0; i <= rear; i++){
+        if (child == med_queue[i]){
+            for (; i < rear; i++){
+                med_queue[i] = med_queue[i + 1];
+            }
+ 
+        med_queue[i] = -99;
+        rear--;
+ 
+        if (rear == -1) 
+            front = -1;
+        return;
+        }
+    }
+    printf("%d not found in queue to delete. \n", child);
+	return;
+}
+
+void pop_low(int child) {
+    int i;
+ 
+    if ((front==-1) && (rear==-1)) {
+        printf("Queue is empty no elements to delete. \n");
+        return;
+    }
+ 
+    for (i = 0; i <= rear; i++){
+        if (child == low_queue[i]){
+            for (; i < rear; i++){
+                low_queue[i] = low_queue[i + 1];
+            }
+ 
+        low_queue[i] = -99;
         rear--;
  
         if (rear == -1) 
@@ -233,6 +348,8 @@ int main(int argc, char * argv[])
 		PCB[i].scheduled = 0;
 		PCB[i].ready = 1;
 		PCB[i].complete = 0;
+		PCB[i].start_wait = 0;
+		PCB[i].end_wait = 0;
 		PCB[i].wait_total = 0;
 		PCB[i].begin = 0;
 		PCB[i].end = 0;
@@ -317,8 +434,11 @@ int main(int argc, char * argv[])
 				fputs(shnano, file);
 				fputs(". \n", file);
 				total_log_lines += 1;
-				pop(i);
+				pop_hi(i);
 				print_list();
+				PCB[i].end = clock();
+				PCB[i].total_time_ns = (((PCB[i].end - PCB[i].begin) / CLOCKS_PER_SEC) * 1000000000);
+				PCB[i].wait_total = 0;
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
@@ -362,7 +482,8 @@ int main(int argc, char * argv[])
 				}
 				
 				if (childpid != 0 && PCB[i].ready == 1) {
-					push(i);
+					push_hi(i);
+					PCB[i].queue = HI;
 					print_list();
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
@@ -371,7 +492,7 @@ int main(int argc, char * argv[])
 					PCB[i].total_time_ns = 0;
 					PCB[i].last_burst_sec = 0;
 					PCB[i].last_burst_ns = 0;
-					PCB[i].scheduled = 1;
+					PCB[i].scheduled = 0;
 					PCB[i].complete = 0;
 					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
@@ -388,36 +509,28 @@ int main(int argc, char * argv[])
 				}
 			}
 			// code here for scheduling
-			// for (i = 0; i < MAXCHILDREN; i++) {
-				// if(PCB[i].scheduled == 1 && PCB[i].complete == 0 && PCB[i].queue == HI) {
-					// random_number = rand() % 4;
-					// if(random_number == 0){
-						// kill PID
-					// }
-				// }
-				
-				
-				// if a process isn't scheduled, need to keep track of wait time.
-				// if(PCB[i].scheduled == 0) {
-					// PCB[i].end = clock();
-					// PCB[i].wait_total += (((PCB[i].end - PCB[i].begin) / CLOCKS_PER_SEC) * 1000000000);
-					// PCB[i].begin = clock();
-				// }
-				
-				
-				// if(PCB[i].wait_total < HIPRIORITY) {
-					// PCB[i].priority = HI;
-
-				// }
-				// else if(PCB[i].wait_total >= HIPRIORITY  && PCB[i].wait_total < LOWPRIORITY) {
-					// PCB[i].priority = MEDIUM;
-
-				// }
-				// else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
-					// PCB[i].priority = LOW;
-
-				// }
-			// }
+			if(PCB[i].ready == 0 && PCB[i].complete == 0){
+				if(PCB[i].wait_total >= HIPRIORITY  && PCB[i].wait_total < LOWPRIORITY) {
+					if(PCB[i].priority = HI){
+						pop_hi(i);
+						push_med(i);
+					}
+					PCB[i].priority = MED;
+				}
+				else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
+					if(PCB[i].priority = MED){
+						pop_med(i);
+						push_low(i);
+					}
+					PCB[i].priority = LOW;
+				}
+			}
+			
+			// schedule first of each queue for testing
+			PCB[hi_queue[0]].scheduled = 1;
+			PCB[med_queue[0]].scheduled = 1;
+			PCB[low_queue[0]].scheduled = 1;
+			
 			
 		}
 	}while (active_children > 0);

@@ -29,9 +29,9 @@ typedef struct {
 	long total_time_ns;
 	long last_burst_sec;
 	long last_burst_ns;
+	long start_wait;
+	long end_wait;
 	long wait_total;
-	clock_t begin;
-	clock_t end;
 	pid_t pid;
 	int scheduled;
 	int complete;
@@ -105,6 +105,7 @@ int main(int argc, char * argv[])
 	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shmTime->seconds, shmTime->nanoseconds);
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
+	PCB[i].start_wait = clock();
 	
 	srand(pid * time(NULL));
 	
@@ -118,6 +119,8 @@ int main(int argc, char * argv[])
 	unsigned int run_time = QUANTUM;
 	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
+		PCB[i].end_wait = clock();
+		PCB[i].wait_total += (((PCB[i].end_wait - PCB[i].start_wait) / CLOCKS_PER_SEC) * 1000000000);
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
 		if(PCB[pid].scheduled == 1){  
@@ -133,6 +136,7 @@ int main(int argc, char * argv[])
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
+					PCB[i].start_wait = clock();
 					printf("Child(.1): %d Wait. \n", pid);
 					continue;	
 				}
@@ -154,6 +158,7 @@ int main(int argc, char * argv[])
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
 					printf("Child(.2): %d Wait. \n", pid);
+					PCB[i].start_wait = clock();
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
@@ -168,6 +173,7 @@ int main(int argc, char * argv[])
 		else {
 			sem_post(sem); // adds 1, cede CS, not scheduled.
 			printf("Child: %d Not scheduled. \n", pid);
+			PCB[i].start_wait = clock();
 			continue;
 		}
 	}
