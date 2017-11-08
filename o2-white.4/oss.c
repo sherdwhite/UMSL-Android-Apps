@@ -315,7 +315,7 @@ int main(int argc, char * argv[])
 		// }
 		
 		for (i = 0; i < MAXCHILDREN; i++) {
-			if (PCB[i].scheduled == 1 && PCB[i].complete == 1 && childpid != 0){
+			if (PCB[i].scheduled == 1 && PCB[i].complete == 1){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
 				sprintf(msgtext, "Master: Child pid %d is terminating at my time %d:%ld. \n ", PCB[i].pid, shmTime->seconds, shmTime->nanoseconds);
@@ -329,32 +329,22 @@ int main(int argc, char * argv[])
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
-				//active_children -= 1;
+				// active_children -= 1;
 			}
 			
-			if(active_children < MAXCHILDREN && PCB[i].ready == 1){
+			if(active_children < 18 && PCB[i].ready == 1){
 				childpid = fork();
-				if (childpid < 0) {
+				if (childpid == -1) {
 					perror("Master: Failed to fork.");
 					return 1;
 				}
-				else if (childpid == 0) { 
+				if (childpid == 0) { 
 					delay.tv_sec = 1; // sec;
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
+					active_children++;
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
-					sprintf(cpid, "%d", i); 
-					execlp("user", "user", cpid, NULL);  // lp for passing arguements
-					//perror("Child failed to execlp. \n");
-					sprintf(shsec, "%d", shmTime->seconds);
-					sprintf(shnano, "%ld", shmTime->nanoseconds);
-					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
-					fputs(msgtext, file);
-					fputs(shsec, file);
-					fputs(":", file);
-					fputs(shnano, file);
-					fputs(". \n", file);
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
 							// shmTime->nanoseconds += nano;
@@ -380,19 +370,19 @@ int main(int argc, char * argv[])
 					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
 					PCB[i].begin = clock();
-					active_children++;
+					sprintf(cpid, "%d", i); 
+					execlp("user", "user", cpid, NULL);  // lp for passing arguements
+					//perror("Child failed to execlp. \n");
+					sprintf(shsec, "%d", shmTime->seconds);
+					sprintf(shnano, "%ld", shmTime->nanoseconds);
+					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(":", file);
+					fputs(shnano, file);
+					fputs(". \n", file);
 					printf("Active Children: %d. \n", active_children);
-
 					// continue;
-					random_time = rand() % 1000 + 1;
-					if((random_time + shmTime->nanoseconds)  > 999999000){
-						shmTime->nanoseconds += 0;
-						shmTime->seconds  += 2;
-					}
-					else {
-						shmTime->nanoseconds += random_time;
-						shmTime->seconds += 1;
-					}
 				}
 			}
 			// code here for scheduling
