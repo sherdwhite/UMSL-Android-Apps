@@ -111,11 +111,9 @@ void print_list() {
         return;
     }
 	
-	printf("Hi Queue: ");
     for (front = 0; front <= rear; front++) {
         printf(" %d ", hi_queue[front]);
     }
-	printf("\n");
  
     front = 0;
 	return;
