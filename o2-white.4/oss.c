@@ -106,16 +106,16 @@ void pop(int child) {
 }
 
 void print_list() {
-    if ((front == -1) && (rear == -1))
-    {
-        printf("\nQueue is empty");
+    if ((front == -1) && (rear == -1))    {
+        printf("Queue is empty.\n");
         return;
     }
- 
-    for (front = 0; front <= rear; front++)
-    {
+	
+	printf("Hi Queue: ");
+    for (front = 0; front <= rear; front++) {
         printf(" %d ", hi_queue[front]);
     }
+	printf("\n");
  
     front = 0;
 	return;
