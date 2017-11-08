@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
 	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shmTime->seconds, shmTime->nanoseconds);
 	// strcpy(shmMsg->msgTest, "Hello!");  // for writing messages
-	PCB[i].start_wait = clock();
+	PCB[pid].start_wait = clock();
 	
 	srand(pid * time(NULL));
 	
