@@ -133,14 +133,14 @@ int main(int argc, char * argv[])
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
-					printf("Wait. \n");
+					printf("Child: %d Wait. \n", pid);
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
 					sem_post(sem); // adds 1
 					clear = 1;
 					PCB[pid].complete = 1;
-					printf("Complete. \n");
+					printf("Child: %d Complete. \n", pid);
 					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
 					break;
 				}
