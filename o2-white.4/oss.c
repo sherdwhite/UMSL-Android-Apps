@@ -21,7 +21,7 @@
 #define MEDIUMPRIORITY 1000000			
 #define LOWPRIORITY 100000000
 #define QUANTUM 50000
-#define MAXCHILDREN 5 // 18
+#define MAXCHILDREN 18
 #define HI 0
 #define MED 1
 #define LOW 2
