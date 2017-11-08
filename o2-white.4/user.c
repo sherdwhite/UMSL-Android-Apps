@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
 	unsigned int run_time = QUANTUM;
 	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
-		// printf("Child: %d cleared sem_wait. \n", pid);
+		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
 		if(PCB[pid].scheduled == 1){  
 			//shmTime->seconds = PCB->seconds;
@@ -133,15 +133,14 @@ int main(int argc, char * argv[])
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
-					printf("Child: %d Wait. \n", pid);
+					printf("Child(.1): %d Wait. \n", pid);
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
 					sem_post(sem); // adds 1
 					clear = 1;
 					PCB[pid].complete = 1;
-					printf("Child: %d Complete. \n", pid);
-					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
+					printf("Child(.1): %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
 					break;
 				}
 			}
@@ -154,19 +153,21 @@ int main(int argc, char * argv[])
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
+					printf("Child(.2): %d Wait. \n", pid);
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
 					sem_post(sem); // adds 1
 					clear = 1;
 					PCB[pid].complete = 1;
-					printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
+					printf("Child(.2): %d cleared sem at sec: %d, nano: %ld \n", pid, shmTime->seconds, shmTime->nanoseconds);
 					break;
 				}
 			}
 		}
 		else {
 			sem_post(sem); // adds 1, cede CS, not scheduled.
+			printf("Child: %d Not scheduled. \n", pid);
 			continue;
 		}
 	}

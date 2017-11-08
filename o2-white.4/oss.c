@@ -318,6 +318,7 @@ int main(int argc, char * argv[])
 				fputs(". \n", file);
 				total_log_lines += 1;
 				pop(i);
+				print_list();
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
