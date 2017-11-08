@@ -337,9 +337,6 @@ int main(int argc, char * argv[])
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
-					active_children++;
-					push(i);
-					print_list();
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
@@ -355,6 +352,9 @@ int main(int argc, char * argv[])
 				}
 				
 				if (childpid != 0) {
+					active_children++;
+					push(i);
+					print_list();
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
