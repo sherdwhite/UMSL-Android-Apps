@@ -44,7 +44,7 @@ typedef struct {
 	clock_t begin;
 	clock_t end;
 	pid_t pid;
-	int priority;
+	int queue;
 	int scheduled;
 	int complete;
 	int ready;
@@ -512,18 +512,18 @@ int main(int argc, char * argv[])
 			// code here for scheduling
 			if(PCB[i].ready == 0 && PCB[i].complete == 0){
 				if(PCB[i].wait_total >= HIPRIORITY  && PCB[i].wait_total < LOWPRIORITY) {
-					if(PCB[i].priority = HI){
+					if(PCB[i].queue = HI){
 						pop_hi(i);
 						push_med(i);
 					}
-					PCB[i].priority = MED;
+					PCB[i].queue = MED;
 				}
 				else if(PCB[i].wait_total >= MEDIUMPRIORITY) {
-					if(PCB[i].priority = MED){
+					if(PCB[i].queue = MED){
 						pop_med(i);
 						push_low(i);
 					}
-					PCB[i].priority = LOW;
+					PCB[i].queue = LOW;
 				}
 			}
 			
