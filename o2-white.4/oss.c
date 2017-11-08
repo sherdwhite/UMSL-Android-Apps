@@ -307,7 +307,7 @@ int main(int argc, char * argv[])
 		// }
 		
 		for (i = 0; i < MAXCHILDREN; i++) {
-			if (PCB[i].scheduled == 1 && PCB[i].complete == 1){
+			if (PCB[i].scheduled == 1 && PCB[i].complete == 1 && childpid != 0){
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
 				sprintf(msgtext, "Master: Child pid %d is terminating at my time %d:%ld. \n ", PCB[i].pid, shmTime->seconds, shmTime->nanoseconds);
@@ -321,7 +321,7 @@ int main(int argc, char * argv[])
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
-				// active_children -= 1;
+				active_children -= 1;
 			}
 			
 			if(active_children < 18 && PCB[i].ready == 1){
