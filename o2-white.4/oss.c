@@ -340,6 +340,8 @@ int main(int argc, char * argv[])
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 					sprintf(cpid, "%d", i); 
 					execlp("user", "user", cpid, NULL);  // lp for passing arguements
+					active_children++;
+					printf("Active Children: %d. \n", active_children);
 					//perror("Child failed to execlp. \n");
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
@@ -351,8 +353,7 @@ int main(int argc, char * argv[])
 					// }
 				}
 				
-				if (childpid != 0) {
-					active_children++;
+				if (childpid != 0 && PCB[i].ready == 1) {
 					push(i);
 					print_list();
 					PCB[i].pid = i;    
@@ -375,7 +376,6 @@ int main(int argc, char * argv[])
 					fputs(":", file);
 					fputs(shnano, file);
 					fputs(". \n", file);
-					printf("Active Children: %d. \n", active_children);
 					// continue;
 				}
 			}
