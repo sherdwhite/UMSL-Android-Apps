@@ -328,6 +328,15 @@ int main(int argc, char * argv[])
 				delay.tv_sec = 1; // sec;
 				delay.tv_nsec = 0; // nano;
 				nanosleep(&delay, NULL);
+				random_time = rand() % 1000 + 1;
+				if((random_time + shmTime->nanoseconds)  > 999999000){
+					shmTime->nanoseconds += 0;
+					shmTime->seconds  += 2;
+				}
+				else {
+					shmTime->nanoseconds += random_time;
+					shmTime->seconds += 1;
+				}
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Master: Failed to fork.");
