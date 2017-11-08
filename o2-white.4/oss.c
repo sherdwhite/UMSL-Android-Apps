@@ -114,7 +114,6 @@ void print_list() {
     for (front = 0; front <= rear; front++) {
         printf(" %d ", hi_queue[front]);
     }
-	 printf("\n");
  
     front = 0;
 	return;
@@ -325,16 +324,16 @@ int main(int argc, char * argv[])
 				active_children -= 1;
 			}
 			
-			if(active_children < 18 && PCB[i].ready == 1){
+			if(active_children < MAXCHILDREN && PCB[i].ready == 1){
+				delay.tv_sec = 1; // sec;
+				delay.tv_nsec = 0; // nano;
+				nanosleep(&delay, NULL);
 				childpid = fork();
 				if (childpid == -1) {
 					perror("Master: Failed to fork.");
 					return 1;
 				}
 				if (childpid == 0) { 
-					delay.tv_sec = 1; // sec;
-					delay.tv_nsec = 0; // nano;
-					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 					sprintf(cpid, "%d", i); 
