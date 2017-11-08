@@ -52,8 +52,7 @@ FILE *file;
 char *filename = "log";
 
 void push(int child) {
-    if (rear >= MAXCHILDREN - 1)
-    {
+    if (rear >= MAXCHILDREN - 1) {
         printf("\nQueue overflow no more elements can be inserted");
         return;
     }
@@ -68,8 +67,7 @@ void push(int child) {
  
 		for (i = 0; i <= rear; i++){
 			if (child >= hi_queue[i]){
-				for (j = rear + 1; j > i; j--)
-				{
+				for (j = rear + 1; j > i; j--){
 					hi_queue[j] = hi_queue[j - 1];
 				}
 				hi_queue[i] = child;
@@ -84,18 +82,14 @@ void push(int child) {
 void pop(int child) {
     int i;
  
-    if ((front==-1) && (rear==-1))
-    {
+    if ((front==-1) && (rear==-1)) {
         printf("Queue is empty no elements to delete. \n");
         return;
     }
  
-    for (i = 0; i <= rear; i++)
-    {
-        if (child == hi_queue[i])
-        {
-            for (; i < rear; i++)
-            {
+    for (i = 0; i <= rear; i++){
+        if (child == hi_queue[i]){
+            for (; i < rear; i++){
                 hi_queue[i] = hi_queue[i + 1];
             }
  
@@ -344,7 +338,12 @@ int main(int argc, char * argv[])
 					nanosleep(&delay, NULL);
 					shmTime->seconds += 1;
 					active_children++;
+					push(i);
+					print_list();
 					printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
+					sprintf(cpid, "%d", i); 
+					execlp("user", "user", cpid, NULL);  // lp for passing arguements
+					//perror("Child failed to execlp. \n");
 					
 					// if((shmTime->nanoseconds + nano) < 1000000000){
 							// shmTime->nanoseconds += nano;
@@ -356,8 +355,6 @@ int main(int argc, char * argv[])
 				}
 				
 				if (childpid != 0) {
-					push(i);
-					print_list();
 					PCB[i].pid = i;    
 					PCB[i].total_CPU_time_sec = 0;
 					PCB[i].total_CPU_time_ns = 0;
@@ -370,9 +367,6 @@ int main(int argc, char * argv[])
 					PCB[i].ready = 0;
 					PCB[i].wait_total = 0;
 					PCB[i].begin = clock();
-					sprintf(cpid, "%d", i); 
-					execlp("user", "user", cpid, NULL);  // lp for passing arguements
-					//perror("Child failed to execlp. \n");
 					sprintf(shsec, "%d", shmTime->seconds);
 					sprintf(shnano, "%ld", shmTime->nanoseconds);
 					sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
