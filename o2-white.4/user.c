@@ -122,8 +122,8 @@ int main(int argc, char * argv[])
 	unsigned int run_time = QUANTUM;
 	while(clear == 0){
 		sem_wait(sem);  // wait until we can subtract 1
-		PCB[i].end_wait = clock();
-		PCB[i].wait_total += (((PCB[i].end_wait - PCB[i].start_wait) / CLOCKS_PER_SEC) * 1000000000);
+		PCB[pid].end_wait = clock();
+		PCB[pid].wait_total += (((PCB[pid].end_wait - PCB[pid].start_wait) / CLOCKS_PER_SEC) * 1000000000);
 		printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
 		if(PCB[pid].scheduled == 1){  
@@ -139,7 +139,7 @@ int main(int argc, char * argv[])
 				completed = rand() % 2;
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
-					PCB[i].start_wait = clock();
+					PCB[pid].start_wait = clock();
 					printf("Child(.1): %d Wait. \n", pid);
 					continue;	
 				}
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
 				if(completed == 0 && PCB[pid].total_time_ns < 50000000){
 					sem_post(sem); // adds 1
 					printf("Child(.2): %d Wait. \n", pid);
-					PCB[i].start_wait = clock();
+					PCB[pid].start_wait = clock();
 					continue;	
 				}
 				if(completed == 1 || PCB[pid].total_time_ns >= 50000000){
@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
 		else {
 			sem_post(sem); // adds 1, cede CS, not scheduled.
 			printf("Child: %d Not scheduled. \n", pid);
-			PCB[i].start_wait = clock();
+			PCB[pid].start_wait = clock();
 			continue;
 		}
 	}
