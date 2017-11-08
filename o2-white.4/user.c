@@ -32,7 +32,10 @@ typedef struct {
 	long start_wait;
 	long end_wait;
 	long wait_total;
+	clock_t begin;
+	clock_t end;
 	pid_t pid;
+	int priority;
 	int scheduled;
 	int complete;
 	int ready;

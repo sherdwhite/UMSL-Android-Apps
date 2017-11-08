@@ -44,6 +44,7 @@ typedef struct {
 	clock_t begin;
 	clock_t end;
 	pid_t pid;
+	int priority;
 	int scheduled;
 	int complete;
 	int ready;
@@ -58,7 +59,7 @@ int max_time = 60;
 FILE *file;
 char *filename = "log";
 
-void push_hi(int child, char ) {
+void push_hi(int child) {
     if (rear >= MAXCHILDREN - 1) {
         printf("\nQueue overflow no more elements can be inserted");
         return;
@@ -86,7 +87,7 @@ void push_hi(int child, char ) {
     rear++;
 }
 
-void push_med(int child, char ) {
+void push_med(int child) {
     if (rear >= MAXCHILDREN - 1) {
         printf("\nQueue overflow no more elements can be inserted");
         return;
@@ -114,7 +115,7 @@ void push_med(int child, char ) {
     rear++;
 }
 
-void push_low(int child, char ) {
+void push_low(int child) {
     if (rear >= MAXCHILDREN - 1) {
         printf("\nQueue overflow no more elements can be inserted");
         return;
