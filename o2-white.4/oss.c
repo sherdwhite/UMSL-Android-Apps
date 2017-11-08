@@ -329,16 +329,16 @@ int main(int argc, char * argv[])
 				PCB[i].complete = 0;
 				PCB[i].ready = 1;
 				PCB[i].scheduled = 0;
-				// active_children -= 1;
+				active_children -= 1;
 			}
 			
 			if(active_children < MAXCHILDREN && PCB[i].ready == 1){
 				childpid = fork();
-				if (childpid == -1) {
+				if (childpid < 0) {
 					perror("Master: Failed to fork.");
 					return 1;
 				}
-				if (childpid == 0) { 
+				else if (childpid == 0) { 
 					delay.tv_sec = 1; // sec;
 					delay.tv_nsec = 0; // nano;
 					nanosleep(&delay, NULL);
@@ -365,7 +365,7 @@ int main(int argc, char * argv[])
 					// }
 				}
 				
-				if (childpid != 0) {
+				else{
 					push(i);
 					print_list();
 					PCB[i].pid = i;    
