@@ -4,9 +4,9 @@ Assignment 5
 
 Objective: 
 
-	The goal of this assignment is to simulate a system clock, spawn children off, have them exit at a semi-random time, and then 
-	send a message back to the oss program.  The oss program writes the time info to a log.  As the program receives messages, 
-	it spawns a new process up to a total of 100 or until time runs out. 
+	The goal of this assignment is to design and implement a resource management module for our Operating System
+Simulator oss using the deadlock detection and recovery strategy to manage resources. There is no scheduling in this 
+project, but it will use shared memory.
 
 Details regarding the base program:
 
