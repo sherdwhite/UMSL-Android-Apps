@@ -36,7 +36,7 @@ FILE *file;
 char *filename = "log";
 int verbose = 0;
 
-void signalHandler();
+// void signalHandler();
 
 int main(int argc, char * argv[]) 
 {
@@ -128,38 +128,38 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_id = shmget(key, sizeof(shared_clock), PERM | IPC_CREAT | IPC_EXCL);
-    if (shm_id == -1) {
+	int shm_clock_id = shmget(key, sizeof(shared_clock), PERM | IPC_CREAT | IPC_EXCL);
+    if (shm_clock_id == -1) {
         perror("Failed to create shared clock segment. \n");
         return 1;
 	}
-	// printf("My OS segment id for shared memory is %d\n", shm_id);
+	// printf("My OS segment id for shared memory is %d\n", shm_clock_id);
 	
 	// attach shared memory segment
-	shared_clock* clock = (shared_clock*)shmat(shm_id, NULL, 0);
+	shared_clock* shm_clock = (shared_clock*)shmat(shm_clock_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (clock == (void*)-1) {
+    if (shm_clock == (void*)-1) {
         perror("Failed to attach shared clock segment. \n");
         return 1;
     }
-	// printf("My OS shared clock address is %x\n", clock);
+	// printf("My OS shared clock address is %x\n", shm_clock);
 	
-	int rsrckey = 91514;
-	int rsrc_id = shmget(rsrckey, sizeof(shared_resources)*20, PERM | IPC_CREAT | IPC_EXCL);
-    if (rsrc_id == -1) {
+	int rsrc_key = 91514;
+	int shm_rsrc_id = shmget(rsrc_key, sizeof(shared_resources)*20, PERM | IPC_CREAT | IPC_EXCL);
+    if (shm_rsrc_id == -1) {
         perror("Failed to create shared resources segment. \n");
         return 1;
 	}
-	// printf("My OS segment id for the resource share is %d\n", rsrc_id);
+	// printf("My OS segment id for the resource share is %d\n", shm_rsrc_id);
 	
 	// attach shared memory segment
-	shared_resources* resources = (shared_resources*)shmat(rsrc_id, NULL, 0);
+	shared_resources* shm_resources = (shared_resources*)shmat(shm_rsrc_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (resources == (void*)-1) {
+    if (shm_resources == (void*)-1) {
         perror("Failed to attach shared resources segment. \n");
         return 1;
     }
-	// printf("My OS resources address is %x\n", clock);
+	// printf("My OS resources address is %x\n", shm_clock);
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
@@ -170,16 +170,16 @@ int main(int argc, char * argv[])
     }	
 	
 	// set clock to zero
-	clock->seconds  = 0;
-	clock->nanoseconds  = 0;
+	shm_clock->seconds  = 0;
+	shm_clock->nanoseconds  = 0;
 	
 	// set resources to zero
 	for(i = 0; i < 20; i++)
 	{
-		resources[i].pid = 0;
-		resources[i].request = 0;
-		resources[i].allocation = 0;
-		resources[i].release = 0;
+		shm_resources[i].pid = 0;
+		shm_resources[i].request = 0;
+		shm_resources[i].allocation = 0;
+		shm_resources[i].release = 0;
 	}
 		
 	// pid_t childpid;
@@ -209,36 +209,38 @@ int main(int argc, char * argv[])
 	int total_log_lines = 0;
 	do {
 		if(elapsed_secs >= max_time || i >= max_children || total_log_lines >= 100000){
-			signalHandler();
+			pid_t pid = getpgrp();  // gets process group
+			printf("Terminating PID: %i due to limit met. \n", pid);
+			sem_close(sem);  // disconnect from semaphore
+			sem_unlink("BellandJ"); // destroy if all closed.
+			shmctl(shm_clock_id, IPC_RMID, NULL);
+			shmctl(shm_rsrc_id, IPC_RMID, NULL);
+			shmdt(shm_clock);
+			shmdt(shm_resources);
+			killpg(pid, SIGINT);  // kills the process group
+			exit(EXIT_SUCCESS);
+			// break;
 		}
 
-		if(clock->nanoseconds  > 999990000){
-			clock->nanoseconds  = 0;
-			clock->seconds  += 1;
+		if(shm_clock->nanoseconds  > 999990000){
+			shm_clock->nanoseconds  = 0;
+			shm_clock->seconds  += 1;
 		}
 		else{
-			clock->nanoseconds += 10000;
+			shm_clock->nanoseconds += 10000;
 		}
 
-		if(resources->ready == 1){
-			sprintf(shsec, "%d", clock->seconds);
-			sprintf(shnano, "%ld", clock->nanoseconds);
-			sprintf(msgsec, "%d", resources->seconds);
-			sprintf(msgnano, "%ld", resources->nanoseconds);
-			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", resources->pid);
+		if(shm_resources[i].release == 1){
+			sprintf(shsec, "%d", shm_clock->seconds);
+			sprintf(shnano, "%ld", shm_clock->nanoseconds);
+			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", shm_resources->pid);
 			fputs(msgtext, file);
 			fputs(shsec, file);
 			fputs(".", file);
 			fputs(shnano, file);
-			fputs(" because it reached ", file);
-			fputs(msgsec, file);
-			fputs(".", file);
-			fputs(msgnano, file);
-			fputs(" in slave. \n", file);
-			resources->pid = 0;
-			resources->seconds = 0;
-			resources->nanoseconds = 0;
-			resources->ready = 0;
+			fputs(".\n", file);
+			shm_resources[i].pid = 0;
+			shm_resources[i].release = 0;
 			i--;
 			continue;
 		}
@@ -255,32 +257,30 @@ int main(int argc, char * argv[])
 	printf("All children returned. \n");
 	printf("Total Children end: %d. \n", i);
 	
-    // printf("Msg: %s\n", resources->msg);
-	
 	sem_close(sem);  // disconnect from semaphore
 	sem_unlink("BellandJ"); // destroy if all closed.
 	 
 	// detach from shared memory segment
-	int detach = shmdt(clock);
+	int detach = shmdt(shm_clock);
 	if (detach == -1){
 		perror("Failed to detach clock memory segment. \n");
 		return 1;
 	}
 	// delete shared memory segment
-	int delete_mem = shmctl(shm_id, IPC_RMID, NULL);
+	int delete_mem = shmctl(shm_clock_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove shared memory segment. \n");
 		return 1;
 	}
 	
 	// detach from msg memory segment
-	detach = shmdt(resources);
+	detach = shmdt(shm_resources);
 	if (detach == -1){
 		perror("Failed to detach msg memory segment. \n");
 		return 1;
 	}
 	// delete msg memory segment
-	delete_mem = shmctl(rsrc_id, IPC_RMID, NULL);
+	delete_mem = shmctl(shm_rsrc_id, IPC_RMID, NULL);
 	if (delete_mem == -1){
 		perror("Failed to remove msg memory segment. \n");
 		return 1;
@@ -289,16 +289,6 @@ int main(int argc, char * argv[])
     return 0;
 }
 
-void signalHandler() {
-			pid_t pid = getpgrp();  // gets process group
-			printf("Terminating PID: %i due to limit met. \n", pid);
-			sem_close(sem);  // disconnect from semaphore
-			sem_unlink("BellandJ"); // destroy if all closed.
-			shmctl(shm_id, IPC_RMID, NULL);
-			shmctl(rsrc_id, IPC_RMID, NULL);
-			shmdt(clock);
-			shmdt(resources);
-			killpg(pid, SIGINT);  // kills the process group
-			exit(EXIT_SUCCESS);
-			// break;
-}
+// void signalHandler() {
+			
+// }

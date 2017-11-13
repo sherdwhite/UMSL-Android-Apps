@@ -50,55 +50,55 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_id = shmget(key, sizeof(shared_clock), SHM_RDONLY | IPC_CREAT);
-    if (shm_id == -1) {
+	int shm_clock_id = shmget(key, sizeof(shared_clock), SHM_RDONLY | IPC_CREAT);
+    if (shm_clock_id == -1) {
         perror("Failed to create shared memory segment. \n");
         return 1;
 	}
-	// printf("My user segment id for shared clock is %d\n", shm_id);
+	// printf("My user segment id for shared clock is %d\n", shm_clock_id);
 	
 	// attach shared memory segment
-	shared_clock* shared = (shared_clock*)shmat(shm_id, NULL, 0);
+	shared_clock* shm_clock = (shared_clock*)shmat(shm_clock_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (shared == (void*)-1) {
+    if (shm_clock == (void*)-1) {
         perror("Failed to attach shared memory segment. \n");
         return 1;
     }
-	// printf("My user shared clock address is %x\n", shared);
+	// printf("My user shared clock address is %x\n", shm_clock);
 	
-	int rsrckey = 91514;
-	int rsrc_id = shmget(rsrckey, sizeof(shared_resources), PERM | IPC_CREAT);
-    if (rsrc_id == -1) {
+	int rsrc_key = 91514;
+	int shm_rsrc_id = shmget(rsrc_key, sizeof(shared_resources)*20, PERM | IPC_CREAT);
+    if (shm_rsrc_id == -1) {
         perror("Failed to create shared resource segment. \n");
         return 1;
 	}
-	// printf("My user segment id for the resource share is %d\n", rsrc_id);
+	// printf("My user segment id for the resource share is %d\n", shm_rsrc_id);
 	
 	// attach shared memory segment
-	shared_resources* resources = (shared_resources*)shmat(rsrc_id, NULL, 0);
+	shared_resources* shm_resources = (shared_resources*)shmat(shm_rsrc_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (resources == (void*)-1) {
+    if (shm_resources == (void*)-1) {
         perror("Failed to attach resources segment. \n");
         return 1;
     }
-	// printf("My OS resources address is %x\n", shared);
+	// printf("My OS resources address is %x\n", shm_resources);
 	
-	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shared->seconds, shared->nanoseconds);
+	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shm_clock->seconds, shm_clock->nanoseconds);
 	 
-	// strcpy(resources->msgTest, "Hello!");  // for writing messages
+	// strcpy(shm_resources->msgTest, "Hello!");  // for writing messages
 	// printf("Child.\n");	
 	
 	srand(pid * time(NULL));
 	long nano_end = 0;
 	int sec_end = 0;
 	long random_time = rand() % 1000000 + 1;
-	if((shared->nanoseconds + random_time)  < 1000000000){
-			nano_end = shared->nanoseconds + rand() % 1000000 + 1;
-			sec_end = shared->seconds;
+	if((shm_clock->nanoseconds + random_time)  < 1000000000){
+			nano_end = shm_clock->nanoseconds + rand() % 1000000 + 1;
+			sec_end = shm_clock->seconds;
 		}
-	else if((shared->nanoseconds + random_time)  >= 1000000000){
-		nano_end = (shared->nanoseconds + random_time) - shared->nanoseconds ;
-		sec_end = shared->seconds  + 1;
+	else if((shm_clock->nanoseconds + random_time)  >= 1000000000){
+		nano_end = (shm_clock->nanoseconds + random_time) - shm_clock->nanoseconds ;
+		sec_end = shm_clock->seconds  + 1;
 	}
 	
 	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
@@ -119,14 +119,14 @@ int main(int argc, char * argv[])
 		sem_wait(sem);  // wait until we can subtract 1
 		// printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		if((sec_end < shared->seconds && resources->ready == 0) || (nano_end <= shared->nanoseconds && sec_end <= shared->seconds && resources->ready == 0)){  
-			resources->pid = pid;
-			resources->seconds = shared->seconds;
-			resources->nanoseconds = shared->nanoseconds;
+		if((sec_end < shm_clock->seconds && shm_resources->ready == 0) || (nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds && shm_resources->ready == 0)){  
+			shm_resources->pid = pid;
+			shm_resources->seconds = shm_clock->seconds;
+			shm_resources->nanoseconds = shm_clock->nanoseconds;
 			sem_post(sem); // adds 1
 			clear = 1;
-			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shared->seconds, shared->nanoseconds);
-			resources->ready = 1;
+			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
+			shm_resources->ready = 1;
 			break;
 		}
 		else {
@@ -138,14 +138,14 @@ int main(int argc, char * argv[])
 	sem_close(sem);  // disconnect from semaphore
 	
 	// detach from shared memory segment
-	int detach = shmdt(shared);
+	int detach = shmdt(shm_clock);
 	if (detach == -1){
 		perror("Failed to detach shared memory segment. \n");
 		return 1;
 	}
 	
 	// detach from msg memory segment
-	detach = shmdt(resources);
+	detach = shmdt(shm_resources);
 	if (detach == -1){
 		perror("Failed to detach shared msg memory segment. \n");
 		return 1;
