@@ -42,8 +42,8 @@ int main(int argc, char * argv[])
 {
 	
 	// Signal Handler
-	signal(SIGINT, signalHandler);
-	signal(SIGSEGV, signalHandler);
+	// signal(SIGINT, signalHandler);
+	// signal(SIGSEGV, signalHandler);
 	
 	int c;
 	clock_t begin = clock();
@@ -173,6 +173,7 @@ int main(int argc, char * argv[])
 	shm_clock->seconds  = 0;
 	shm_clock->nanoseconds  = 0;
 	
+	int i;	
 	// set resources to zero
 	for(i = 0; i < 20; i++)
 	{
