@@ -121,8 +121,6 @@ int main(int argc, char * argv[])
 		// Critical Section
 		if((sec_end < shm_clock->seconds && shm_resources->ready == 0) || (nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds && shm_resources->ready == 0)){  
 			shm_resources->pid = pid;
-			shm_resources->seconds = shm_clock->seconds;
-			shm_resources->nanoseconds = shm_clock->nanoseconds;
 			sem_post(sem); // adds 1
 			clear = 1;
 			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
