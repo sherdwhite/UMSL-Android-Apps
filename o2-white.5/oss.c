@@ -28,6 +28,7 @@ typedef struct {
 	int request;
 	int allocation;
 	int release;
+	int ready;
 } shared_resources;
 
 int max_time = 2;
@@ -49,6 +50,7 @@ int main(int argc, char * argv[])
 	clock_t begin = clock();
 	clock_t end;
 	double elapsed_secs;
+	srand(time(NULL));
 
 	while ((c = getopt (argc, argv, "hs:l:t:v:")) != -1)
     switch (c)
@@ -175,12 +177,12 @@ int main(int argc, char * argv[])
 	
 	int i;	
 	// set resources to zero
-	for(i = 0; i < 20; i++)
-	{
+	for(i = 0; i < 20; i++){
 		shm_resources[i].pid = 0;
 		shm_resources[i].request = 0;
 		shm_resources[i].allocation = 0;
 		shm_resources[i].release = 0;
+		shm_resources[i].ready = 1;
 	}
 		
 	// pid_t childpid;
@@ -208,8 +210,21 @@ int main(int argc, char * argv[])
 	char msgnano[10];
 	char msgtext[132];
 	int total_log_lines = 0;
+	int active_children = 0;
+	struct timespec next;
+	int random_time;
+	random_time = rand() % 50000000 + 1000000; // nano;
+	if((random_time + shmTime->nanoseconds) >= 1000000000){
+		next.tv_sec = shmTime->nanoseconds + 1;
+		next.tv_nsec = random_time - shmTime->nanoseconds;
+	}
+	else {
+		next.tv_sec = shmTime->nanoseconds;
+		next.tv_nsec = random_time + shmTime->nanoseconds;
+	}
+	
 	do {
-		if(elapsed_secs >= max_time || i >= max_children || total_log_lines >= 100000){
+		if(elapsed_secs >= max_time || active_children > max_children || total_log_lines >= 100000){
 			pid_t pid = getpgrp();  // gets process group
 			printf("Terminating PID: %i due to limit met. \n", pid);
 			sem_close(sem);  // disconnect from semaphore
@@ -231,19 +246,60 @@ int main(int argc, char * argv[])
 			shm_clock->nanoseconds += 10000;
 		}
 
-		if(shm_resources[i].release == 1){
-			sprintf(shsec, "%d", shm_clock->seconds);
-			sprintf(shnano, "%ld", shm_clock->nanoseconds);
-			sprintf(msgtext, "Master: Child pid %d is terminating at my time ", shm_resources->pid);
-			fputs(msgtext, file);
-			fputs(shsec, file);
-			fputs(".", file);
-			fputs(shnano, file);
-			fputs(".\n", file);
-			shm_resources[i].pid = 0;
-			shm_resources[i].release = 0;
-			i--;
-			continue;
+		for(i = 0; i < 20; i++){
+			if(shm_resources[i].release == 1){
+				sprintf(shsec, "%d", shm_clock->seconds);
+				sprintf(shnano, "%ld", shm_clock->nanoseconds);
+				sprintf(msgtext, "Master: Child pid %d is releasing resources at my time ", shm_resources->pid);
+				fputs(msgtext, file);
+				fputs(shsec, file);
+				fputs(".", file);
+				fputs(shnano, file);
+				fputs(".\n", file);
+				shm_resources[i].pid = 0;
+				shm_resources[i].release = 0;
+				shm_resources[i].ready = 1;
+				active_children--;
+				continue;
+			}
+		}
+		
+		if(active_children < MAXCHILDREN && PCB[i].ready == 1){   // need to fix this, remove ready and check if current time is over next
+			random_time = rand() % 50000000 + 1000000; // nano;
+			if((random_time + shmTime->nanoseconds) >= 1000000000){
+				next.tv_sec = shmTime->nanoseconds + 1;
+				next.tv_nsec = random_time - shmTime->nanoseconds;
+			}
+			else {
+				next.tv_sec = shmTime->nanoseconds;
+				next.tv_nsec = random_time + shmTime->nanoseconds;
+			}
+			childpid = fork();
+			if (childpid == -1) {
+				perror("Master: Failed to fork.");
+				return 1;
+			}
+			if (childpid == 0) { 
+				shmTime->seconds += 1;
+				printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
+				sprintf(cpid, "%d", i); 
+				execlp("user", "user", cpid, NULL);  // lp for passing arguements
+				active_children++;
+				printf("Active Children: %d. \n", active_children);
+				//perror("Child failed to execlp. \n");
+			}
+			
+			if (childpid != 0 && PCB[i].ready == 1) {
+				PCB[i].ready = 0;
+				sprintf(shsec, "%d", shmTime->seconds);
+				sprintf(shnano, "%ld", shmTime->nanoseconds);
+				sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
+				fputs(msgtext, file);
+				fputs(shsec, file);
+				fputs(":", file);
+				fputs(shnano, file);
+				fputs(". \n", file);
+			}
 		}
 		
 		end = clock();
