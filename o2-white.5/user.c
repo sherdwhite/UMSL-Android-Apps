@@ -118,12 +118,11 @@ int main(int argc, char * argv[])
 		sem_wait(sem);  // wait until we can subtract 1
 		// printf("Child: %d cleared sem_wait. \n", pid);
 		// Critical Section
-		if((sec_end < shm_clock->seconds && shm_resources->ready == 0) || (nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds && shm_resources->ready == 0)){  
-			shm_resources->pid = pid;
+		if((sec_end < shm_clock->seconds && shm_resources[pid].release == 0) || (nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds && shm_resources[pid].release == 0)){  
 			sem_post(sem); // adds 1
 			clear = 1;
 			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
-			shm_resources->release = 1;
+			shm_resources[pid].release = 1;
 			break;
 		}
 		else {
