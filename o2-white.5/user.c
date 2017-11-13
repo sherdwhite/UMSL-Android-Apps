@@ -28,7 +28,6 @@ typedef struct {
 	int request;
 	int allocation;
 	int release;
-	int ready;
 } shared_resources;
 
 int main(int argc, char * argv[]) 
@@ -124,7 +123,7 @@ int main(int argc, char * argv[])
 			sem_post(sem); // adds 1
 			clear = 1;
 			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
-			shm_resources->ready = 1;
+			shm_resources->release = 1;
 			break;
 		}
 		else {
