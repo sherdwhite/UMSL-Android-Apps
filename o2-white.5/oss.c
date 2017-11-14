@@ -213,15 +213,8 @@ int main(int argc, char * argv[])
 	int active_children = 0;
 	struct timespec next;
 	int random_time;
-	random_time = rand() % 50000000 + 1000000; // nano;
-	if((random_time + shmTime->nanoseconds) >= 1000000000){
-		next.tv_sec = shmTime->nanoseconds + 1;
-		next.tv_nsec = random_time - shmTime->nanoseconds;
-	}
-	else {
-		next.tv_sec = shmTime->nanoseconds;
-		next.tv_nsec = random_time + shmTime->nanoseconds;
-	}
+	next.tv_sec = 0;
+	next.tv_nsec = 0;
 	
 	do {
 		if(elapsed_secs >= max_time || active_children > max_children || total_log_lines >= 100000){
@@ -250,7 +243,7 @@ int main(int argc, char * argv[])
 			if(shm_resources[i].release == 1){
 				sprintf(shsec, "%d", shm_clock->seconds);
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sprintf(msgtext, "Master: Child pid %d is releasing resources at my time ", shm_resources->pid);
+				sprintf(msgtext, "OSS: Child pid %d is releasing resources at my time ", shm_resources->pid);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(".", file);
@@ -264,24 +257,25 @@ int main(int argc, char * argv[])
 			}
 		}
 		
-		if(active_children < MAXCHILDREN && PCB[i].ready == 1){   // need to fix this, remove ready and check if current time is over next
+		if(active_children < MAXCHILDREN && next.tv_sec <= shmTime->seconds && next.tv_nsec <=shmTime->nanoseconds){  
 			random_time = rand() % 50000000 + 1000000; // nano;
 			if((random_time + shmTime->nanoseconds) >= 1000000000){
-				next.tv_sec = shmTime->nanoseconds + 1;
+				next.tv_sec = shmTime->seconds + 1;
 				next.tv_nsec = random_time - shmTime->nanoseconds;
 			}
 			else {
-				next.tv_sec = shmTime->nanoseconds;
+				next.tv_sec = shmTime->seconds;
 				next.tv_nsec = random_time + shmTime->nanoseconds;
 			}
+			
 			childpid = fork();
 			if (childpid == -1) {
-				perror("Master: Failed to fork.");
+				perror("OSS: Failed to fork.");
 				return 1;
 			}
 			if (childpid == 0) { 
 				shmTime->seconds += 1;
-				printf("Master: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
+				printf("OSS: Child pid %d is starting at my time %d:%ld. \n ", i, shmTime->seconds, shmTime->nanoseconds);
 				sprintf(cpid, "%d", i); 
 				execlp("user", "user", cpid, NULL);  // lp for passing arguements
 				active_children++;
