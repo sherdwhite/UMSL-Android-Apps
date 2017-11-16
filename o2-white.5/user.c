@@ -135,13 +135,15 @@ int main(int argc, char * argv[])
 		}
 		else{
 			if(rand() % 10 <= 1){
-				if(shm_resources[pid].request = 0){
+				if(shm_resources[pid].request == 0 && shm_resources[pid].allocation == 0){
 					shm_resources[pid].request = 1;
+					shm_resources[pid].allocation == 0;
 					shm_resources[pid].release = 0;
 					break;
 				}
-				else if(shm_resources[pid].request = 1 && shm_resources[pid].allocation = 1){
+				else if(shm_resources[pid].request == 0 && shm_resources[pid].allocation == 1){
 					shm_resources[pid].request = 0;
+					shm_resources[pid].allocation == 0;
 					shm_resources[pid].release = 1;
 					break;
 				}
