@@ -10,8 +10,10 @@ project, but it will use shared memory.
 
 Details regarding the base program:
 
-	oss.c handles the forking process while user.c handles the critical section via a semaphore.  All requirements implimented 
-	except spawning of new processes as ones complete.
+	oss.c handles the forking process and resource allocation via shared memory, a semaphore, and other mechanisms. User.c 
+	is simply checking to see if resources are allocated and through the use of random checks will either continue or exit 
+	and release allocated resources.
+	
 	
 Instructions:
 	
@@ -21,5 +23,7 @@ Instructions:
 	-s x
 	-l filename
 	-t z
+	-v y
 	where x is the maximum number of slave processes spawned (default 5) and filename is the log file used. The
-	parameter z is the time in seconds when the master will terminate itself and all children (default 20)
+	parameter z is the time in seconds when the master will terminate itself and all children (default 20).  The parameter
+	y determines if the logs are Verbose or not.
