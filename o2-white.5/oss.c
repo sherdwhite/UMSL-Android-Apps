@@ -204,6 +204,7 @@ int main(int argc, char * argv[])
 	
 	// printf("Total Children: %d. \n", i);
 	pid_t childpid;
+	char cpid[12];
 	char shsec[2];
 	char shnano[10];
 	char msgsec[2];
