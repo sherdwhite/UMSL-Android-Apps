@@ -203,7 +203,7 @@ int main(int argc, char * argv[])
 	// }
 	
 	// printf("Total Children: %d. \n", i);
-	
+	pid_t childpid;
 	char shsec[2];
 	char shnano[10];
 	char msgsec[2];
@@ -257,7 +257,7 @@ int main(int argc, char * argv[])
 			}
 		}
 		
-		if(active_children < MAXCHILDREN && next.tv_sec <= shmTime->seconds && next.tv_nsec <=shmTime->nanoseconds){  
+		if(active_children < max_children && next.tv_sec <= shmTime->seconds && next.tv_nsec <=shmTime->nanoseconds){  
 			random_time = rand() % 50000000 + 1000000; // nano;
 			if((random_time + shmTime->nanoseconds) >= 1000000000){
 				next.tv_sec = shmTime->seconds + 1;
@@ -283,11 +283,11 @@ int main(int argc, char * argv[])
 				//perror("Child failed to execlp. \n");
 			}
 			
-			if (childpid != 0 && PCB[i].ready == 1) {
-				PCB[i].ready = 0;
+			if (childpid != 0 && shm_resources[i].ready == 1) {
+				shm_resources[i].ready = 0;
 				sprintf(shsec, "%d", shmTime->seconds);
 				sprintf(shnano, "%ld", shmTime->nanoseconds);
-				sprintf(msgtext, "OSS: Generating process with PID %d at time ", PCB[i].pid);
+				sprintf(msgtext, "OSS: Generating process with PID %d at time ", shm_resources[i].pid);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(":", file);
