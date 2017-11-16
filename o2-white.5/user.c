@@ -82,25 +82,6 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS resources address is %x\n", shm_resources);
 	
-	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shm_clock->seconds, shm_clock->nanoseconds);
-	 
-	// strcpy(shm_resources->msgTest, "Hello!");  // for writing messages
-	// printf("Child.\n");	
-	
-	srand(pid * time(NULL));
-	long nano_end = 0;
-	int sec_end = 0;
-	long random_time = rand() % 1000000 + 1;
-	if((shm_clock->nanoseconds + random_time)  < 1000000000){
-			nano_end = shm_clock->nanoseconds + rand() % 1000000 + 1;
-			sec_end = shm_clock->seconds;
-		}
-	else if((shm_clock->nanoseconds + random_time)  >= 1000000000){
-		nano_end = (shm_clock->nanoseconds + random_time) - shm_clock->nanoseconds ;
-		sec_end = shm_clock->seconds  + 1;
-	}
-	
-	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
 	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
 	// 0644 permission. 1 is the initial value of the semaphore
@@ -110,24 +91,61 @@ int main(int argc, char * argv[])
         return;
     }
 	
-	// int sem_value;
-	// sem_getvalue(sem, &sem_value);
-	// printf("Child: %d, Semaphore value is %d. \n", pid, sem_value);
+	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shm_clock->seconds, shm_clock->nanoseconds);
+	 
+	// strcpy(shm_resources->msgTest, "Hello!");  // for writing messages
+	// printf("Child.\n");	
+	
+	srand(time(NULL));
+	long nano_end = 0;
+	int sec_end = 0;
+	long random_time = rand() % 250000000;
+	if((shm_clock->nanoseconds + random_time)  < 1000000000){
+			nano_end = shm_clock->nanoseconds + random_time;
+			sec_end = shm_clock->seconds;
+		}
+	else if((shm_clock->nanoseconds + random_time)  >= 1000000000){
+		nano_end = (shm_clock->nanoseconds + random_time) - shm_clock->nanoseconds ;
+		sec_end = shm_clock->seconds  + 1;
+	}
+	
+	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
+	
 	int clear = 0;
 	while(clear == 0){
-		sem_wait(sem);  // wait until we can subtract 1
-		// printf("Child: %d cleared sem_wait. \n", pid);
-		// Critical Section
-		if((sec_end < shm_clock->seconds && shm_resources[pid].release == 0) || (nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds && shm_resources[pid].release == 0)){  
-			sem_post(sem); // adds 1
-			clear = 1;
-			printf("Child: %d cleared sem at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
-			shm_resources[pid].release = 1;
-			break;
+		if(nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds){
+			if(rand() % 10 <= 1){
+				shm_resources[pid].request = 0;
+				shm_resources[pid].allocation = 0;
+				shm_resources[pid].release = 1;
+				clear = 1;
+				printf("Child: %d releasing resources at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
+			}
+			else{
+				random_time = rand() % 250000000;
+				if((shm_clock->nanoseconds + random_time)  < 1000000000){
+						nano_end = shm_clock->nanoseconds + random_time;
+						sec_end = shm_clock->seconds;
+				}
+				else if((shm_clock->nanoseconds + random_time)  >= 1000000000){
+					nano_end = (shm_clock->nanoseconds + random_time) - shm_clock->nanoseconds ;
+					sec_end = shm_clock->seconds  + 1;
+				}
+			}
 		}
-		else {
-			sem_post(sem); // adds 1, cede CS, not ready to send msg.
-			continue;
+		else{
+			if(rand() % 10 <= 1){
+				if(shm_resources[pid].request = 0){
+					shm_resources[pid].request = 1;
+					shm_resources[pid].release = 0;
+					break;
+				}
+				else if(shm_resources[pid].request = 1 && shm_resources[pid].allocation = 1){
+					shm_resources[pid].request = 0;
+					shm_resources[pid].release = 1;
+					break;
+				}
+			}
 		}
 	}
 	
