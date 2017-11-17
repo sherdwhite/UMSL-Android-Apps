@@ -227,7 +227,7 @@ int main(int argc, char * argv[])
 	do {
 		if(elapsed_secs >= max_time || active_children > max_children || total_log_lines >= 100000){
 			pid_t pid = getpgrp();  // gets process group
-			printf("Terminating PID: %i due to limit met. Elapsed Seconds: %i. Active chilren: %i; Log lines: %i. \n", pid, elapsed_secs, active_children, total_log_lines);
+			printf("Terminating PID: %i due to limit met. Elapsed Seconds: %d. Active chilren: %d; Log lines: %d. \n", pid, elapsed_secs, active_children, total_log_lines);
 			sem_close(sem);  // disconnect from semaphore
 			sem_unlink("BellandJ"); // destroy if all closed.
 			shmctl(shm_clock_id, IPC_RMID, NULL);
@@ -251,15 +251,17 @@ int main(int argc, char * argv[])
 
 		for(i = 0; i < max_children; i++){
 			if(shm_resources[i].release == 1){
-				sprintf(shsec, "%d", shm_clock->seconds);
-				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sprintf(msgtext, "OSS: Child pid %d is releasing resources %d at my time ", i, shm_resources[i].resource_descriptor);
-				fputs(msgtext, file);
-				fputs(shsec, file);
-				fputs(".", file);
-				fputs(shnano, file);
-				fputs(".\n", file);
-				total_log_lines++;
+				if(verbose == 1){
+					sprintf(shsec, "%d", shm_clock->seconds);
+					sprintf(shnano, "%ld", shm_clock->nanoseconds);
+					sprintf(msgtext, "OSS: Child pid %d is releasing resources %d at my time ", i, shm_resources[i].resource_descriptor);
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(".", file);
+					fputs(shnano, file);
+					fputs(".\n", file);
+					total_log_lines++;
+				}
 				shm_resources[i].request = 0;
 				shm_resources[i].allocation = 0;
 				resource_queue[shm_resources[i].resource_descriptor]--;
@@ -275,12 +277,14 @@ int main(int argc, char * argv[])
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
 				shm_resources[i].resource_descriptor = random_resource;
 				sprintf(msgtext, "OSS: Child pid %d is allocated to resource %d at my time ", i, random_resource);
-				fputs(msgtext, file);
-				fputs(shsec, file);
-				fputs(".", file);
-				fputs(shnano, file);
-				fputs(".\n", file);
-				total_log_lines++;
+				if(verbose == 1){
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(".", file);
+					fputs(shnano, file);
+					fputs(".\n", file);
+					total_log_lines++;
+				}
 				shm_resources[i].request = 0;
 				shm_resources[i].allocation = 1;
 				shm_resources[i].release = 0;
@@ -324,12 +328,14 @@ int main(int argc, char * argv[])
 					sprintf(shsec, "%d", shm_clock->seconds);
 					sprintf(shnano, "%ld", shm_clock->nanoseconds);
 					sprintf(msgtext, "OSS: Generating process with PID %d at time ", shm_resources[i].pid);
-					fputs(msgtext, file);
-					fputs(shsec, file);
-					fputs(":", file);
-					fputs(shnano, file);
-					fputs(". \n", file);
-					total_log_lines++;
+					if(verbose == 1){
+						fputs(msgtext, file);
+						fputs(shsec, file);
+						fputs(":", file);
+						fputs(shnano, file);
+						fputs(". \n", file);
+						total_log_lines++;
+					}
 					j++;
 				}
 			}
@@ -344,18 +350,21 @@ int main(int argc, char * argv[])
 						sprintf(shnano, "%ld", shm_clock->nanoseconds);
 						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources at my time ", i, p);
 						// printf("OSS: Deadlock on resource %i. Child pid %d is releasing resources at my time %d:%ld. \n", i, p, shm_resources[i].resource_descriptor, shm_clock->seconds, shm_clock->nanoseconds);
-						fputs(msgtext, file);
-						fputs(shsec, file);
-						fputs(".", file);
-						fputs(shnano, file);
-						fputs(".\n", file);
-						total_log_lines++;
+						if(verbose == 1){
+							fputs(msgtext, file);
+							fputs(shsec, file);
+							fputs(".", file);
+							fputs(shnano, file);
+							fputs(".\n", file);
+							total_log_lines++;
+						}
 						shm_resources[p].request = 0;
 						shm_resources[p].allocation = 0;
 						resource_queue[shm_resources[p].resource_descriptor]--;
 						shm_resources[p].resource_descriptor = 99;
 						shm_resources[p].release = 0;
-						shm_resources[p].ready = 1;
+						shm_resources[p].ready = 1
+						active_children--;
 					}
 				}
 			}
