@@ -339,8 +339,8 @@ int main(int argc, char * argv[])
 	} while(elapsed_secs < max_time);
 	
 	// wait for children
-	int j;
-	for (j = 0; j <= i; j++){
+	int k;
+	for (k = 0; k <= i; k++){
 		wait(NULL);
 	}
 	printf("All children returned. \n");
