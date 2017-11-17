@@ -257,6 +257,7 @@ int main(int argc, char * argv[])
 				fputs(".", file);
 				fputs(shnano, file);
 				fputs(".\n", file);
+				total_log_lines++;
 				shm_resources[i].request = 0;
 				shm_resources[i].allocation = 0;
 				resource_queue[shm_resources[i].resource_descriptor]--;
@@ -277,6 +278,7 @@ int main(int argc, char * argv[])
 				fputs(".", file);
 				fputs(shnano, file);
 				fputs(".\n", file);
+				total_log_lines++;
 				shm_resources[i].request = 0;
 				shm_resources[i].allocation = 1;
 				shm_resources[i].release = 0;
@@ -306,6 +308,7 @@ int main(int argc, char * argv[])
 					if (childpid == 0) { 
 						printf("OSS: Child pid %d is starting at my time %d:%ld. \n ", i, shm_clock->seconds, shm_clock->nanoseconds);
 						sprintf(cpid, "%d", i); 
+						shm_resources[i].pid = i;
 						execlp("user", "user", cpid, NULL);  // lp for passing arguements
 						active_children++;
 						printf("Active Children: %d. \n", active_children);
@@ -322,6 +325,7 @@ int main(int argc, char * argv[])
 						fputs(":", file);
 						fputs(shnano, file);
 						fputs(". \n", file);
+						total_log_lines++;
 					}
 				}
 				break;
