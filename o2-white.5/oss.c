@@ -226,7 +226,7 @@ int main(int argc, char * argv[])
 	do {
 		if(elapsed_secs >= max_time || active_children > max_children || total_log_lines >= 100000){
 			pid_t pid = getpgrp();  // gets process group
-			printf("Terminating PID: %i due to limit met. Elapsed Seconds: %d. Active chilren: %d; Log lines: %d. \n", pid, elapsed_secs, active_children, total_log_lines);
+			printf("Terminating PID: %i due to limit met. Elapsed Seconds: %i. Active chilren: %i; Log lines: %i. \n", pid, elapsed_secs, active_children, total_log_lines);
 			sem_close(sem);  // disconnect from semaphore
 			sem_unlink("BellandJ"); // destroy if all closed.
 			shmctl(shm_clock_id, IPC_RMID, NULL);
@@ -252,7 +252,7 @@ int main(int argc, char * argv[])
 			if(shm_resources[i].release == 1){
 				sprintf(shsec, "%d", shm_clock->seconds);
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sprintf(msgtext, "OSS: Child pid %d is releasing resources %c at my time ", i, shm_resources[i].resource_descriptor);
+				sprintf(msgtext, "OSS: Child pid %d is releasing resources %d at my time ", i, shm_resources[i].resource_descriptor);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(".", file);
