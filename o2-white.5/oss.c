@@ -222,6 +222,7 @@ int main(int argc, char * argv[])
 	next.tv_sec = 0;
 	next.tv_nsec = 0;
 	int j = 0;
+	int p;
 	
 	do {
 		if(elapsed_secs >= max_time || active_children > max_children || total_log_lines >= 100000){
@@ -248,7 +249,7 @@ int main(int argc, char * argv[])
 		}
 		sem_post(sem); // adds 1
 
-		for(i = 0; i < 20; i++){
+		for(i = 0; i < max_children; i++){
 			if(shm_resources[i].release == 1){
 				sprintf(shsec, "%d", shm_clock->seconds);
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
@@ -334,6 +335,31 @@ int main(int argc, char * argv[])
 			}
 		}
 		
+		// Deadlock Detection
+		for(i = 0; i < 20; i++){
+			if(resource_queue[i] >=10){
+				for(p = 0; p < max_children; p++){
+					if(shm_resources[p].resource_descriptor == i){
+						shm_resources[p].request = 0;
+						shm_resources[p].allocation = 0;
+						resource_queue[shm_resources[i].resource_descriptor]--;
+						shm_resources[p].resource_descriptor = 99;
+						shm_resources[p].release = 0;
+						shm_resources[p].ready = 1;
+						sprintf(shsec, "%d", shm_clock->seconds);
+						sprintf(shnano, "%ld", shm_clock->nanoseconds);
+						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
+						fputs(msgtext, file);
+						fputs(shsec, file);
+						fputs(".", file);
+						fputs(shnano, file);
+						fputs(".\n", file);
+						total_log_lines++;
+					}
+				}
+			}
+		}
+				
 		end = clock();
 		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
 	} while(elapsed_secs < max_time);
