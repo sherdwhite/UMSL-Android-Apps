@@ -363,7 +363,7 @@ int main(int argc, char * argv[])
 						resource_queue[shm_resources[p].resource_descriptor]--;
 						shm_resources[p].resource_descriptor = 99;
 						shm_resources[p].release = 0;
-						shm_resources[p].ready = 1
+						shm_resources[p].ready = 1;
 						active_children--;
 					}
 				}
