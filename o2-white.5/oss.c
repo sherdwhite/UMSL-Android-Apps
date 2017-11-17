@@ -349,6 +349,7 @@ int main(int argc, char * argv[])
 						sprintf(shsec, "%d", shm_clock->seconds);
 						sprintf(shnano, "%ld", shm_clock->nanoseconds);
 						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
+						printf("OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
 						fputs(msgtext, file);
 						fputs(shsec, file);
 						fputs(".", file);
