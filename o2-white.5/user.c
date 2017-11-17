@@ -27,7 +27,9 @@ typedef struct {
 	pid_t pid;
 	int request;
 	int allocation;
+	int mem_location;
 	int release;
+	int ready;
 } shared_resources;
 
 int main(int argc, char * argv[]) 
@@ -82,15 +84,6 @@ int main(int argc, char * argv[])
     }
 	// printf("My OS resources address is %x\n", shm_resources);
 	
-	
-	// Initialize named semaphore for shared processes.  Create it if it wasn't created, 
-	// 0644 permission. 1 is the initial value of the semaphore
-	sem_t *sem = sem_open("BellandJ", 1);
-	if(sem == SEM_FAILED) {
-        perror("Child Failed to sem_open. \n");
-        return;
-    }
-	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shm_clock->seconds, shm_clock->nanoseconds);
 	 
 	// strcpy(shm_resources->msgTest, "Hello!");  // for writing messages
@@ -139,19 +132,15 @@ int main(int argc, char * argv[])
 					shm_resources[pid].request = 1;
 					shm_resources[pid].allocation == 0;
 					shm_resources[pid].release = 0;
-					break;
 				}
 				else if(shm_resources[pid].request == 0 && shm_resources[pid].allocation == 1){
 					shm_resources[pid].request = 0;
 					shm_resources[pid].allocation == 0;
 					shm_resources[pid].release = 1;
-					break;
 				}
 			}
 		}
 	}
-	
-	sem_close(sem);  // disconnect from semaphore
 	
 	// detach from shared memory segment
 	int detach = shmdt(shm_clock);

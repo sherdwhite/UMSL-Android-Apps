@@ -27,10 +27,13 @@ typedef struct {
 	pid_t pid;
 	int request;
 	int allocation;
+	int resource_descriptor;
 	int release;
 	int ready;
 } shared_resources;
 
+// populate resource
+int resource_queue[20] = { 2, 5, 9, 2, 7, 1, 8, 3, 6, 5, 2, 5, 9, 0, 7, 1, 8, 3, 6, 5 };
 int max_time = 2;
 int max_children = 5;
 FILE *file;
@@ -181,6 +184,7 @@ int main(int argc, char * argv[])
 		shm_resources[i].pid = 0;
 		shm_resources[i].request = 0;
 		shm_resources[i].allocation = 0;
+		shm_resources[i].resource_descriptor = 99;
 		shm_resources[i].release = 0;
 		shm_resources[i].ready = 1;
 	}
@@ -214,6 +218,7 @@ int main(int argc, char * argv[])
 	int active_children = 0;
 	struct timespec next;
 	int random_time;
+	int random_resource;
 	next.tv_sec = 0;
 	next.tv_nsec = 0;
 	
@@ -232,6 +237,7 @@ int main(int argc, char * argv[])
 			// break;
 		}
 
+		sem_wait(sem);  // wait until we can subtract 1
 		if(shm_clock->nanoseconds  > 999990000){
 			shm_clock->nanoseconds  = 0;
 			shm_clock->seconds  += 1;
@@ -239,25 +245,46 @@ int main(int argc, char * argv[])
 		else{
 			shm_clock->nanoseconds += 10000;
 		}
+		sem_post(sem); // adds 1
 
 		for(i = 0; i < 20; i++){
 			if(shm_resources[i].release == 1){
 				sprintf(shsec, "%d", shm_clock->seconds);
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sprintf(msgtext, "OSS: Child pid %d is releasing resources at my time ", shm_resources->pid);
+				sprintf(msgtext, "OSS: Child pid %d is releasing resources %c at my time ", i, shm_resources[i].resource_descriptor);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(".", file);
 				fputs(shnano, file);
 				fputs(".\n", file);
-				shm_resources[i].pid = 0;
+				shm_resources[i].request = 0;
+				shm_resources[i].allocation = 0;
+				resource_queue[shm_resources[i].resource_descriptor]--;
+				shm_resources[i].resource_descriptor = 99;
 				shm_resources[i].release = 0;
 				shm_resources[i].ready = 1;
 				active_children--;
-				continue;
+			}
+			
+			if(shm_resources[i].request == 1 && shm_resources[i].allocation == 0){
+				random_resource = rand() % 20;
+				sprintf(shsec, "%d", shm_clock->seconds);
+				sprintf(shnano, "%ld", shm_clock->nanoseconds);
+				shm_resources[i].resource_descriptor = random_resource;
+				sprintf(msgtext, "OSS: Child pid %d is allocated to resource %d at my time ", i, random_resource);
+				fputs(msgtext, file);
+				fputs(shsec, file);
+				fputs(".", file);
+				fputs(shnano, file);
+				fputs(".\n", file);
+				shm_resources[i].request = 0;
+				shm_resources[i].allocation = 1;
+				shm_resources[i].release = 0;
+				resource_queue[random_resource]++;
 			}
 		}
-		
+
+		// This isn't correct.  Need to loop through i.
 		if(active_children < max_children && next.tv_sec <= shm_clock->seconds && next.tv_nsec <=shm_clock->nanoseconds){  
 			random_time = rand() % 50000000 + 1000000; // nano;
 			if((random_time + shm_clock->nanoseconds) >= 1000000000){
@@ -269,31 +296,35 @@ int main(int argc, char * argv[])
 				next.tv_nsec = random_time + shm_clock->nanoseconds;
 			}
 			
-			childpid = fork();
-			if (childpid == -1) {
-				perror("OSS: Failed to fork.");
-				return 1;
-			}
-			if (childpid == 0) { 
-				shm_clock->seconds += 1;
-				printf("OSS: Child pid %d is starting at my time %d:%ld. \n ", i, shm_clock->seconds, shm_clock->nanoseconds);
-				sprintf(cpid, "%d", i); 
-				execlp("user", "user", cpid, NULL);  // lp for passing arguements
-				active_children++;
-				printf("Active Children: %d. \n", active_children);
-				//perror("Child failed to execlp. \n");
-			}
-			
-			if (childpid != 0 && shm_resources[i].ready == 1) {
-				shm_resources[i].ready = 0;
-				sprintf(shsec, "%d", shm_clock->seconds);
-				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sprintf(msgtext, "OSS: Generating process with PID %d at time ", shm_resources[i].pid);
-				fputs(msgtext, file);
-				fputs(shsec, file);
-				fputs(":", file);
-				fputs(shnano, file);
-				fputs(". \n", file);
+			for(i = 0; i < 20; i++){
+				if (shm_resources[i].ready == 1) {
+					childpid = fork();
+					if (childpid == -1) {
+						perror("OSS: Failed to fork.");
+						return 1;
+					}
+					if (childpid == 0) { 
+						printf("OSS: Child pid %d is starting at my time %d:%ld. \n ", i, shm_clock->seconds, shm_clock->nanoseconds);
+						sprintf(cpid, "%d", i); 
+						execlp("user", "user", cpid, NULL);  // lp for passing arguements
+						active_children++;
+						printf("Active Children: %d. \n", active_children);
+						//perror("Child failed to execlp. \n");
+					}
+					
+					if (childpid != 0 && shm_resources[i].ready == 1) {
+						shm_resources[i].ready = 0;
+						sprintf(shsec, "%d", shm_clock->seconds);
+						sprintf(shnano, "%ld", shm_clock->nanoseconds);
+						sprintf(msgtext, "OSS: Generating process with PID %d at time ", shm_resources[i].pid);
+						fputs(msgtext, file);
+						fputs(shsec, file);
+						fputs(":", file);
+						fputs(shnano, file);
+						fputs(". \n", file);
+					}
+				}
+				break;
 			}
 		}
 		
