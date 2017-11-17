@@ -343,7 +343,7 @@ int main(int argc, char * argv[])
 						sprintf(shsec, "%d", shm_clock->seconds);
 						sprintf(shnano, "%ld", shm_clock->nanoseconds);
 						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
-						printf("OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d. \n", i, p, shm_resources[i].resource_descriptor);
+						printf("OSS: Deadlock on resource %i. Child pid %d is releasing resources at my time %d:%ld. \n", i, p, shm_resources[i].resource_descriptor, shm_clock->seconds, shm_clock->nanoseconds );
 						fputs(msgtext, file);
 						fputs(shsec, file);
 						fputs(".", file);
@@ -352,7 +352,7 @@ int main(int argc, char * argv[])
 						total_log_lines++;
 						shm_resources[p].request = 0;
 						shm_resources[p].allocation = 0;
-						resource_queue[shm_resources[i].resource_descriptor]--;
+						resource_queue[shm_resources[p].resource_descriptor]--;
 						shm_resources[p].resource_descriptor = 99;
 						shm_resources[p].release = 0;
 						shm_resources[p].ready = 1;
