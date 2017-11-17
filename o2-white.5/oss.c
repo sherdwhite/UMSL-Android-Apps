@@ -340,22 +340,22 @@ int main(int argc, char * argv[])
 			if(resource_queue[i] >=10){
 				for(p = 0; p < max_children; p++){
 					if(shm_resources[p].resource_descriptor == i){
-						shm_resources[p].request = 0;
-						shm_resources[p].allocation = 0;
-						resource_queue[shm_resources[i].resource_descriptor]--;
-						shm_resources[p].resource_descriptor = 99;
-						shm_resources[p].release = 0;
-						shm_resources[p].ready = 1;
 						sprintf(shsec, "%d", shm_clock->seconds);
 						sprintf(shnano, "%ld", shm_clock->nanoseconds);
 						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
-						printf("OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
+						printf("OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d. \n", i, p, shm_resources[i].resource_descriptor);
 						fputs(msgtext, file);
 						fputs(shsec, file);
 						fputs(".", file);
 						fputs(shnano, file);
 						fputs(".\n", file);
 						total_log_lines++;
+						shm_resources[p].request = 0;
+						shm_resources[p].allocation = 0;
+						resource_queue[shm_resources[i].resource_descriptor]--;
+						shm_resources[p].resource_descriptor = 99;
+						shm_resources[p].release = 0;
+						shm_resources[p].ready = 1;
 					}
 				}
 			}
