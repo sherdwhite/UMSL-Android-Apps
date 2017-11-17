@@ -287,7 +287,7 @@ int main(int argc, char * argv[])
 			}
 		}
 		
-		if(j > max_children){
+		if(j >= max_children){
 			j = 0;
 		}
 		
