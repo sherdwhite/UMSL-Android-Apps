@@ -350,14 +350,12 @@ int main(int argc, char * argv[])
 						sprintf(shnano, "%ld", shm_clock->nanoseconds);
 						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources at my time ", i, p);
 						// printf("OSS: Deadlock on resource %i. Child pid %d is releasing resources at my time %d:%ld. \n", i, p, shm_resources[i].resource_descriptor, shm_clock->seconds, shm_clock->nanoseconds);
-						if(verbose == 1){
-							fputs(msgtext, file);
-							fputs(shsec, file);
-							fputs(".", file);
-							fputs(shnano, file);
-							fputs(".\n", file);
-							total_log_lines++;
-						}
+						fputs(msgtext, file);
+						fputs(shsec, file);
+						fputs(".", file);
+						fputs(shnano, file);
+						fputs(".\n", file);
+						total_log_lines++;
 						shm_resources[p].request = 0;
 						shm_resources[p].allocation = 0;
 						resource_queue[shm_resources[p].resource_descriptor]--;
