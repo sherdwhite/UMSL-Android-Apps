@@ -284,21 +284,18 @@ int main(int argc, char * argv[])
 				shm_resources[i].release = 0;
 				resource_queue[random_resource]++;
 			}
-		}
-
-		// This isn't correct.  Need to loop through i.
-		if(active_children < max_children && next.tv_sec <= shm_clock->seconds && next.tv_nsec <=shm_clock->nanoseconds){  
-			random_time = rand() % 50000000 + 1000000; // nano;
-			if((random_time + shm_clock->nanoseconds) >= 1000000000){
-				next.tv_sec = shm_clock->seconds + 1;
-				next.tv_nsec = random_time - shm_clock->nanoseconds;
-			}
-			else {
-				next.tv_sec = shm_clock->seconds;
-				next.tv_nsec = random_time + shm_clock->nanoseconds;
-			}
 			
-			for(i = 0; i < 20; i++){
+			if(active_children < max_children && next.tv_sec <= shm_clock->seconds && next.tv_nsec <=shm_clock->nanoseconds){  
+				random_time = rand() % 50000000 + 1000000; // nano;
+				if((random_time + shm_clock->nanoseconds) >= 1000000000){
+					next.tv_sec = shm_clock->seconds + 1;
+					next.tv_nsec = random_time - shm_clock->nanoseconds;
+				}
+				else {
+					next.tv_sec = shm_clock->seconds;
+					next.tv_nsec = random_time + shm_clock->nanoseconds;
+				}
+
 				if (shm_resources[i].ready == 1) {
 					childpid = fork();
 					if (childpid == -1) {
