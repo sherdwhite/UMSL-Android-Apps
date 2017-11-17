@@ -342,8 +342,8 @@ int main(int argc, char * argv[])
 					if(shm_resources[p].resource_descriptor == i){
 						sprintf(shsec, "%d", shm_clock->seconds);
 						sprintf(shnano, "%ld", shm_clock->nanoseconds);
-						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources %d at my time ", i, p, shm_resources[i].resource_descriptor);
-						printf("OSS: Deadlock on resource %i. Child pid %d is releasing resources at my time %d:%ld. \n", i, p, shm_resources[i].resource_descriptor, shm_clock->seconds, shm_clock->nanoseconds );
+						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources at my time ", i, p);
+						// printf("OSS: Deadlock on resource %i. Child pid %d is releasing resources at my time %d:%ld. \n", i, p, shm_resources[i].resource_descriptor, shm_clock->seconds, shm_clock->nanoseconds);
 						fputs(msgtext, file);
 						fputs(shsec, file);
 						fputs(".", file);
