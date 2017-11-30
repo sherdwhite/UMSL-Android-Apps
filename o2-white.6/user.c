@@ -30,7 +30,10 @@ typedef struct {
 	int mem_location;
 	int release;
 	int ready;
-} shared_resources;
+} shared_memory;
+
+int memory[256];
+char page_table[256];
 
 int main(int argc, char * argv[]) 
 {
@@ -51,42 +54,73 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_clock_id = shmget(key, sizeof(shared_clock), SHM_RDONLY | IPC_CREAT);
+	int shm_clock_id = shmget(key, sizeof(shared_clock), PERM | IPC_CREAT | IPC_EXCL);
     if (shm_clock_id == -1) {
-        perror("Failed to create shared memory segment. \n");
+        perror("Failed to create shared clock segment. \n");
         return 1;
 	}
-	// printf("My user segment id for shared clock is %d\n", shm_clock_id);
+	// printf("My OS segment id for shared memory is %d\n", shm_clock_id);
 	
 	// attach shared memory segment
 	shared_clock* shm_clock = (shared_clock*)shmat(shm_clock_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (shm_clock == (void*)-1) {
-        perror("Failed to attach shared memory segment. \n");
+        perror("Failed to attach shared clock segment. \n");
         return 1;
     }
-	// printf("My user shared clock address is %x\n", shm_clock);
+	// printf("My OS shared clock address is %x\n", shm_clock);
 	
-	int rsrc_key = 91514;
-	int shm_rsrc_id = shmget(rsrc_key, sizeof(shared_resources)*20, PERM | IPC_CREAT);
-    if (shm_rsrc_id == -1) {
-        perror("Failed to create shared resource segment. \n");
+	int mem_key = 91514;
+	int shm_id = shmget(mem_key, sizeof(shared_memory)*20, PERM | IPC_CREAT | IPC_EXCL);
+    if (shm_id == -1) {
+        perror("Failed to create shared resources segment. \n");
         return 1;
 	}
-	// printf("My user segment id for the resource share is %d\n", shm_rsrc_id);
+	// printf("My OS segment id for the resource share is %d\n", shm_id);
 	
 	// attach shared memory segment
-	shared_resources* shm_resources = (shared_resources*)shmat(shm_rsrc_id, NULL, 0);
+	shared_memory* sh_mem = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (shm_resources == (void*)-1) {
-        perror("Failed to attach resources segment. \n");
+    if (sh_mem == (void*)-1) {
+        perror("Failed to attach shared resources segment. \n");
         return 1;
     }
-	// printf("My OS resources address is %x\n", shm_resources);
+	
+	int page_key = 91514;
+	int page_id = shmget(page_key, sizeof(page_table), PERM | IPC_CREAT | IPC_EXCL);
+    if (page_id == -1) {
+        perror("Failed to create shared resources segment. \n");
+        return 1;
+	}
+	// printf("My OS segment id for the resource share is %d\n", page_id);
+	
+	// attach shared memory segment
+	page_table* paging = (page_table*)shmat(page_id, NULL, 0);
+	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
+    if (paging == (void*)-1) {
+        perror("Failed to attach shared resources segment. \n");
+        return 1;
+    }
+	
+	int m_key = 91514;
+	int mem_id = shmget(m_key, sizeof(memory), PERM | IPC_CREAT | IPC_EXCL);
+    if (mem_id == -1) {
+        perror("Failed to create shared resources segment. \n");
+        return 1;
+	}
+	// printf("My OS segment id for the resource share is %d\n", mem_id);
+	
+	// attach shared memory segment
+	memory* mem = (memory*)shmat(mem_id, NULL, 0);
+	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
+    if (mem == (void*)-1) {
+        perror("Failed to attach shared resources segment. \n");
+        return 1;
+    }
 	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shm_clock->seconds, shm_clock->nanoseconds);
 	 
-	// strcpy(shm_resources->msgTest, "Hello!");  // for writing messages
+	// strcpy(sh_mem->msgTest, "Hello!");  // for writing messages
 	// printf("Child.\n");	
 	
 	srand(time(NULL));
@@ -108,9 +142,9 @@ int main(int argc, char * argv[])
 	while(clear == 0){
 		if(nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds){
 			if(rand() % 10 <= 1){
-				shm_resources[pid].request = 0;
-				shm_resources[pid].allocation = 0;
-				shm_resources[pid].release = 1;
+				sh_mem[pid].request = 0;
+				sh_mem[pid].allocation = 0;
+				sh_mem[pid].release = 1;
 				clear = 1;
 				printf("Child: %d releasing resources at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
 			}
@@ -128,15 +162,15 @@ int main(int argc, char * argv[])
 		}
 		else{
 			if(rand() % 10 <= 1){
-				if(shm_resources[pid].request == 0 && shm_resources[pid].allocation == 0){
-					shm_resources[pid].request = 1;
-					shm_resources[pid].allocation == 0;
-					shm_resources[pid].release = 0;
+				if(sh_mem[pid].request == 0 && sh_mem[pid].allocation == 0){
+					sh_mem[pid].request = 1;
+					sh_mem[pid].allocation == 0;
+					sh_mem[pid].release = 0;
 				}
-				else if(shm_resources[pid].request == 0 && shm_resources[pid].allocation == 1){
-					shm_resources[pid].request = 0;
-					shm_resources[pid].allocation == 0;
-					shm_resources[pid].release = 1;
+				else if(sh_mem[pid].request == 0 && sh_mem[pid].allocation == 1){
+					sh_mem[pid].request = 0;
+					sh_mem[pid].allocation == 0;
+					sh_mem[pid].release = 1;
 				}
 			}
 		}
@@ -150,7 +184,7 @@ int main(int argc, char * argv[])
 	}
 	
 	// detach from msg memory segment
-	detach = shmdt(shm_resources);
+	detach = shmdt(sh_mem);
 	if (detach == -1){
 		perror("Failed to detach shared msg memory segment. \n");
 		return 1;
