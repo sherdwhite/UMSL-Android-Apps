@@ -35,12 +35,67 @@ typedef struct {
 
 // populate resource
 int process_queue[MAX_PROCESSES];
+int front, rear;
 int memory[256];
 char page_table[256];
 int max_children = 18;
 int max_time = 2;
 FILE *file;
 char *filename = "log";
+
+void push(int child) {
+    if (rear >= max_children - 1) {
+        printf("\nQueue overflow no more elements can be inserted");
+        return;
+    }
+    if ((front == -1) && (rear == -1)){
+        front++;
+        rear++;
+        process_queue[rear] = child;
+        return;
+    }    
+    else{
+        int i,j;
+ 
+		for (i = 0; i <= rear; i++){
+			if (child >= process_queue[i]){
+				for (j = rear + 1; j > i; j--){
+					process_queue[j] = process_queue[j - 1];
+				}
+				process_queue[i] = child;
+				return;
+			}
+		}
+		process_queue[i] = child;
+	}
+    rear++;
+}
+
+void pop(int child) {
+    int i;
+ 
+    if ((front==-1) && (rear==-1)) {
+        printf("Queue is empty no elements to delete. \n");
+        return;
+    }
+ 
+    for (i = 0; i <= rear; i++){
+        if (child == process_queue[i]){
+            for (; i < rear; i++){
+                process_queue[i] = process_queue[i + 1];
+            }
+ 
+        process_queue[i] = -99;
+        rear--;
+ 
+        if (rear == -1) 
+            front = -1;
+        return;
+        }
+    }
+    printf("%d not found in queue to delete. \n", child);
+	return;
+}
 
 // void signalHandler();
 
