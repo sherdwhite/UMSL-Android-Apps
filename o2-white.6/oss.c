@@ -307,7 +307,7 @@ int main(int argc, char * argv[])
 				pop(i);
 				available = 0;
 				for(j = 0; j < 256; j++){
-					if{memory[j] == -1 && page_table[j] == '.'{
+					if(memory[j] == -1 && page_table[j] == '.'){
 						available++;
 					}
 				}
@@ -321,7 +321,7 @@ int main(int argc, char * argv[])
 					fputs(shnano, file);
 					fputs(".\n", file);
 					sprintf(msgtext2, "OSS: %c ", page_table);
-					fputs(msgtex2t, file);
+					fputs(msgtext2, file);
 					fputs(".\n", file);
 					total_log_lines++;
 					sh_mem[i].request = 0;
@@ -341,6 +341,7 @@ int main(int argc, char * argv[])
 					push(i);
 				}
 			}
+			
 			if(sh_mem[i].release == 1){
 				sprintf(shsec, "%d", shm_clock->seconds);
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
@@ -365,7 +366,7 @@ int main(int argc, char * argv[])
 			if(sh_mem[i].request == 1 && sh_mem[i].allocation == 0){
 				available = 0;
 				for(j = 0; j < 256; j++){
-					if{memory[j] == -1 && page_table[j] == '.'{
+					if(memory[j] == -1 && page_table[j] == '.'){
 						available++;
 					}
 				}
