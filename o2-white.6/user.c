@@ -27,13 +27,10 @@ typedef struct {
 	pid_t pid;
 	int request;
 	int allocation;
-	int mem_location;
 	int release;
 	int ready;
+	int read_write;
 } shared_memory;
-
-int memory[256];
-char page_table[256];
 
 int main(int argc, char * argv[]) 
 {
@@ -86,38 +83,6 @@ int main(int argc, char * argv[])
         return 1;
     }
 	
-	int page_key = 91514;
-	int page_id = shmget(page_key, sizeof(page_table), PERM | IPC_CREAT | IPC_EXCL);
-    if (page_id == -1) {
-        perror("Failed to create shared resources segment. \n");
-        return 1;
-	}
-	// printf("My OS segment id for the resource share is %d\n", page_id);
-	
-	// attach shared memory segment
-	page_table* paging = (page_table*)shmat(page_id, NULL, 0);
-	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (paging == (void*)-1) {
-        perror("Failed to attach shared resources segment. \n");
-        return 1;
-    }
-	
-	int m_key = 91514;
-	int mem_id = shmget(m_key, sizeof(memory), PERM | IPC_CREAT | IPC_EXCL);
-    if (mem_id == -1) {
-        perror("Failed to create shared resources segment. \n");
-        return 1;
-	}
-	// printf("My OS segment id for the resource share is %d\n", mem_id);
-	
-	// attach shared memory segment
-	memory* mem = (memory*)shmat(mem_id, NULL, 0);
-	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (mem == (void*)-1) {
-        perror("Failed to attach shared resources segment. \n");
-        return 1;
-    }
-	
 	printf("Child %d start at seconds: %d and nanoseconds: %ld.\n", pid, shm_clock->seconds, shm_clock->nanoseconds);
 	 
 	// strcpy(sh_mem->msgTest, "Hello!");  // for writing messages
@@ -127,10 +92,11 @@ int main(int argc, char * argv[])
 	long nano_end = 0;
 	int sec_end = 0;
 	long random_time = rand() % 250000000;
+	random_time = rand() % 250000000;
 	if((shm_clock->nanoseconds + random_time)  < 1000000000){
 			nano_end = shm_clock->nanoseconds + random_time;
 			sec_end = shm_clock->seconds;
-		}
+	}
 	else if((shm_clock->nanoseconds + random_time)  >= 1000000000){
 		nano_end = (shm_clock->nanoseconds + random_time) - shm_clock->nanoseconds ;
 		sec_end = shm_clock->seconds  + 1;
@@ -140,6 +106,17 @@ int main(int argc, char * argv[])
 	
 	int clear = 0;
 	while(clear == 0){
+		if(rand() % 2 == 1){
+			sh_mem[pid].read_write = 1;
+			clear = 1;
+			printf("Child: %d read memory at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
+		}
+		else{
+			sh_mem[pid].read_write = 0;
+			clear = 1;
+			printf("Child: %d wrote memory at sec: %d, nano: %ld \n", pid, shm_clock->seconds, shm_clock->nanoseconds);
+		}
+		
 		if(nano_end <= shm_clock->nanoseconds && sec_end <= shm_clock->seconds){
 			if(rand() % 10 <= 1){
 				sh_mem[pid].request = 0;

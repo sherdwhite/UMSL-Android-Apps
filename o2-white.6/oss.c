@@ -28,20 +28,22 @@ typedef struct {
 	pid_t pid;
 	int request;
 	int allocation;
-	int resource_descriptor;
 	int release;
 	int ready;
+	int read_write;
 } shared_memory;
 
 // populate resource
 int process_queue[MAX_PROCESSES];
 int front, rear;
 int memory[256];
-char page_table[256];
+char page_table[257];
 int max_children = 18;
 int max_time = 2;
+int available = 256;
 FILE *file;
 char *filename = "log";
+int queue = 0;
 
 void push(int child) {
     if (rear >= max_children - 1) {
@@ -194,7 +196,7 @@ int main(int argc, char * argv[])
 	// printf("My OS shared clock address is %x\n", shm_clock);
 	
 	int mem_key = 91514;
-	int shm_id = shmget(mem_key, sizeof(shared_memory)*20, PERM | IPC_CREAT | IPC_EXCL);
+	int shm_id = shmget(mem_key, sizeof(shared_memory)*18, PERM | IPC_CREAT | IPC_EXCL);
     if (shm_id == -1) {
         perror("Failed to create shared resources segment. \n");
         return 1;
@@ -205,38 +207,6 @@ int main(int argc, char * argv[])
 	shared_memory* sh_mem = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (sh_mem == (void*)-1) {
-        perror("Failed to attach shared resources segment. \n");
-        return 1;
-    }
-	
-	int page_key = 91514;
-	int page_id = shmget(page_key, sizeof(page_table), PERM | IPC_CREAT | IPC_EXCL);
-    if (page_id == -1) {
-        perror("Failed to create shared resources segment. \n");
-        return 1;
-	}
-	// printf("My OS segment id for the resource share is %d\n", page_id);
-	
-	// attach shared memory segment
-	page_table* paging = (page_table*)shmat(page_id, NULL, 0);
-	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (paging == (void*)-1) {
-        perror("Failed to attach shared resources segment. \n");
-        return 1;
-    }
-	
-	int m_key = 91514;
-	int mem_id = shmget(m_key, sizeof(memory), PERM | IPC_CREAT | IPC_EXCL);
-    if (mem_id == -1) {
-        perror("Failed to create shared resources segment. \n");
-        return 1;
-	}
-	// printf("My OS segment id for the resource share is %d\n", mem_id);
-	
-	// attach shared memory segment
-	memory* mem = (memory*)shmat(mem_id, NULL, 0);
-	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
-    if (mem == (void*)-1) {
         perror("Failed to attach shared resources segment. \n");
         return 1;
     }
@@ -259,15 +229,14 @@ int main(int argc, char * argv[])
 		sh_mem[i].pid = 0;
 		sh_mem[i].request = 0;
 		sh_mem[i].allocation = 0;
-		sh_mem[i].resource_descriptor = 99;
 		sh_mem[i].release = 0;
 		sh_mem[i].ready = 1;
 	}
 	
 	// set memory and paging to . (empty) to start
 	for(i = 0; i < 256; i++){
-		paging[i] = ".";
-		mem[i] = ".";
+		memory[i] = -1;
+		page_table[i] = ".";
 	}
 		
 	// pid_t childpid;
@@ -295,15 +264,17 @@ int main(int argc, char * argv[])
 	char msgsec[2];
 	char msgnano[10];
 	char msgtext[132];
+	char msgtext2[132];
 	int total_log_lines = 0;
 	int active_children = 0;
 	struct timespec next;
 	int random_time;
-	int random_resource;
+	int random_size = 32;
 	next.tv_sec = 0;
 	next.tv_nsec = 0;
 	int j = 0;
 	int p;
+	page_table[256] = '\0';
 	
 	do {
 		if(elapsed_secs >= max_time || active_children > max_children || total_log_lines >= 100000){
@@ -331,10 +302,48 @@ int main(int argc, char * argv[])
 		sem_post(sem); // adds 1
 
 		for(i = 0; i < max_children; i++){
+			if(queue > 0){
+				pop(i);
+				available = 0;
+				for(j = 0; j < 256; j++){
+					if{memory[j] = -1 && page_table[j] = "."{
+						available++;
+					}
+				}
+				if(random_size >= available){
+					sprintf(shsec, "%d", shm_clock->seconds);
+					sprintf(shnano, "%ld", shm_clock->nanoseconds);
+					sprintf(msgtext, "OSS: Child pid %d moved from queue to memory at my time ", i);
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(".", file);
+					fputs(shnano, file);
+					fputs(".\n", file);
+					sprintf(msgtext2, "OSS: %c ", page_table);
+					fputs(msgtex2t, file);
+					fputs(".\n", file);
+					total_log_lines++;
+					sh_mem[i].request = 0;
+					sh_mem[i].allocation = 1;
+					sh_mem[i].release = 0;
+					while(available > 0){
+						for(j = 0; j < 256; j++){
+							if(memory[j] == -1 && page_table[j] == "."){
+								memory[j] = i;
+								page_table[j] = "D";
+								available--;
+							}
+						}
+					}	
+				}
+				else{
+					push(i);
+				}
+			}
 			if(sh_mem[i].release == 1){
 				sprintf(shsec, "%d", shm_clock->seconds);
 				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sprintf(msgtext, "OSS: Child pid %d is releasing resources %d at my time ", i, sh_mem[i].resource_descriptor);
+				sprintf(msgtext, "OSS: Child pid %d is releasing memory at my time ", i);
 				fputs(msgtext, file);
 				fputs(shsec, file);
 				fputs(".", file);
@@ -343,34 +352,64 @@ int main(int argc, char * argv[])
 				total_log_lines++;
 				sh_mem[i].request = 0;
 				sh_mem[i].allocation = 0;
-				resource_queue[sh_mem[i].resource_descriptor]--;
-				sh_mem[i].resource_descriptor = 99;
 				sh_mem[i].release = 0;
 				sh_mem[i].ready = 1;
+				for(j = 0; j < 256; j++){
+					memory[j] = -1;
+					page_table[j] = ".";
+				}
 				active_children--;
 			}
 			
 			if(sh_mem[i].request == 1 && sh_mem[i].allocation == 0){
-				random_resource = rand() % 20;
-				sprintf(shsec, "%d", shm_clock->seconds);
-				sprintf(shnano, "%ld", shm_clock->nanoseconds);
-				sh_mem[i].resource_descriptor = random_resource;
-				sprintf(msgtext, "OSS: Child pid %d is allocated to resource %d at my time ", i, random_resource);
-				fputs(msgtext, file);
-				fputs(shsec, file);
-				fputs(".", file);
-				fputs(shnano, file);
-				fputs(".\n", file);
-				total_log_lines++;
-				sh_mem[i].request = 0;
-				sh_mem[i].allocation = 1;
-				sh_mem[i].release = 0;
-				resource_queue[random_resource]++;
+				available = 0;
+				for(j = 0; j < 256; j++){
+					if{memory[j] = -1 && page_table[j] = "."{
+						available++;
+					}
+				}
+				random_size = rand() % 32 + 1;
+				if(random_size >= available){
+					sprintf(shsec, "%d", shm_clock->seconds);
+					sprintf(shnano, "%ld", shm_clock->nanoseconds);
+					sprintf(msgtext, "OSS: Child pid %d is allocated to memory at my time ", i);
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(".", file);
+					fputs(shnano, file);
+					fputs(".\n", file);
+					total_log_lines++;
+					sh_mem[i].request = 0;
+					sh_mem[i].allocation = 1;
+					sh_mem[i].release = 0;
+					sh_mem[i].size = random_size;
+					while(available > 0){
+						for(j = 0; j < 256; j++){
+							if(memory[j] == -1 && page_table[j] == "."){
+								memory[j] = i;
+								page_table[j] = "D";
+								available--;
+							}
+						}
+					}	
+				}
+				else{
+					push(i);
+					sh_mem[i].size = random_size;
+					sprintf(shsec, "%d", shm_clock->seconds);
+					sprintf(shnano, "%ld", shm_clock->nanoseconds);
+					sprintf(msgtext, "OSS: Child pid %d hit page fault at my time ", i);
+					fputs(msgtext, file);
+					fputs(shsec, file);
+					fputs(".", file);
+					fputs(shnano, file);
+					fputs(" and putting process in the queue.\n", file);
+					sprintf(msgtext2, "OSS: %c ", page_table);
+					fputs(msgtex2t, file);
+					fputs(".\n", file);
+					total_log_lines++;
+				}
 			}
-		}
-		
-		if(j >= max_children){
-			j = 0;
 		}
 		
 		if(active_children < max_children && next.tv_sec <= shm_clock->seconds && next.tv_nsec <=shm_clock->nanoseconds){  
@@ -416,33 +455,6 @@ int main(int argc, char * argv[])
 			}
 		}
 		
-		// Deadlock Detection
-		for(i = 0; i < 20; i++){
-			if(resource_queue[i] >=10){
-				for(p = 0; p < max_children; p++){
-					if(sh_mem[p].resource_descriptor == i){
-						sprintf(shsec, "%d", shm_clock->seconds);
-						sprintf(shnano, "%ld", shm_clock->nanoseconds);
-						sprintf(msgtext, "OSS: Deadlock on resource queue %i. Child pid %d is releasing resources at my time ", i, p);
-						// printf("OSS: Deadlock on resource %i. Child pid %d is releasing resources at my time %d:%ld. \n", i, p, sh_mem[i].resource_descriptor, shm_clock->seconds, shm_clock->nanoseconds);
-						fputs(msgtext, file);
-						fputs(shsec, file);
-						fputs(".", file);
-						fputs(shnano, file);
-						fputs(".\n", file);
-						total_log_lines++;
-						sh_mem[p].request = 0;
-						sh_mem[p].allocation = 0;
-						resource_queue[sh_mem[p].resource_descriptor]--;
-						sh_mem[p].resource_descriptor = 99;
-						sh_mem[p].release = 0;
-						sh_mem[p].ready = 1;
-						active_children--;
-					}
-				}
-			}
-		}
-				
 		end = clock();
 		elapsed_secs = (double)(end - begin) / CLOCKS_PER_SEC;  //only reports in seconds.
 	} while(elapsed_secs < max_time);
