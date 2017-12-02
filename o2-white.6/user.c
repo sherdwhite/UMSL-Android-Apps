@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_clock_id = shmget(key, sizeof(shared_clock), PERM | IPC_CREAT | IPC_EXCL);
+	int shm_clock_id = shmget(key, sizeof(shared_clock), PERM | IPC_CREAT);
     if (shm_clock_id == -1) {
         perror("Failed to create shared clock segment. \n");
         return 1;
@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
 	// printf("My OS shared clock address is %x\n", shm_clock);
 	
 	int mem_key = 91514;
-	int shm_id = shmget(mem_key, sizeof(shared_memory)*20, PERM | IPC_CREAT | IPC_EXCL);
+	int shm_id = shmget(mem_key, sizeof(shared_memory)*20, PERM | IPC_CREAT);
     if (shm_id == -1) {
         perror("Failed to create shared resources segment. \n");
         return 1;
