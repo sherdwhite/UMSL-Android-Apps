@@ -52,12 +52,12 @@ int main(int argc, char * argv[])
 	// IPC_CREAT | IPC_EXCL says to create and fail if it already exists
 	// PERM is read write, could also be number, say 0755 like chmod command
 	int key = 92111;
-	int shm_clock_id = shmget(key, sizeof(shared_clock), PERM | IPC_CREAT);
+	int shm_clock_id = shmget(key, sizeof(shared_clock), SHM_RDONLY | IPC_CREAT);
     if (shm_clock_id == -1) {
         perror("Failed to create shared clock segment. \n");
         return 1;
 	}
-	// printf("My OS segment id for shared memory is %d\n", shm_clock_id);
+	// printf("My OS segment id for shared clock is %d\n", shm_clock_id);
 	
 	// attach shared memory segment
 	shared_clock* shm_clock = (shared_clock*)shmat(shm_clock_id, NULL, 0);
@@ -69,9 +69,9 @@ int main(int argc, char * argv[])
 	// printf("My OS shared clock address is %x\n", shm_clock);
 	
 	int mem_key = 91514;
-	int shm_id = shmget(mem_key, sizeof(shared_memory)*20, PERM | IPC_CREAT);
+	int shm_id = shmget(mem_key, sizeof(shared_memory)*18, PERM | IPC_CREAT);
     if (shm_id == -1) {
-        perror("Failed to create shared resources segment. \n");
+        perror("Failed to create shared memory segment. \n");
         return 1;
 	}
 	// printf("My OS segment id for the resource share is %d\n", shm_id);
@@ -80,7 +80,7 @@ int main(int argc, char * argv[])
 	shared_memory* sh_mem = (shared_memory*)shmat(shm_id, NULL, 0);
 	// shmat(segment_id, NULL, SHM_RDONLY) to attach to read only memory
     if (sh_mem == (void*)-1) {
-        perror("Failed to attach shared resources segment. \n");
+        perror("Failed to attach shared memory segment. \n");
         return 1;
     }
 	
