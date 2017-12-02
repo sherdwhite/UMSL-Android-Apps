@@ -30,6 +30,7 @@ typedef struct {
 	int release;
 	int ready;
 	int read_write;
+	int size;
 } shared_memory;
 
 int main(int argc, char * argv[]) 

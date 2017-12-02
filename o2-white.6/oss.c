@@ -31,6 +31,7 @@ typedef struct {
 	int release;
 	int ready;
 	int read_write;
+	int size;
 } shared_memory;
 
 // populate resource
@@ -236,7 +237,7 @@ int main(int argc, char * argv[])
 	// set memory and paging to . (empty) to start
 	for(i = 0; i < 256; i++){
 		memory[i] = -1;
-		page_table[i] = ".";
+		page_table[i] = '.';
 	}
 		
 	// pid_t childpid;
@@ -306,7 +307,7 @@ int main(int argc, char * argv[])
 				pop(i);
 				available = 0;
 				for(j = 0; j < 256; j++){
-					if{memory[j] = -1 && page_table[j] = "."{
+					if{memory[j] == -1 && page_table[j] == '.'{
 						available++;
 					}
 				}
@@ -330,7 +331,7 @@ int main(int argc, char * argv[])
 						for(j = 0; j < 256; j++){
 							if(memory[j] == -1 && page_table[j] == "."){
 								memory[j] = i;
-								page_table[j] = "D";
+								page_table[j] = 'D';
 								available--;
 							}
 						}
@@ -364,7 +365,7 @@ int main(int argc, char * argv[])
 			if(sh_mem[i].request == 1 && sh_mem[i].allocation == 0){
 				available = 0;
 				for(j = 0; j < 256; j++){
-					if{memory[j] = -1 && page_table[j] = "."{
+					if{memory[j] == -1 && page_table[j] == '.'{
 						available++;
 					}
 				}
@@ -385,7 +386,7 @@ int main(int argc, char * argv[])
 					sh_mem[i].size = random_size;
 					while(available > 0){
 						for(j = 0; j < 256; j++){
-							if(memory[j] == -1 && page_table[j] == "."){
+							if(memory[j] == -1 && page_table[j] == '.'){
 								memory[j] = i;
 								page_table[j] = "D";
 								available--;
