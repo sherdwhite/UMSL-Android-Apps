@@ -329,7 +329,7 @@ int main(int argc, char * argv[])
 					sh_mem[i].release = 0;
 					while(available > 0){
 						for(j = 0; j < 256; j++){
-							if(memory[j] == -1 && page_table[j] == "."){
+							if(memory[j] == -1 && page_table[j] == '.'){
 								memory[j] = i;
 								page_table[j] = 'D';
 								available--;
@@ -358,7 +358,7 @@ int main(int argc, char * argv[])
 				sh_mem[i].ready = 1;
 				for(j = 0; j < 256; j++){
 					memory[j] = -1;
-					page_table[j] = ".";
+					page_table[j] = '.';
 				}
 				active_children--;
 			}
@@ -389,7 +389,7 @@ int main(int argc, char * argv[])
 						for(j = 0; j < 256; j++){
 							if(memory[j] == -1 && page_table[j] == '.'){
 								memory[j] = i;
-								page_table[j] = "D";
+								page_table[j] = 'D';
 								available--;
 							}
 						}
@@ -407,7 +407,7 @@ int main(int argc, char * argv[])
 					fputs(shnano, file);
 					fputs(" and putting process in the queue.\n", file);
 					sprintf(msgtext2, "OSS: %c ", page_table);
-					fputs(msgtex2t, file);
+					fputs(msgtext2, file);
 					fputs(".\n", file);
 					total_log_lines++;
 				}
