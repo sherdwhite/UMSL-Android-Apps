@@ -89,6 +89,7 @@ int main(int argc, char * argv[])
 	// strcpy(sh_mem->msgTest, "Hello!");  // for writing messages
 	// printf("Child.\n");	
 	
+	srand(time(NULL));
 	long nano_end = 0;
 	int sec_end = 0;
 	long random_time = rand() % 250000000;
