@@ -89,7 +89,6 @@ int main(int argc, char * argv[])
 	// strcpy(sh_mem->msgTest, "Hello!");  // for writing messages
 	// printf("Child.\n");	
 	
-	srand(time(NULL));
 	long nano_end = 0;
 	int sec_end = 0;
 	long random_time = rand() % 250000000;
@@ -102,8 +101,6 @@ int main(int argc, char * argv[])
 		nano_end = (shm_clock->nanoseconds + random_time) - shm_clock->nanoseconds ;
 		sec_end = shm_clock->seconds  + 1;
 	}
-	
-	srand(time(NULL) * random_time);
 	
 	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
