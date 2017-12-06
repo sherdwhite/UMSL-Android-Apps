@@ -445,7 +445,7 @@ int main(int argc, char * argv[])
 					sh_mem[j].ready = 0;
 					sprintf(shsec, "%d", shm_clock->seconds);
 					sprintf(shnano, "%ld", shm_clock->nanoseconds);
-					sprintf(msgtext, "OSS: Generating process with PID %d at time ", i);
+					sprintf(msgtext, "OSS: Generating process with PID %d at time ", j);
 					fputs(msgtext, file);
 					fputs(shsec, file);
 					fputs(":", file);
