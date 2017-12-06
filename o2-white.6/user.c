@@ -103,6 +103,8 @@ int main(int argc, char * argv[])
 		sec_end = shm_clock->seconds  + 1;
 	}
 	
+	srand(time(NULL) * random_time);
+	
 	printf("Child: %d end time is %d sec and %ld nanoseconds. \n", pid, sec_end, nano_end);
 	
 	int clear = 0;
