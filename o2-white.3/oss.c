@@ -1,6 +1,7 @@
 // Sherd White
 // cs4760 Assignment 3
 // 10/04/2017
+// Grader Comments: No siglarm handling, but good execution, logging looks OK. Code style and formatting looks good. Great Job!!
 
 #include <stdio.h>
 #include <stdlib.h>

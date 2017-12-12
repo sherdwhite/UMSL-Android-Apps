@@ -1,6 +1,7 @@
 // Sherd White
 // cs4760 Assignment 1
 // 10/04/2017
+// Grader Comments: No results created, no signal handlers, execution failed Program code looks OK. no implementation for signal handles and interrupt
 
 #include <stdio.h>
 #include <stdlib.h>

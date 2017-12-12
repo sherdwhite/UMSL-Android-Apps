@@ -1,6 +1,7 @@
 // Sherd White
 // cs4760 Assignment 6
 // 11/21/2017
+// Grader Comments: Good execution, but page table and frame information was not logged. Code implementation looks good, no stats displayed and shared memory not cleaned up.
 
 #include <stdio.h>
 #include <stdlib.h>

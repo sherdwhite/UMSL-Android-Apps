@@ -4,6 +4,8 @@
 #include <sys/wait.h>
 #include <iostream>
 
+// Grader Comments: assignment1.cpp: good execution, but help and Usage msg could be more helpful -1, no perror
+
 int main (int argc, char *argv[]) {
     pid_t childpid = 0;
     int i, n, c;

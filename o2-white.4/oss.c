@@ -1,6 +1,7 @@
 // Sherd White
 // cs4760 Assignment 4  
 // 10/04/2017
+// Grader Comments: Execution looks OK, child were created and did see any information about processes entering queue, program looks OK, with all the pcb, clock and scheduling algorithm. interrupt handling failed and no queue dispatch and execution time as asked.
 
 #include <stdio.h>
 #include <stdlib.h>

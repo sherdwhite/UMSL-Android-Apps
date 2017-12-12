@@ -1,6 +1,7 @@
 // Sherd White
 // cs4760 Assignment 5
 // 11/10/2017
+// Grader Comments: Good execution, code style and format. Great job except no statistics outputted.
 
 #include <stdio.h>
 #include <stdlib.h>
