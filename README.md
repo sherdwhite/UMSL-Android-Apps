@@ -1,2 +1,2 @@
-# o2-white
-For Operating Systems Assignments
+# CS5020
+For Android Apps

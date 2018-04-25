@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:screenOrientation="landscape"
+    tools:context=".GameActivity">
+
+    <TextView
+        android:id="@+id/letter_text"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:gravity="center"
+        android:text="@string/game_text"
+        android:textAppearance="@android:style/TextAppearance.Material.Title"
+        app:layout_constraintBottom_toTopOf="@+id/canvas"
+        app:layout_constraintEnd_toStartOf="@+id/text_input"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/canvas"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        app:layout_constraintBottom_toTopOf="@+id/used_letters"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/letter_text" />
+
+    <EditText
+        android:id="@+id/text_input"
+        android:layout_width="75dp"
+        android:layout_height="50dp"
+        android:singleLine="true"
+        android:maxLength="1"
+        android:hint="@string/hint"
+        android:text="@string/input_text"
+        app:layout_constraintBottom_toTopOf="@+id/canvas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/letter_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/used_letters"
+        android:layout_width="183dp"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="@string/none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/used_text"
+        app:layout_constraintTop_toBottomOf="@+id/canvas" />
+
+    <TextView
+        android:id="@+id/used_text"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="@string/used_letters"
+        android:textAppearance="@android:style/TextAppearance.Material.Medium"
+        app:layout_constraintBottom_toBottomOf="@+id/used_letters"
+        app:layout_constraintEnd_toStartOf="@+id/used_letters"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/used_letters"
+        tools:text="Used Letters:" />
+
+</android.support.constraint.ConstraintLayout>
